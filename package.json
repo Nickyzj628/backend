@@ -4,8 +4,8 @@
 	"main": "app.js",
 	"type": "module",
 	"scripts": {
-		"dev": "bun --watch app.js",
-		"build": "bun build ./app.js --outdir ./dist --target bun --minify",
+		"dev": "bun --watch src/app.ts",
+		"build": "bun build src/app.ts --outdir dist --target bun --minify",
 		"start": "bun dist/app.js"
 	},
 	"keywords": [],
@@ -13,6 +13,7 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
+		"@nickyzj2023/utils": "^1.0.14",
 		"cors": "^2.8.5",
 		"express": "^5.1.0",
 		"highlight.js": "^11.11.1",
@@ -20,6 +21,10 @@
 		"marked-gfm-heading-id": "^4.1.2",
 		"marked-highlight": "^2.2.2",
 		"sharp": "^0.34.3",
-		"socket.io": "^4.8.1"
+		"socket.io": "^4.8.1",
+		"valibot": "^1.2.0"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.5"
 	}
 }
