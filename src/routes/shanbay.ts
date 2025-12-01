@@ -4,13 +4,22 @@ import * as v from "valibot";
 
 const router = Router();
 
-const Schema = v.object({
-  id: v.string(),
-  content: v.string(),
-  translation: v.string(),
-  author: v.number(),
-  origin_img_urls: v.array(v.string()),
-});
+const Schema = v.pipe(
+  v.object({
+    id: v.string(),
+    content: v.string(),
+    translation: v.string(),
+    author: v.string(),
+    origin_img_urls: v.array(v.string()),
+  }),
+  v.transform((input) => {
+    const { origin_img_urls, ...props } = input;
+    return {
+      ...props,
+      image: origin_img_urls[0],
+    };
+  }),
+);
 const get = withCache(
   fetcher("https://apiv3.shanbay.com/weapps").get,
   86400 /* 缓存一天 */,
