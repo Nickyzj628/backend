@@ -1,3 +1,4 @@
+import { timeLog } from "@nickyzj2023/utils";
 import { Namespace } from "socket.io";
 
 const SYSTEM_USER_NAME = "NeiKos496";
@@ -44,8 +45,8 @@ const rooms = (nsp: Namespace) => {
       socket.join(roomCode);
       socket.emit("roomCreated", roomCode);
 
-      console.log(`${userName}创建了房间#${roomCode}`);
-      console.log(`当前房间列表：${getAllRooms(nsp).map((room) => room.name)}`);
+      timeLog(`${userName}创建了房间#${roomCode}`);
+      timeLog(`当前房间列表：${getAllRooms(nsp).map((room) => room.name)}`);
     });
 
     // 加入房间
@@ -70,7 +71,7 @@ const rooms = (nsp: Namespace) => {
           });
       }
 
-      console.log(
+      timeLog(
         `${userName}${isRoomExist ? "加入" : "创建"}了房间#${roomCode}`,
       );
     });
@@ -80,7 +81,7 @@ const rooms = (nsp: Namespace) => {
       const { roomCode } = socket;
       const type = isHost ? "host" : "user";
       nsp.to(roomCode).emit("roomMessage", { type, userName, text });
-      console.log(`${userName}在房间#${roomCode}说: ${text}`);
+      timeLog(`${userName}在房间#${roomCode}说: ${text}`);
     });
 
     // 断开连接
@@ -91,13 +92,13 @@ const rooms = (nsp: Namespace) => {
         return;
       }
 
-      console.log(`${userName}离开了房间#${roomCode}`);
+      timeLog(`${userName}离开了房间#${roomCode}`);
 
       // 房间已经不存在
       const roomSockets = nsp.adapter.rooms.get(roomCode);
       if (!roomSockets) {
-        console.log(`房间#${roomCode}已关闭`);
-        console.log(
+        timeLog(`房间#${roomCode}已关闭`);
+        timeLog(
           `当前房间列表：${getAllRooms(nsp).map((room) => room.name)}`,
         );
         return;

@@ -10,6 +10,7 @@ import blogs from "@/routes/blogs";
 import index from "@/routes/index";
 import rooms from "@/routes/rooms";
 import shanbay from "@/routes/shanbay";
+import { timeLog } from "@nickyzj2023/utils";
 
 const ALLOWED_ORIGINS = [
   "http://localhost:5173",
@@ -61,5 +62,5 @@ rooms(io.of("/"));
 
 // 启动服务器
 server.listen(PORT, () =>
-  console.log(`服务器已启动：https://nickyzj.run:${PORT}`),
+  timeLog(`服务器已启动：https://nickyzj.run:${PORT}`),
 );

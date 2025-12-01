@@ -102,7 +102,11 @@ router.get("/:year/:title", async (req, res) => {
   const { year, title } = req.params;
 
   const path = `${WEBDAV_URL}${DIR}/${year}/${title}.md`;
-  const [error, response] = await to(fetcher().get(path));
+  const [error, response] = await to(
+    fetcher().get(path, {
+      parser: (response) => response.text(),
+    }),
+  );
   if (error) {
     res.fail(`读取文章失败：${error.message}`);
     return;
