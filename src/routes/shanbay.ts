@@ -21,10 +21,8 @@ const Schema = pipe(
 	}),
 );
 
-const get = withCache(
-	fetcher("https://apiv3.shanbay.com/weapps").get,
-	86400 /* 缓存一天 */,
-);
+const api = fetcher("https://apiv3.shanbay.com/weapps");
+const get = withCache(api.get, 86400 /* 缓存一天 */);
 
 router.get("/", async (req, res) => {
 	const [error, response] = await to(get("/dailyquote/quote"));

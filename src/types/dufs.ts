@@ -1,24 +1,34 @@
-import * as v from "valibot";
+import {
+	array,
+	boolean,
+	type InferOutput,
+	literal,
+	null_,
+	number,
+	object,
+	string,
+	union,
+} from "valibot";
 
-export const DufsJSONSchema = v.object({
-	href: v.string(),
-	kind: v.literal("Index"),
-	uri_prefix: v.string(),
-	allow_upload: v.boolean(),
-	allow_delete: v.boolean(),
-	allow_search: v.boolean(),
-	allow_archive: v.boolean(),
-	dir_exists: v.boolean(),
-	auth: v.boolean(),
-	user: v.null(),
-	paths: v.array(
-		v.object({
-			path_type: v.union([v.literal("Dir"), v.literal("File")]),
-			name: v.string(),
-			mtime: v.number(),
-			size: v.number(),
+export const DufsJSONSchema = object({
+	href: string(),
+	kind: literal("Index"),
+	uri_prefix: string(),
+	allow_upload: boolean(),
+	allow_delete: boolean(),
+	allow_search: boolean(),
+	allow_archive: boolean(),
+	dir_exists: boolean(),
+	auth: boolean(),
+	user: null_(),
+	paths: array(
+		object({
+			path_type: union([literal("Dir"), literal("File")]),
+			name: string(),
+			mtime: number(),
+			size: number(),
 		}),
 	),
 });
 
-export type DufsJSON = v.InferOutput<typeof DufsJSONSchema>;
+export type DufsJSON = InferOutput<typeof DufsJSONSchema>;

@@ -18,8 +18,8 @@ const init = async () => {
 	console.time("初始化路由/animes");
 
 	// 读取季度列表
-	const files = await getFiles(DIR, (data) =>
-		data.sort((a, b) => b.name.localeCompare(a.name, "zh")),
+	const files = await getFiles(DIR, (a, b) =>
+		b.name.localeCompare(a.name, "zh"),
 	);
 	seasons = files.map((file) => file.name);
 	pages = seasons.length;
@@ -36,7 +36,7 @@ init();
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-	const { page } = formatQuery(req.query);
+	const { page = 1 } = formatQuery(req.query);
 	const season = seasons[page - 1];
 	if (season === undefined) {
 		res.success({ page, pages, data: [] });
@@ -49,7 +49,7 @@ router.get("/", async (req, res) => {
 			title: dir.name,
 			season,
 			eps: dir.size,
-			updated: dir.mtime,
+			updated: dir.modified,
 		};
 	});
 
@@ -69,7 +69,7 @@ router.get("/:season", async (req, res) => {
 			title: dir.name,
 			season,
 			eps: dir.size,
-			updated: dir.mtime,
+			updated: dir.modified,
 		};
 	});
 
@@ -79,16 +79,16 @@ router.get("/:season", async (req, res) => {
 router.get("/:season/:title", async (req, res) => {
 	const { season, title } = req.params;
 
-	const files = await getFiles(`/${DIR}/${season}/${title}`);
-	const episodes = files
-		.map((file) => file.name)
-		.sort((a, b) => a.localeCompare(b, "zh"));
+	const files = await getFiles(`/${DIR}/${season}/${title}`, (a, b) =>
+		a.name.localeCompare(b.name, "zh"),
+	);
+	const episodes = files.map((file) => file.name);
 
 	res.success({ title, season, episodes });
 });
 
-router.put("/:year/:title", async (req, res) => {
-	const { title, year } = req.params;
+router.put("/:season/:title", async (req, res) => {
+	const { title, season } = req.params;
 	const { cover } = req.body;
 
 	// 修改封面（前端传 base64）
@@ -96,7 +96,11 @@ router.put("/:year/:title", async (req, res) => {
 		const base64 = cover.includes(";base64,")
 			? cover.split(";base64,").pop()
 			: cover;
-		const buffer = Buffer.from(base64!, "base64");
+		if (!base64) {
+			res.fail("封面处理失败：请确认上传的图片为base64格式");
+			return;
+		}
+		const buffer = Buffer.from(base64, "base64");
 
 		const fileOut = `${WEBDAV_PATH}/Nickyzj/Photos/Animes/${title}.webp`;
 		const [error, response] = await to(sharp(buffer).webp().toFile(fileOut));

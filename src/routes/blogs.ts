@@ -1,12 +1,12 @@
-import { fetcher, to } from "@nickyzj2023/utils";
+import { to } from "@nickyzj2023/utils";
 import express from "express";
 import hljs from "highlight.js";
 import { Marked } from "marked";
 import { gfmHeadingId } from "marked-gfm-heading-id";
 import { markedHighlight } from "marked-highlight";
 import sharp from "sharp";
-import { WEBDAV_PATH, WEBDAV_URL } from "@/libs/constants.js";
-import { formatQuery, getFiles } from "@/libs/utils.js";
+import { WEBDAV_PATH } from "@/libs/constants.js";
+import { formatQuery, getFile, getFiles } from "@/libs/utils.js";
 
 /** 博客文件夹在 dufs 的相对路径 */
 const DIR = "/Nickyzj/Blogs";
@@ -42,8 +42,8 @@ const init = async () => {
 	console.time("初始化路由/blogs");
 
 	// 读取年份范围
-	const files = await getFiles(DIR);
-	years = files.map((file) => parseInt(file.name));
+	const files = await getFiles(DIR, (a, b) => Number(b.name) - Number(a.name));
+	years = files.map((file) => Number(file.name));
 	pages = years.length;
 
 	console.timeEnd("初始化路由/blogs");
@@ -58,20 +58,24 @@ init();
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-	const { page } = formatQuery(req.query);
+	const { page = 1 } = formatQuery(req.query);
 	const year = years[page - 1];
 	if (!year) {
 		res.success({ page, pages, data: [] });
 		return;
 	}
 
-	const files = await getFiles(`${DIR}/${year}`);
+	const files = await getFiles(
+		`${DIR}/${year}`,
+		(a, b) => b.created - a.created,
+	);
 	const data = files.map((file) => {
 		const title = file.name.replace(".md", "");
 		return {
 			title,
 			year,
-			updated: file.mtime,
+			created: file.created,
+			updated: file.modified,
 		};
 	});
 
@@ -80,18 +84,21 @@ router.get("/", async (req, res) => {
 
 router.get("/:year", async (req, res) => {
 	const { year } = req.params;
-	if (!years.includes(parseInt(year))) {
+	if (!years.includes(Number(year))) {
 		res.success({ data: [] });
 		return;
 	}
 
-	const files = await getFiles(`/${DIR}/${year}`);
+	const files = await getFiles(
+		`/${DIR}/${year}`,
+		(a, b) => b.created - a.created,
+	);
 	const data = files.map((dir) => {
 		return {
 			title: dir.name,
 			year,
-			eps: dir.size,
-			updated: dir.mtime,
+			created: dir.created,
+			updated: dir.modified,
 		};
 	});
 
@@ -101,24 +108,23 @@ router.get("/:year", async (req, res) => {
 router.get("/:year/:title", async (req, res) => {
 	const { year, title } = req.params;
 
-	const path = `${WEBDAV_URL}${DIR}/${year}/${title}.md`;
-	const [error, response] = await to(
-		fetcher().get(path, {
-			parser: (response) => response.text(),
-		}),
-	);
+	const [error, response] = await to(getFile(`${DIR}/${year}/${title}.md`));
 	if (error) {
 		res.fail(`读取文章失败：${error.message}`);
 		return;
 	}
-	if (typeof response !== "string") {
-		res.fail("读取文章失败：数据格式有误");
-		return;
-	}
 
-	const content = marked.parse(response);
-	const minutes = Math.ceil(response.length / 500);
-	res.success({ title, year, minutes, content });
+	const file = await Bun.file(response.path).text();
+	const content = marked.parse(file);
+	const minutes = Math.ceil(file.length / 500);
+	res.success({
+		title,
+		year,
+		created: response.created,
+		modified: response.modified,
+		minutes,
+		content,
+	});
 });
 
 router.put("/:year/:title", async (req, res) => {
@@ -130,7 +136,11 @@ router.put("/:year/:title", async (req, res) => {
 		const base64 = cover.includes(";base64,")
 			? cover.split(";base64,").pop()
 			: cover;
-		const buffer = Buffer.from(base64!, "base64");
+		if (!base64) {
+			res.fail("封面处理失败：请确认提交的图片为base64格式");
+			return;
+		}
+		const buffer = Buffer.from(base64, "base64");
 
 		const fileOut = `${WEBDAV_PATH}/Nickyzj/Photos/Blogs/${title}.webp`;
 		const [error] = await to(sharp(buffer).webp().toFile(fileOut));
