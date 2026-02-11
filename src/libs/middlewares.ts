@@ -1,25 +1,20 @@
-import type { RequestHandler } from "express";
+export const customResponse = (app: any) =>
+	app.decorate("res", {
+		success: (data: any = {}, options: any = {}) => {
+			const { statusCode = 200, message = "success" } = options;
 
-/** 自定义 success 和 fail 方法 */
-export const customResponse: () => RequestHandler = () => (req, res, next) => {
-	res.success = (data = {}, options = {}) => {
-		const { statusCode = 200, message = "success" } = options;
+			return {
+				statusCode,
+				message,
+				...data,
+			};
+		},
+		fail: (message: string = "failed", options: any = {}) => {
+			const { statusCode = 400 } = options;
 
-		res.json({
-			statusCode,
-			message,
-			...data,
-		});
-	};
-
-	res.fail = (message = "failed", options = {}) => {
-		const { statusCode = 400 } = options;
-
-		res.json({
-			statusCode,
-			message,
-		});
-	};
-
-	next();
-};
+			return {
+				statusCode,
+				message,
+			};
+		},
+	});

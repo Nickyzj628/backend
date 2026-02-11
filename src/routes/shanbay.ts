@@ -1,10 +1,16 @@
-import { fetcher, to, withCache } from "@nickyzj2023/utils";
-import { Router } from "express";
+import {
+	fetcher,
+	mapKeys,
+	type SnakeToCamel,
+	snakeToCamel,
+	to,
+	withCache,
+} from "@nickyzj2023/utils";
+import { Elysia } from "elysia";
 import { array, object, pipe, safeParse, string, transform } from "valibot";
 
-const router = Router();
-
 const Schema = pipe(
+	// 定义后端返回类型
 	object({
 		id: string(),
 		content: string(),
@@ -12,32 +18,43 @@ const Schema = pipe(
 		author: string(),
 		origin_img_urls: array(string()),
 	}),
+	// 转换字段名为驼峰式
+	transform(
+		(input) =>
+			mapKeys(input, snakeToCamel) as {
+				[K in keyof typeof input as SnakeToCamel<K>]: (typeof input)[K];
+			},
+	),
+	// 处理 originImgUrls，只保留其中一张图片
 	transform((input) => {
-		const { origin_img_urls, ...props } = input;
+		const { originImgUrls, ...props } = input;
 		return {
 			...props,
-			image: origin_img_urls[0],
+			image: originImgUrls[0],
 		};
 	}),
 );
 
-const api = fetcher("https://apiv3.shanbay.com/weapps");
-const get = withCache(api.get, 86400 /* 缓存一天 */);
+const get = withCache(
+	fetcher("https://apiv3.shanbay.com/weapps").get,
+	28800, // 缓存 8 小时
+);
 
-router.get("/", async (req, res) => {
-	const [error, response] = await to(get("/dailyquote/quote"));
-	if (error) {
-		res.fail(`查询扇贝每日一句失败: ${error.message}`);
-		return;
-	}
+export const shanbay = new Elysia({ prefix: "/shanbay" }).get(
+	"/",
+	async ({ set }) => {
+		const [error, response] = await to(get("/dailyquote/quote"));
+		if (error) {
+			set.status = 500;
+			return `查询扇贝每日一句失败: ${error.message}`;
+		}
 
-	const validation = safeParse(Schema, response);
-	if (!validation.success) {
-		res.fail(`扇贝每日一句数据结构有误: ${validation.issues[0].message}`);
-		return;
-	}
+		const validation = safeParse(Schema, response);
+		if (!validation.success) {
+			set.status = 400;
+			return `查询扇贝每日一句失败: ${validation.issues[0].message}`;
+		}
 
-	res.success(validation.output);
-});
-
-export default router;
+		return validation.output;
+	},
+);

@@ -1,116 +1,72 @@
-import { to } from "@nickyzj2023/utils";
-import express from "express";
-import sharp from "sharp";
-import { WEBDAV_PATH } from "@/libs/constants.js";
-import { formatQuery, getFiles } from "@/libs/utils.js";
+import { Elysia } from "elysia";
+import {
+	maxValue,
+	minValue,
+	number,
+	object,
+	optional,
+	pipe,
+	string,
+} from "valibot";
+import {
+	countStmt,
+	getBySlugStmt,
+	listStmt,
+	watchAnimes,
+} from "@/utils/animes";
 
-/** 番剧文件夹在 dufs 的相对路径 */
-const DIR = "/Nickyzj/Animes";
+// 监听文章目录下的改动，同步到数据库
+watchAnimes();
 
-/**
- * 初始化路由所需数据
- */
+export const animes = new Elysia({ prefix: "/animes" })
+	.get(
+		"/",
+		async ({ query: { page, pageSize } }) => {
+			const offset = (page - 1) * pageSize;
 
-let seasons: string[] = [];
-let pages = 0;
+			const totalResult = countStmt.get();
+			const total = totalResult?.total ?? 0;
+			const totalPages = Math.ceil(total / pageSize);
 
-const init = async () => {
-	console.time("初始化路由/animes");
+			const list = listStmt.all({
+				$limit: pageSize,
+				$offset: offset,
+			});
 
-	// 读取季度列表
-	const files = await getFiles(DIR, (a, b) =>
-		b.name.localeCompare(a.name, "zh"),
+			return {
+				page,
+				pageSize,
+				total,
+				totalPages,
+				list,
+			};
+		},
+		{
+			query: object({
+				page: optional(pipe(number(), minValue(1)), 1),
+				pageSize: optional(pipe(number(), minValue(1), maxValue(100)), 10),
+			}),
+		},
+	)
+	.get(
+		"/:slug",
+		async ({ params: { slug }, set }) => {
+			// 从数据库读取番剧信息
+			const anime = getBySlugStmt.get({ $slug: slug });
+
+			if (!anime) {
+				set.status = 404;
+				return "番剧不存在";
+			}
+
+			// 解析 episodes JSON
+			anime.episodes = JSON.parse(anime.episodes ?? "[]");
+
+			return anime;
+		},
+		{
+			params: object({
+				slug: string(),
+			}),
+		},
 	);
-	seasons = files.map((file) => file.name);
-	pages = seasons.length;
-
-	console.timeEnd("初始化路由/animes");
-};
-
-init();
-
-/**
- * 路由相关逻辑
- */
-
-const router = express.Router();
-
-router.get("/", async (req, res) => {
-	const { page = 1 } = formatQuery(req.query);
-	const season = seasons[page - 1];
-	if (season === undefined) {
-		res.success({ page, pages, data: [] });
-		return;
-	}
-
-	const files = await getFiles(`${DIR}/${season}`);
-	const data = files.map((dir) => {
-		return {
-			title: dir.name,
-			season,
-			eps: dir.size,
-			updated: dir.modified,
-		};
-	});
-
-	res.success({ page, pages, data });
-});
-
-router.get("/:season", async (req, res) => {
-	const { season } = req.params;
-	if (!seasons.includes(season)) {
-		res.success({ data: [] });
-		return;
-	}
-
-	const files = await getFiles(`/${DIR}/${season}`);
-	const data = files.map((dir) => {
-		return {
-			title: dir.name,
-			season,
-			eps: dir.size,
-			updated: dir.modified,
-		};
-	});
-
-	res.success({ data });
-});
-
-router.get("/:season/:title", async (req, res) => {
-	const { season, title } = req.params;
-
-	const files = await getFiles(`/${DIR}/${season}/${title}`, (a, b) =>
-		a.name.localeCompare(b.name, "zh"),
-	);
-	const episodes = files.map((file) => file.name);
-
-	res.success({ title, season, episodes });
-});
-
-router.put("/:season/:title", async (req, res) => {
-	const { title, season } = req.params;
-	const { cover } = req.body;
-
-	// 修改封面（前端传 base64）
-	if (cover && typeof cover === "string") {
-		const base64 = cover.includes(";base64,")
-			? cover.split(";base64,").pop()
-			: cover;
-		if (!base64) {
-			res.fail("封面处理失败：请确认上传的图片为base64格式");
-			return;
-		}
-		const buffer = Buffer.from(base64, "base64");
-
-		const fileOut = `${WEBDAV_PATH}/Nickyzj/Photos/Animes/${title}.webp`;
-		const [error, response] = await to(sharp(buffer).webp().toFile(fileOut));
-		if (error) {
-			res.fail(`封面处理失败：${error.message}`);
-			return;
-		}
-	}
-
-	res.success();
-});
-
-export default router;
