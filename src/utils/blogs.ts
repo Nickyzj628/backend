@@ -133,41 +133,42 @@ export const watchBlogs = async () => {
 	/**
 	 * 一阶段：启动时全量同步所有历史文件
 	 */
+	if (Bun.env.INIT_WATCH !== "false") {
+		console.time("全量同步文章");
 
-	console.time("全量同步文章");
-
-	const initWatcher = chokidar.watch(BLOGS_DIR, {
-		depth: 1,
-		ignored: (path, stats) => {
-			// 忽略非 .md 文件
-			return stats?.isFile() === true && !path.endsWith(".md");
-		},
-	});
-
-	// 把所有文章加入队列
-	const initAddQueue: Array<{ path: string; stats?: fs.Stats }> = [];
-	initWatcher.on("add", (path, stats) => {
-		initAddQueue.push({ path, stats });
-	});
-
-	// 批量处理队列，使用事务优化性能
-	const batchAdd = db.transaction(() => {
-		initAddQueue.forEach(({ path, stats }) => {
-			addFile(path, stats);
+		const initWatcher = chokidar.watch(BLOGS_DIR, {
+			depth: 1,
+			ignored: (path, stats) => {
+				// 忽略非 .md 文件
+				return stats?.isFile() === true && !path.endsWith(".md");
+			},
 		});
-		return initAddQueue.length;
-	});
 
-	// 等待扫描完成
-	await new Promise<void>((resolve) => {
-		initWatcher.on("ready", () => {
-			batchAdd();
-			initWatcher.close();
-			resolve();
+		// 把所有文章加入队列
+		const initAddQueue: Array<{ path: string; stats?: fs.Stats }> = [];
+		initWatcher.on("add", (path, stats) => {
+			initAddQueue.push({ path, stats });
 		});
-	});
 
-	console.timeEnd("全量同步文章");
+		// 批量处理队列，使用事务优化性能
+		const batchAdd = db.transaction(() => {
+			initAddQueue.forEach(({ path, stats }) => {
+				addFile(path, stats);
+			});
+			return initAddQueue.length;
+		});
+
+		// 等待扫描完成
+		await new Promise<void>((resolve) => {
+			initWatcher.on("ready", () => {
+				batchAdd();
+				initWatcher.close();
+				resolve();
+			});
+		});
+
+		console.timeEnd("全量同步文章");
+	}
 
 	/**
 	 * 二阶段：只监听近两年的
@@ -183,6 +184,7 @@ export const watchBlogs = async () => {
 			// 忽略非 .md 文件
 			return stats?.isFile() === true && !path.endsWith(".md");
 		},
+		ignoreInitial: true,
 		awaitWriteFinish: true,
 	});
 

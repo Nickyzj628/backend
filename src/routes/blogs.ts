@@ -1,13 +1,4 @@
-import { Elysia } from "elysia";
-import {
-	maxValue,
-	minValue,
-	number,
-	object,
-	optional,
-	pipe,
-	string,
-} from "valibot";
+import { Elysia, t } from "elysia";
 import { BLOGS_DIR } from "@/libs/constants";
 import { countStmt, getBySlugStmt, listStmt, watchBlogs } from "@/utils/blogs";
 import { renderMarkdown } from "@/utils/markdown";
@@ -18,17 +9,16 @@ watchBlogs();
 export const blogs = new Elysia({ prefix: "/blogs" })
 	.get(
 		"/",
-		async ({ query: { page, pageSize } }) => {
+		async ({ query: { page = 1, pageSize = 10 } }) => {
 			const offset = (page - 1) * pageSize;
-
-			const totalResult = countStmt.get();
-			const total = totalResult?.total ?? 0;
-			const totalPages = Math.ceil(total / pageSize);
 
 			const list = listStmt.all({
 				$limit: pageSize,
 				$offset: offset,
 			});
+
+			const { total = 0 } = countStmt.get() ?? {};
+			const totalPages = Math.ceil(total / pageSize);
 
 			return {
 				page,
@@ -39,9 +29,11 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 			};
 		},
 		{
-			query: object({
-				page: optional(pipe(number(), minValue(1)), 1),
-				pageSize: optional(pipe(number(), minValue(1), maxValue(100)), 10),
+			query: t.Object({
+				page: t.Optional(t.Numeric({ default: 1, minimum: 1 })),
+				pageSize: t.Optional(
+					t.Numeric({ default: 10, minimum: 1, maximum: 100 }),
+				),
 			}),
 		},
 	)
@@ -64,8 +56,8 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 			return { ...blog, html };
 		},
 		{
-			params: object({
-				slug: string(),
+			params: t.Object({
+				slug: t.String(),
 			}),
 		},
 	);

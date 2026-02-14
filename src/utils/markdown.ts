@@ -15,12 +15,13 @@ import { textToSlug } from "./common";
 
 // 转义 HTML 特殊字符
 const escapeHtml = (text: string) => {
-	return text
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&#039;");
+	return text;
+	// return text
+	// 	.replace(/&/g, "&amp;")
+	// 	.replace(/</g, "&lt;")
+	// 	.replace(/>/g, "&gt;")
+	// 	.replace(/"/g, "&quot;")
+	// 	.replace(/'/g, "&#039;");
 };
 
 /**

@@ -12,10 +12,9 @@ import { shanbay } from "@/routes/shanbay";
 // 创建 ElysiaJS 服务器
 const app = new Elysia({
 	serve: {
-		hostname: "nickyzj.run",
 		tls: {
-			cert: file("E:/Administrator/Documents/ssl/server.crt"),
-			key: file("E:/Administrator/Documents/ssl/server.key"),
+			cert: file("E:/Administrator/Documents/ssl/nickyzj.run_bundle.crt"),
+			key: file("E:/Administrator/Documents/ssl/nickyzj.run.key"),
 		},
 	},
 });
