@@ -1,7 +1,6 @@
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 import { timeLog } from "@nickyzj2023/utils";
-import { toJsonSchema } from "@valibot/to-json-schema";
 import { file } from "bun";
 import { Elysia } from "elysia";
 import { ALLOWED_ORIGINS, PORT } from "@/libs/constants";
@@ -20,13 +19,7 @@ const app = new Elysia({
 });
 
 // 中间件
-app.use(
-	openapi({
-		mapJsonSchema: {
-			valibot: toJsonSchema,
-		},
-	}),
-);
+app.use(openapi());
 app.use(
 	cors({
 		origin: ALLOWED_ORIGINS,

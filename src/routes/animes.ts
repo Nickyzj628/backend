@@ -1,12 +1,18 @@
 import { Elysia, t } from "elysia";
 import {
+	AnimeDetailParamsSchema,
+	AnimeDetailResponseSchema,
+	AnimeListQuerySchema,
+	AnimeListResponseSchema,
+} from "@/types/animes";
+import {
 	countStmt,
 	getBySlugStmt,
 	listStmt,
 	watchAnimes,
 } from "@/utils/animes";
 
-// 监听文章目录下的改动，同步到数据库
+// 监听番剧目录下的改动，同步到数据库
 watchAnimes();
 
 export const animes = new Elysia({ prefix: "/animes" })
@@ -32,12 +38,10 @@ export const animes = new Elysia({ prefix: "/animes" })
 			};
 		},
 		{
-			query: t.Object({
-				page: t.Optional(t.Numeric({ default: 1, minimum: 1 })),
-				pageSize: t.Optional(
-					t.Numeric({ default: 10, minimum: 1, maximum: 100 }),
-				),
-			}),
+			query: AnimeListQuerySchema,
+			response: {
+				200: AnimeListResponseSchema,
+			},
 		},
 	)
 	.get(
@@ -51,14 +55,22 @@ export const animes = new Elysia({ prefix: "/animes" })
 				return "番剧不存在";
 			}
 
-			// 解析 episodes JSON
-			anime.episodes = JSON.parse(anime.episodes ?? "[]");
+			// 解析 episodes JSON，转换成 string[]
+			const episodesData = JSON.parse(anime.episodes ?? "[]");
+			const episodes = Array.isArray(episodesData)
+				? episodesData.map((item) => String(item))
+				: [];
 
-			return anime;
+			return {
+				...anime,
+				episodes,
+			};
 		},
 		{
-			params: t.Object({
-				slug: t.String(),
-			}),
+			params: AnimeDetailParamsSchema,
+			response: {
+				200: AnimeDetailResponseSchema,
+				404: t.String(),
+			},
 		},
 	);

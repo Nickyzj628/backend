@@ -15,20 +15,16 @@
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
     "@elysiajs/openapi": "^1.4.14",
-    "@nickyzj2023/utils": "^1.0.45",
-    "@shikijs/langs-precompiled": "^3.22.0",
-    "@valibot/to-json-schema": "^1.5.0",
+    "@nickyzj2023/utils": "^1.0.50",
     "chokidar": "^5.0.0",
-    "elysia": "^1.4.22",
+    "elysia": "^1.4.25",
     "pinyin-pro": "^3.28.0",
-    "sharp": "^0.34.5",
-    "shiki": "^3.0.0",
     "socket.io": "^4.8.3",
     "valibot": "^1.2.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.14",
-    "@types/bun": "^1.3.8",
+    "@biomejs/biome": "2.3.15",
+    "@types/bun": "^1.3.9",
     "cross-env": "^10.1.0"
   }
 }

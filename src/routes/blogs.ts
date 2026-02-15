@@ -1,9 +1,15 @@
 import { Elysia, t } from "elysia";
 import { BLOGS_DIR } from "@/libs/constants";
+import {
+	BlogDetailQuerySchema,
+	BlogDetailResponseSchema,
+	BlogListQuerySchema,
+	BlogListResponseSchema,
+} from "@/types/blogs";
 import { countStmt, getBySlugStmt, listStmt, watchBlogs } from "@/utils/blogs";
 import { renderMarkdown } from "@/utils/markdown";
 
-// 监听文章目录下的改动，同步到数据库
+// 监听文章目录下的变动，同步到数据库
 watchBlogs();
 
 export const blogs = new Elysia({ prefix: "/blogs" })
@@ -29,12 +35,10 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 			};
 		},
 		{
-			query: t.Object({
-				page: t.Optional(t.Numeric({ default: 1, minimum: 1 })),
-				pageSize: t.Optional(
-					t.Numeric({ default: 10, minimum: 1, maximum: 100 }),
-				),
-			}),
+			query: BlogListQuerySchema,
+			response: {
+				200: BlogListResponseSchema,
+			},
 		},
 	)
 	.get(
@@ -56,8 +60,10 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 			return { ...blog, html };
 		},
 		{
-			params: t.Object({
-				slug: t.String(),
-			}),
+			params: BlogDetailQuerySchema,
+			response: {
+				200: BlogDetailResponseSchema,
+				404: t.String(),
+			},
 		},
 	);
