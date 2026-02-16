@@ -7,6 +7,9 @@ import { ALLOWED_ORIGINS, PORT } from "@/libs/constants";
 import { animes } from "@/routes/animes";
 import { blogs } from "@/routes/blogs";
 import { shanbay } from "@/routes/shanbay";
+import { startBrecTimer } from "@/utils/brec";
+
+const log = (...args: any[]) => timeLog("[app]", ...args);
 
 // 创建 ElysiaJS 服务器
 const app = new Elysia({
@@ -49,8 +52,14 @@ app.use(animes);
 // 	},
 // });
 
+// 直播状态推送
+let stopBrecTimer = () => {};
 app
 	.onStart(({ server }) => {
-		timeLog(`服务器已启动：${server?.url}`);
+		stopBrecTimer = startBrecTimer();
+		log(`服务已启动: ${server?.url}`);
+	})
+	.onStop(() => {
+		stopBrecTimer();
 	})
 	.listen(PORT);

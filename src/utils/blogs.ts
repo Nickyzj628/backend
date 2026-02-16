@@ -7,6 +7,8 @@ import { BLOGS_DIR, ROOT_PATH, WEBDAV_PATH } from "@/libs/constants";
 import type { BlogItem } from "@/types/blogs";
 import { extractYearFromPath, textToSlug } from "./common";
 
+const log = (...args: any[]) => timeLog("[blogs]", ...args);
+
 const db = new Database(`${ROOT_PATH}/data/sqlite.db`);
 
 db.run(`
@@ -89,7 +91,7 @@ const addFile = (path: string, stats?: fs.Stats) => {
 		$updated_at: updatedAt,
 	});
 	if (changes > 0) {
-		timeLog(`新增文章：${title}`);
+		log(`新增文章：${title}`);
 	}
 
 	return changes;
@@ -107,7 +109,7 @@ const changeFile = (path: string, stats?: fs.Stats) => {
 		$updated_at: updatedAt,
 	});
 	if (changes > 0) {
-		timeLog(`更新文章：${title}`);
+		log(`更新文章：${title}`);
 	}
 
 	return changes;
@@ -119,7 +121,7 @@ const unlinkFile = (path: string) => {
 
 	const { changes } = deleteStmt.run({ $title: title });
 	if (changes > 0) {
-		timeLog(`删除文章：${title}`);
+		log(`删除文章：${title}`);
 	}
 
 	return changes;
@@ -193,6 +195,6 @@ export const watchBlogs = async () => {
 		.on("change", changeFile)
 		.on("unlink", unlinkFile)
 		.on("ready", () => {
-			timeLog(`开始监听目录`, activeDirs);
+			log(`开始监听目录`, activeDirs);
 		});
 };

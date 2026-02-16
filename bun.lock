@@ -7,7 +7,7 @@
       "dependencies": {
         "@elysiajs/cors": "^1.4.1",
         "@elysiajs/openapi": "^1.4.14",
-        "@nickyzj2023/utils": "^1.0.50",
+        "@nickyzj2023/utils": "^1.0.52",
         "chokidar": "^5.0.0",
         "elysia": "^1.4.25",
         "pinyin-pro": "^3.28.0",
@@ -48,7 +48,7 @@
 
     "@epic-web/invariant": ["@epic-web/invariant@1.0.0", "", {}, "sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA=="],
 
-    "@nickyzj2023/utils": ["@nickyzj2023/utils@1.0.50", "", { "peerDependencies": { "typescript": "^5.9.3" } }, "sha512-lb1Y3J5XHyjjzyqZpOcNAfz7M2fRj6uOo77a56U7pH82O188QKUnXn+v0Oat2uK3b30Oh/mUM/PBXNUDvcwGAg=="],
+    "@nickyzj2023/utils": ["@nickyzj2023/utils@1.0.52", "", { "peerDependencies": { "typescript": "^5.9.3" } }, "sha512-Clg9L47aIMW2eDVechHC9SB3R2FyjpyKsltwAFTUzfCP5Mioo/g7Cd0nYlxZZsVYKc7R5cNRlIFLoyErDIOKiw=="],
 
     "@sinclair/typebox": ["@sinclair/typebox@0.34.48", "", {}, "sha512-kKJTNuK3AQOrgjjotVxMrCn1sUJwM76wMszfq1kdU4uYVJjvEWuFQ6HgvLt4Xz3fSmZlTOxJ/Ie13KnIcWQXFA=="],
 

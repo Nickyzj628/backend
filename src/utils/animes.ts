@@ -8,6 +8,8 @@ import { ANIMES_DIR, ROOT_PATH, WEBDAV_PATH } from "@/libs/constants.js";
 import type { AnimeItem } from "@/types/animes";
 import { extractSeasonFromPath, textToSlug } from "@/utils/common";
 
+const log = (...args: any[]) => timeLog("[animes]", ...args);
+
 const db = new Database(`${ROOT_PATH}/data/sqlite.db`);
 
 db.run(`
@@ -102,7 +104,7 @@ const addFile = async (path: string, stats?: fs.Stats) => {
 		$updated_at: updatedAt,
 	});
 	if (changes > 0) {
-		timeLog(`新增番剧：${title}，共${eps}话`);
+		log(`新增番剧：${title}，共${eps}话`);
 	}
 
 	return changes;
@@ -123,7 +125,7 @@ const changeFile = async (path: string, stats?: fs.Stats) => {
 		$updated_at: updatedAt,
 	});
 	if (changes > 0) {
-		timeLog(`更新番剧：${title}，共${eps}话`);
+		log(`更新番剧：${title}，共${eps}话`);
 	}
 
 	return changes;
@@ -134,7 +136,7 @@ const unlinkFile = (path: string) => {
 
 	const { changes } = deleteStmt.run({ $title: title });
 	if (changes > 0) {
-		timeLog(`删除番剧：${title}`);
+		log(`删除番剧：${title}`);
 	}
 
 	return changes;
@@ -232,7 +234,7 @@ export const watchAnimes = async () => {
 	 */
 
 	const activeDirs = getActiveSeasonDirs();
-	timeLog("开始监听目录", activeDirs);
+	log("开始监听目录", activeDirs);
 
 	const activeWatcher = chokidar.watch(activeDirs, {
 		depth: 1,
