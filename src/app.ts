@@ -6,6 +6,7 @@ import { Elysia } from "elysia";
 import { ALLOWED_ORIGINS, PORT } from "@/libs/constants";
 import { animes } from "@/routes/animes";
 import { blogs } from "@/routes/blogs";
+import { rooms } from "@/routes/rooms";
 import { shanbay } from "@/routes/shanbay";
 import { startBrecTimer } from "@/utils/brec";
 
@@ -29,31 +30,18 @@ app.use(
 	}),
 );
 
-// 路由
+// 常规路由
 app.get("/", ({ redirect }) => redirect("/openapi"));
 app.use(shanbay);
 app.use(blogs);
 app.use(animes);
 
-// Websocket 放映室
-// app.ws("/rooms", {
-// 	open: (ws) => {
-// 		console.log("WebSocket connection opened to /rooms");
-// 		console.log(ws);
-// 		// 初始化房间 WebSocket 处理
-// 		// setupRoomsWebSocket(ws);
-// 	},
-// 	message: (ws, message) => {
-// 		console.log("Received message:", message);
-// 		// 消息处理将在 setupRoomsWebSocket 中定义
-// 	},
-// 	close: (ws) => {
-// 		console.log("WebSocket connection closed");
-// 	},
-// });
+// websocket 路由
+app.use(rooms);
 
 // 直播状态推送
 let stopBrecTimer = () => {};
+
 app
 	.onStart(({ server }) => {
 		stopBrecTimer = startBrecTimer();
