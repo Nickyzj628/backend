@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+@plugin "@iconify/tailwind4";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --spacing-18: 4.5rem;
+}
+
+@layer base {
+    /* 滚动条 */
+
+    ::-webkit-scrollbar {
+        @apply w-4 bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply border-4 border-solid border-transparent rounded-full;
+        @apply bg-clip-content bg-neutral-400/60 hover:bg-neutral-400;
+    }
+
+    /* 交互体验优化 */
+
+    html {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        scroll-behavior: smooth;
+    }
+
+    /* 标题 */
+
+    h1 {
+        @apply text-3xl;
+    }
+
+    h2 {
+        @apply text-2xl;
+    }
+
+    h3 {
+        @apply text-xl;
+    }
+
+    h4 {
+        @apply text-lg;
+    }
+
+    h5 {
+        @apply text-base;
+    }
+
+    h6 {
+        @apply text-sm;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply text-black transition dark:text-neutral-200;
+    }
+
+    /* 多媒体 */
+
+    img {
+        @apply object-cover transition dark:brightness-90;
+    }
+
+    video {
+        @apply object-contain outline-none rounded-xl overflow-hidden;
+    }
+
+    /* 交互元素 */
+
+    a {
+        @apply transition active:scale-95;
+    }
+
+    button {
+        @apply outline-none cursor-pointer transition active:scale-95;
+    }
+
+    /* 水平分割线 */
+    hr {
+        @apply my-4;
+        @apply border-1 border-solid border-neutral-100 rounded-full;
+        @apply transition dark:border-neutral-800;
+    }
+
+    /* 表格相关 */
+
+    th {
+        @apply whitespace-nowrap;
+    }
+
+    /* 文章相关 */
+
+    blockquote,
+    ::marker {
+        @apply transition;
+    }
+}
+
+@layer components {
+
+    /* bento box */
+    .bento {
+        @apply p-3 bg-white rounded-xl transition dark:bg-neutral-900;
+    }
+
+    /* 垂直分割线 */
+    .divider {
+        @apply w-0.5 h-6 bg-neutral-200/60 rounded-full transition dark:bg-neutral-700/60;
+    }
+
+    /* 吧唧 */
+    .badge {
+        @apply px-2.5 py-0.5;
+        @apply text-xs text-neutral-800;
+        @apply bg-neutral-100 rounded-full;
+        @apply transition dark:text-neutral-100 dark:bg-neutral-800;
+    }
+}
+
+/* 图片缩放 */
+
+.medium-zoom-overlay {
+    @apply z-40;
+}
+
+.medium-zoom-image--opened {
+    @apply z-50 rounded-md;
+}
