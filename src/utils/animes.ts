@@ -25,7 +25,7 @@ db.run(`
   )
 `);
 
-const insertStmt = db.prepare<
+const saveStmt = db.prepare<
 	{ changes: number },
 	{
 		$title: string;
@@ -37,26 +37,15 @@ const insertStmt = db.prepare<
 		$updated_at: string;
 	}
 >(`
-  INSERT OR IGNORE INTO animes (title, slug, season, eps, episodes, created_at, updated_at)
+  INSERT INTO animes (title, slug, season, eps, episodes, created_at, updated_at)
   VALUES ($title, $slug, $season, $eps, $episodes, $created_at, $updated_at)
-`);
-
-const updateStmt = db.prepare<
-	{ changes: number },
-	{
-		$title: string;
-		$eps: number;
-		$episodes: string;
-		$created_at: string;
-		$updated_at: string;
-	}
->(`
-  UPDATE animes
-  SET eps = $eps,
-      episodes = $episodes,
-      created_at = $created_at,
-      updated_at = $updated_at
-  WHERE title = $title
+  ON CONFLICT(title) DO UPDATE SET
+    slug = excluded.slug,
+    season = excluded.season,
+    eps = excluded.eps,
+    episodes = excluded.episodes,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at
 `);
 
 const deleteStmt = db.prepare<{ changes: number }, { $title: string }>(`
@@ -84,7 +73,7 @@ export const getBySlugStmt = db.prepare<AnimeItem, { $slug: string }>(`
   WHERE slug = $slug
 `);
 
-const addFile = async (path: string, stats?: fs.Stats) => {
+const saveAnime = async (path: string, stats?: fs.Stats) => {
 	const title = basename(path);
 	const slug = textToSlug(title);
 	const filePath = relative(WEBDAV_PATH, path);
@@ -94,7 +83,34 @@ const addFile = async (path: string, stats?: fs.Stats) => {
 	const createdAt = stats?.birthtime?.toISOString() ?? "";
 	const updatedAt = stats?.mtime?.toISOString() ?? "";
 
-	const { changes } = insertStmt.run({
+	// 检查番剧是否存在
+	const existing = getBySlugStmt.get({ $slug: slug });
+
+	// 如果不存在，则插入新记录
+	if (!existing) {
+		saveStmt.run({
+			$title: title,
+			$slug: slug,
+			$season: season,
+			$eps: eps,
+			$episodes: JSON.stringify(episodes),
+			$created_at: createdAt,
+			$updated_at: updatedAt,
+		});
+		log(`新增番剧：${title}，共${eps}话`);
+		return;
+	}
+
+	// 如果存在，则检查是否有变化
+	const hasChanged =
+		existing.eps !== eps || existing.episodes !== JSON.stringify(episodes);
+
+	if (!hasChanged) {
+		return;
+	}
+
+	// 如果有变化，则更新记录
+	saveStmt.run({
 		$title: title,
 		$slug: slug,
 		$season: season,
@@ -103,32 +119,7 @@ const addFile = async (path: string, stats?: fs.Stats) => {
 		$created_at: createdAt,
 		$updated_at: updatedAt,
 	});
-	if (changes > 0) {
-		log(`新增番剧：${title}，共${eps}话`);
-	}
-
-	return changes;
-};
-
-const changeFile = async (path: string, stats?: fs.Stats) => {
-	const title = basename(path);
-	const episodes = await readdir(path);
-	const eps = episodes.length;
-	const createdAt = stats?.birthtime?.toISOString() ?? "";
-	const updatedAt = stats?.mtime?.toISOString() ?? "";
-
-	const { changes } = updateStmt.run({
-		$title: title,
-		$eps: eps,
-		$episodes: JSON.stringify(episodes),
-		$created_at: createdAt,
-		$updated_at: updatedAt,
-	});
-	if (changes > 0) {
-		log(`更新番剧：${title}，共${eps}话`);
-	}
-
-	return changes;
+	log(`更新番剧：${title}，共${eps}话`);
 };
 
 const unlinkFile = (path: string) => {
@@ -212,7 +203,7 @@ export const watchAnimes = async () => {
 		// 批量处理队列，使用事务优化性能
 		const batchAdd = db.transaction(async () => {
 			await Promise.all(
-				initAddQueue.map(async ({ path, stats }) => await addFile(path, stats)),
+				initAddQueue.map(({ path, stats }) => saveAnime(path, stats)),
 			);
 			return initAddQueue.length;
 		});
@@ -251,14 +242,14 @@ export const watchAnimes = async () => {
 			const relativePath = path.replaceAll("\\", "/").replace(ANIMES_DIR, "");
 			const depth = getPathDepth(relativePath);
 			if (depth === 2) {
-				addFile(path, stats);
+				saveAnime(path, stats);
 			}
 		})
 		.on("change", async (path, stats) => {
 			const relativePath = path.replaceAll("\\", "/").replace(ANIMES_DIR, "");
 			const depth = getPathDepth(relativePath);
 			if (depth === 2) {
-				changeFile(path, stats);
+				saveAnime(path, stats);
 			}
 		})
 		.on("unlinkDir", (path) => {

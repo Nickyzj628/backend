@@ -22,7 +22,7 @@ db.run(`
    )
  `);
 
-const insertStmt = db.prepare<
+const saveStmt = db.prepare<
 	{ changes: number },
 	{
 		$title: string;
@@ -32,22 +32,13 @@ const insertStmt = db.prepare<
 		$updated_at: string;
 	}
 >(`
-  INSERT OR IGNORE INTO blogs (title, slug, year, created_at, updated_at)
+  INSERT INTO blogs (title, slug, year, created_at, updated_at)
   VALUES ($title, $slug, $year, $created_at, $updated_at)
-`);
-
-const updateStmt = db.prepare<
-	{ changes: number },
-	{
-		$title: string;
-		$created_at: string;
-		$updated_at: string;
-	}
->(`
-  UPDATE blogs
-  SET created_at = $created_at,
-      updated_at = $updated_at
-  WHERE title = $title
+  ON CONFLICT(title) DO UPDATE SET
+    slug = excluded.slug,
+    year = excluded.year,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at
 `);
 
 const deleteStmt = db.prepare<{ changes: number }, { $title: string }>(`
@@ -74,8 +65,8 @@ export const getBySlugStmt = db.prepare<BlogItem, { $slug: string }>(`
   WHERE slug = $slug
 `);
 
-/** 添加文章到数据库 */
-const addFile = (path: string, stats?: fs.Stats) => {
+/** 保存文章到数据库（新增或更新） */
+const saveBlog = (path: string, stats?: fs.Stats) => {
 	const title = basename(path, ".md");
 	const slug = textToSlug(title);
 	const filePath = relative(WEBDAV_PATH, path);
@@ -83,34 +74,14 @@ const addFile = (path: string, stats?: fs.Stats) => {
 	const createdAt = stats?.birthtime?.toISOString() ?? "";
 	const updatedAt = stats?.mtime?.toISOString() ?? "";
 
-	const { changes } = insertStmt.run({
+	const { changes } = saveStmt.run({
 		$title: title,
 		$slug: slug,
 		$year: year,
 		$created_at: createdAt,
 		$updated_at: updatedAt,
 	});
-	if (changes > 0) {
-		log(`新增文章：${title}`);
-	}
-
-	return changes;
-};
-
-/** 更新数据库里的文章 */
-const changeFile = (path: string, stats?: fs.Stats) => {
-	const title = basename(path, ".md");
-	const createdAt = stats?.birthtime?.toISOString() ?? "";
-	const updatedAt = stats?.mtime?.toISOString() ?? "";
-
-	const { changes } = updateStmt.run({
-		$title: title,
-		$created_at: createdAt,
-		$updated_at: updatedAt,
-	});
-	if (changes > 0) {
-		log(`更新文章：${title}`);
-	}
+	log(`保存文章：${title}`);
 
 	return changes;
 };
@@ -155,7 +126,7 @@ export const watchBlogs = async () => {
 		// 批量处理队列，使用事务优化性能
 		const batchAdd = db.transaction(() => {
 			initAddQueue.forEach(({ path, stats }) => {
-				addFile(path, stats);
+				saveBlog(path, stats);
 			});
 			return initAddQueue.length;
 		});
@@ -191,8 +162,8 @@ export const watchBlogs = async () => {
 	});
 
 	activeWatcher
-		.on("add", addFile)
-		.on("change", changeFile)
+		.on("add", saveBlog)
+		.on("change", saveBlog)
 		.on("unlink", unlinkFile)
 		.on("ready", () => {
 			log(`开始监听目录`, activeDirs);
