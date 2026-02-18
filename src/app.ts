@@ -5,7 +5,7 @@ import { file } from "bun";
 import { Elysia } from "elysia";
 import { ALLOWED_ORIGINS, PORT } from "@/libs/constants";
 import { animes } from "@/routes/animes";
-// import { blogs } from "@/routes/blogs";
+import { blogs } from "@/routes/blogs";
 import { shanbay } from "@/routes/shanbay";
 import { startBrecTimer } from "@/utils/brec";
 
@@ -32,7 +32,7 @@ app.use(
 // 路由
 app.get("/", ({ redirect }) => redirect("/openapi"));
 app.use(shanbay);
-// app.use(blogs);
+app.use(blogs);
 app.use(animes);
 
 // Websocket 放映室

@@ -103,7 +103,9 @@ const saveAnime = async (path: string, stats?: fs.Stats) => {
 
 	// 如果存在，则检查是否有变化
 	const hasChanged =
-		existing.eps !== eps || existing.episodes !== JSON.stringify(episodes);
+		existing.season !== season ||
+		existing.created_at !== createdAt ||
+		existing.updated_at !== updatedAt;
 
 	if (!hasChanged) {
 		return;
@@ -190,22 +192,22 @@ export const watchAnimes = async () => {
 		});
 
 		// 把所有番剧加入队列
-		const initAddQueue: Array<{ path: string; stats?: fs.Stats }> = [];
+		const initQueue: Array<{ path: string; stats?: fs.Stats }> = [];
 		initWatcher.on("addDir", (path, stats) => {
 			// 只收集番剧目录
 			const relativePath = path.replaceAll("\\", "/").replace(ANIMES_DIR, "");
 			const depth = getPathDepth(relativePath);
 			if (depth === 2) {
-				initAddQueue.push({ path, stats });
+				initQueue.push({ path, stats });
 			}
 		});
 
 		// 批量处理队列，使用事务优化性能
 		const batchAdd = db.transaction(async () => {
 			await Promise.all(
-				initAddQueue.map(({ path, stats }) => saveAnime(path, stats)),
+				initQueue.map(({ path, stats }) => saveAnime(path, stats)),
 			);
-			return initAddQueue.length;
+			return initQueue.length;
 		});
 
 		// 等待扫描完成

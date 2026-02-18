@@ -66,7 +66,7 @@ export const getBySlugStmt = db.prepare<BlogItem, { $slug: string }>(`
 `);
 
 /** 保存文章到数据库（新增或更新） */
-const saveBlog = (path: string, stats?: fs.Stats) => {
+const saveBlog = async (path: string, stats?: fs.Stats) => {
 	const title = basename(path, ".md");
 	const slug = textToSlug(title);
 	const filePath = relative(WEBDAV_PATH, path);
@@ -74,16 +74,38 @@ const saveBlog = (path: string, stats?: fs.Stats) => {
 	const createdAt = stats?.birthtime?.toISOString() ?? "";
 	const updatedAt = stats?.mtime?.toISOString() ?? "";
 
-	const { changes } = saveStmt.run({
+	// 检查文章是否存在
+	const existing = getBySlugStmt.get({ $slug: slug });
+
+	// 如果不存在，则插入新记录
+	if (!existing) {
+		saveStmt.run({
+			$title: title,
+			$slug: slug,
+			$year: year,
+			$created_at: createdAt,
+			$updated_at: updatedAt,
+		});
+		log(`新增文章：${title}`);
+		return;
+	}
+
+	// 如果存在，则检查是否有变化
+	const hasChanged = existing.updated_at !== updatedAt;
+
+	if (!hasChanged) {
+		return;
+	}
+
+	// 如果有变化，则更新记录
+	saveStmt.run({
 		$title: title,
 		$slug: slug,
 		$year: year,
 		$created_at: createdAt,
 		$updated_at: updatedAt,
 	});
-	log(`保存文章：${title}`);
-
-	return changes;
+	log(`更新文章：${title}`);
 };
 
 /** 删除数据库中的文章 */
@@ -118,17 +140,17 @@ export const watchBlogs = async () => {
 		});
 
 		// 把所有文章加入队列
-		const initAddQueue: Array<{ path: string; stats?: fs.Stats }> = [];
+		const initQueue: Array<{ path: string; stats?: fs.Stats }> = [];
 		initWatcher.on("add", (path, stats) => {
-			initAddQueue.push({ path, stats });
+			initQueue.push({ path, stats });
 		});
 
 		// 批量处理队列，使用事务优化性能
-		const batchAdd = db.transaction(() => {
-			initAddQueue.forEach(({ path, stats }) => {
-				saveBlog(path, stats);
-			});
-			return initAddQueue.length;
+		const batchAdd = db.transaction(async () => {
+			await Promise.all(
+				initQueue.map(({ path, stats }) => saveBlog(path, stats)),
+			);
+			return initQueue.length;
 		});
 
 		// 等待扫描完成
