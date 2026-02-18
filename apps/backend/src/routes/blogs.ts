@@ -1,5 +1,4 @@
 import { Elysia, t } from "elysia";
-import { BLOGS_DIR } from "@/libs/constants";
 import {
 	BlogDetailQuerySchema,
 	BlogDetailResponseSchema,
@@ -7,7 +6,6 @@ import {
 	BlogListResponseSchema,
 } from "@/types/blogs";
 import { countStmt, getBySlugStmt, listStmt, watchBlogs } from "@/utils/blogs";
-import { renderMarkdown } from "@/utils/markdown";
 
 // 监听文章目录下的变动，同步到数据库
 watchBlogs();
@@ -44,7 +42,7 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 	.get(
 		"/:slug",
 		async ({ params: { slug }, set }) => {
-			// 从数据库读取文章信息
+			// 从数据库读取文章信息（包含已渲染的 html）
 			const blog = getBySlugStmt.get({ $slug: slug });
 
 			if (!blog) {
@@ -52,12 +50,7 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 				return "文章不存在";
 			}
 
-			// 读取 markdown 文件内容，渲染为 html
-			const path = `${BLOGS_DIR}/${blog.year}/${blog.title}.md`;
-			const text = await Bun.file(path).text();
-			const html = await renderMarkdown(text);
-
-			return { ...blog, html };
+			return blog;
 		},
 		{
 			params: BlogDetailQuerySchema,

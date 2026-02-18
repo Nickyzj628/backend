@@ -6,6 +6,7 @@ import chokidar from "chokidar";
 import { BLOGS_DIR, ROOT_PATH, WEBDAV_PATH } from "@/libs/constants";
 import type { BlogItem } from "@/types/blogs";
 import { extractYearFromPath, textToSlug } from "./common";
+import { renderMarkdown } from "./markdown";
 
 const log = (...args: any[]) => timeLog("[blogs]", ...args);
 
@@ -18,7 +19,8 @@ db.run(`
      slug TEXT UNIQUE NOT NULL,
      year INTEGER NOT NULL,
      created_at DATETIME,
-     updated_at DATETIME
+     updated_at DATETIME,
+     html TEXT
    )
  `);
 
@@ -30,15 +32,17 @@ const saveStmt = db.prepare<
 		$year: number;
 		$created_at: string;
 		$updated_at: string;
+		$html: string;
 	}
 >(`
-  INSERT INTO blogs (title, slug, year, created_at, updated_at)
-  VALUES ($title, $slug, $year, $created_at, $updated_at)
+  INSERT INTO blogs (title, slug, year, created_at, updated_at, html)
+  VALUES ($title, $slug, $year, $created_at, $updated_at, $html)
   ON CONFLICT(title) DO UPDATE SET
     slug = excluded.slug,
     year = excluded.year,
     created_at = excluded.created_at,
-    updated_at = excluded.updated_at
+    updated_at = excluded.updated_at,
+    html = excluded.html
 `);
 
 const deleteStmt = db.prepare<{ changes: number }, { $title: string }>(`
@@ -59,8 +63,11 @@ export const countStmt = db.prepare<{ total: number }, []>(
 	`SELECT COUNT(*) as total FROM blogs`,
 );
 
-export const getBySlugStmt = db.prepare<BlogItem, { $slug: string }>(`
-  SELECT title, slug, year, created_at, updated_at
+export const getBySlugStmt = db.prepare<
+	BlogItem & { html: string },
+	{ $slug: string }
+>(`
+  SELECT title, slug, year, created_at, updated_at, html
   FROM blogs
   WHERE slug = $slug
 `);
@@ -79,12 +86,17 @@ const saveBlog = async (path: string, stats?: fs.Stats) => {
 
 	// 如果不存在，则插入新记录
 	if (!existing) {
+		// 读取文件内容并渲染为 html
+		const text = await Bun.file(path).text();
+		const html = await renderMarkdown(text);
+
 		saveStmt.run({
 			$title: title,
 			$slug: slug,
 			$year: year,
 			$created_at: createdAt,
 			$updated_at: updatedAt,
+			$html: html,
 		});
 		log(`新增文章：${title}`);
 		return;
@@ -98,12 +110,16 @@ const saveBlog = async (path: string, stats?: fs.Stats) => {
 	}
 
 	// 如果有变化，则更新记录
+	const text = await Bun.file(path).text();
+	const html = await renderMarkdown(text);
+
 	saveStmt.run({
 		$title: title,
 		$slug: slug,
 		$year: year,
 		$created_at: createdAt,
 		$updated_at: updatedAt,
+		$html: html,
 	});
 	log(`更新文章：${title}`);
 };
@@ -128,42 +144,40 @@ export const watchBlogs = async () => {
 	/**
 	 * 一阶段：启动时全量同步所有历史文件
 	 */
-	if (Bun.env.INIT_WATCH !== "false") {
-		console.time("全量同步文章");
+	console.time("全量同步文章");
 
-		const initWatcher = chokidar.watch(BLOGS_DIR, {
-			depth: 1,
-			ignored: (path, stats) => {
-				// 忽略非 .md 文件
-				return stats?.isFile() === true && !path.endsWith(".md");
-			},
+	const initWatcher = chokidar.watch(BLOGS_DIR, {
+		depth: 1,
+		ignored: (path, stats) => {
+			// 忽略非 .md 文件
+			return stats?.isFile() === true && !path.endsWith(".md");
+		},
+	});
+
+	// 把所有文章加入队列
+	const initQueue: Array<{ path: string; stats?: fs.Stats }> = [];
+	initWatcher.on("add", (path, stats) => {
+		initQueue.push({ path, stats });
+	});
+
+	// 批量处理队列，使用事务优化性能
+	const batchAdd = db.transaction(async () => {
+		await Promise.all(
+			initQueue.map(({ path, stats }) => saveBlog(path, stats)),
+		);
+		return initQueue.length;
+	});
+
+	// 等待扫描完成
+	await new Promise<void>((resolve) => {
+		initWatcher.on("ready", () => {
+			batchAdd();
+			initWatcher.close();
+			resolve();
 		});
+	});
 
-		// 把所有文章加入队列
-		const initQueue: Array<{ path: string; stats?: fs.Stats }> = [];
-		initWatcher.on("add", (path, stats) => {
-			initQueue.push({ path, stats });
-		});
-
-		// 批量处理队列，使用事务优化性能
-		const batchAdd = db.transaction(async () => {
-			await Promise.all(
-				initQueue.map(({ path, stats }) => saveBlog(path, stats)),
-			);
-			return initQueue.length;
-		});
-
-		// 等待扫描完成
-		await new Promise<void>((resolve) => {
-			initWatcher.on("ready", () => {
-				batchAdd();
-				initWatcher.close();
-				resolve();
-			});
-		});
-
-		console.timeEnd("全量同步文章");
-	}
+	console.timeEnd("全量同步文章");
 
 	/**
 	 * 二阶段：只监听近两年的

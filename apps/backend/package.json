@@ -2,7 +2,7 @@
 	"name": "backend",
 	"type": "module",
 	"scripts": {
-		"dev": "cross-env INIT_WATCH=false bun --watch src/app.ts",
+		"dev": "bun --watch src/app.ts",
 		"build": "bun build src/app.ts --outdir dist --target bun --minify --packages external",
 		"start": "bun dist/app.js"
 	},
@@ -21,6 +21,7 @@
 	},
 	"devDependencies": {
 		"@types/bun": "^1.3.9",
-		"cross-env": "^10.1.0"
+		"cross-env": "^10.1.0",
+		"shiki": "^3.22.0"
 	}
 }

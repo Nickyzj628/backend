@@ -1,42 +1,50 @@
+import { createHighlighterCore, type HighlighterCore } from "shiki/core";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import { textToSlug } from "./common";
 
-// Shiki 高亮器实例
-// const highlighter = await createHighlighterCore({
-// 	themes: [import("@shikijs/themes/gruvbox-light-medium")],
-// 	langs: [
-// 		import("@shikijs/langs-precompiled/html"),
-// 		import("@shikijs/langs-precompiled/css"),
-// 		import("@shikijs/langs-precompiled/javascript"),
-// 		import("@shikijs/langs-precompiled/typescript"),
-// 		import("@shikijs/langs-precompiled/json"),
-// 	],
-// 	engine: createJavaScriptRawEngine(),
-// });
+let highlighter: HighlighterCore | null = null;
+let initPromise: Promise<HighlighterCore> | null = null;
 
-// 转义 HTML 特殊字符
-const escapeHtml = (text: string) => {
-	return text;
-	// return text
-	// 	.replace(/&/g, "&amp;")
-	// 	.replace(/</g, "&lt;")
-	// 	.replace(/>/g, "&gt;")
-	// 	.replace(/"/g, "&quot;")
-	// 	.replace(/'/g, "&#039;");
+const initHighlighter = async () => {
+	if (highlighter) {
+		return highlighter;
+	}
+
+	// 使用 Promise 锁，防止并发创建多个实例
+	if (!initPromise) {
+		initPromise = createHighlighterCore({
+			themes: [import("shiki/themes/dracula.mjs")],
+			langs: [
+				import("shiki/langs/html.mjs"),
+				import("shiki/langs/css.mjs"),
+				import("shiki/langs/javascript.mjs"),
+				import("shiki/langs/typescript.mjs"),
+				import("shiki/langs/json.mjs"),
+			],
+			engine: createJavaScriptRegexEngine(),
+		}).then((h) => {
+			highlighter = h;
+			return h;
+		});
+	}
+
+	return initPromise;
 };
 
 /**
  * 将 Markdown 渲染为 HTML
  */
 export const renderMarkdown = async (md: string) => {
+	await initHighlighter();
 	return Bun.markdown.render(
 		md,
 		{
 			// ========== Block Callbacks ==========
 
 			// 标题
-			heading: (children, meta) => {
-				const id = meta.id || textToSlug(children);
-				return `<h${meta.level} id="${id}">${children}</h${meta.level}>`;
+			heading: (children, { level, id }) => {
+				const uniqueId = `${textToSlug(children)}${id || ""}`;
+				return `<h${level} id="${uniqueId}">${children}</h${level}>`;
 			},
 
 			// 段落
@@ -48,15 +56,18 @@ export const renderMarkdown = async (md: string) => {
 			// 代码块
 			code: (children, meta) => {
 				const lang = meta?.language || "text";
-				// try {
-				// 	return highlighter.codeToHtml(children, {
-				// 		lang,
-				// 		theme: "catppuccin-frappe",
-				// 	});
-				// } catch {
-				// 	return `<pre><code class="language-${lang}">${escapeHtml(children)}</code></pre>`;
-				// }
-				return `<pre><code class="language-${lang}">${escapeHtml(children)}</code></pre>`;
+				if (highlighter) {
+					try {
+						const themes = highlighter.getLoadedThemes();
+						return highlighter.codeToHtml(children, {
+							lang,
+							theme: themes[0],
+						});
+					} catch {
+						return `<pre><code class="language-${lang}">${children}</code></pre>`;
+					}
+				}
+				return `<pre><code class="language-${lang}">${children}</code></pre>`;
 			},
 
 			// 列表
@@ -108,21 +119,21 @@ export const renderMarkdown = async (md: string) => {
 
 			// 链接
 			link: (children, { href, title }) => {
-				const titleAttr = title ? ` title="${escapeHtml(title)}"` : "";
-				return `<a href="${escapeHtml(href)}"${titleAttr}>${children}</a>`;
+				const titleAttr = title ? ` title="${title}"` : "";
+				return `<a href="${href}"${titleAttr}>${children}</a>`;
 			},
 
 			// 图片
 			image: (children, { src, title }) => {
-				const titleAttr = title ? ` title="${escapeHtml(title)}"` : "";
-				return `<img src="${escapeHtml(src)}" alt="${children}"${titleAttr} />`;
+				const titleAttr = title ? ` title="${title}"` : "";
+				return `<img src="${src}" alt="${children}"${titleAttr} />`;
 			},
 
 			// 行内代码
-			codespan: (children) => `<code>${escapeHtml(children)}</code>`,
+			codespan: (children) => `<code>${children}</code>`,
 
 			// 纯文本
-			text: (children) => escapeHtml(children),
+			text: (children) => children,
 		},
 		{
 			headings: {
