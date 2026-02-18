@@ -1,214 +1,147 @@
 # AGENTS.md
 
-本文档为 AI 编码助手提供代码库操作指南。
+AI coding assistant guidelines for this Bun/ElysiaJS monorepo.
 
-## 项目概述
+## Tech Stack
 
-Bun/ElysiaJS 后端项目，支持 SQLite 数据库、WebSocket 和文件监控。
+- **Runtime**: Bun (ESM)
+- **Framework**: ElysiaJS with TypeBox validation
+- **Database**: SQLite (`bun:sqlite`)
+- **Lint/Format**: Biome
+- **Testing**: Bun test runner
 
-### 技术栈
-
-- **运行时**: Bun (ESM)
-- **框架**: ElysiaJS (REST API + WebSocket)
-- **数据库**: SQLite (`bun:sqlite`)
-- **验证**: Elysia 内置 `t.*` schema
-- **代码质量**: Biome
-
-### 项目结构
+## Project Structure
 
 ```
-src/
-├── app.ts           # Elysia 入口、中间件和路由注册
-├── routes/          # 路由模块 (animes.ts, blogs.ts, shanbay.ts, rooms.ts)
-├── libs/            # 共享配置 (constants.ts, middlewares.ts)
-├── types/           # 类型和验证 schema (blogs.ts, animes.ts 等)
-└── utils/           # 工具函数 (animes.ts, blogs.ts, markdown.ts 等)
-
-data/sqlite.db      # SQLite 数据库
-dist/               # 构建输出
+.
+├── apps/
+│   ├── backend/          # ElysiaJS backend API
+│   │   ├── src/
+│   │   │   ├── app.ts              # Elysia entry
+│   │   │   ├── routes/             # HTTP & WebSocket routes
+│   │   │   ├── libs/               # Shared config
+│   │   │   ├── types/              # TypeBox schemas
+│   │   │   └── utils/              # Utility functions
+│   │   ├── data/sqlite.db          # Database
+│   │   └── dist/                   # Build output
+│   └── frontend/         # Frontend app (configure as needed)
+├── biome.json            # Root Biome config
+└── package.json          # Workspace root
 ```
 
----
-
-## 构建、 lint 和测试命令
-
-### 开发
+## Commands
 
 ```bash
-bun run dev
+# Root workspace commands
+bun install                              # Install all dependencies
+bun run dev                              # Start both frontend & backend
+bun run dev:backend                      # Start only backend
+bun run dev:frontend                     # Start only frontend
+bun run build                            # Build all apps
+bun run check                            # Lint & format check all
+bun run check:write                      # Auto-fix all issues
+
+# Backend-specific (run from apps/backend/ or use --cwd)
+bun run --cwd apps/backend dev
+bun run --cwd apps/backend build
+bunx biome check apps/backend/src
+
+# Testing
+bun test                                 # Run all tests
+bun test apps/backend/src/utils/...      # Run single test file
 ```
 
-以 watch 模式启动，`INIT_WATCH=false` 跳过动漫目录全量扫描以加快启动。
+## Code Style
 
-### 构建和运行
+### Biome Config
+- **Indent**: Tabs
+- **Quotes**: Double
+- **Semicolons**: Required
+- **Line endings**: LF
 
-```bash
-bun run build    # 构建生产包到 dist/
-bun run start    # 运行 dist/app.js
-```
-
-### 代码质量 (Biome)
-
-```bash
-bunx biome check .           # 运行 lint 和代码分析
-bunx biome format .          # 格式化所有文件
-bunx biome check --write .    # 自动修复问题
-
-# 检查特定文件
-bunx biome check src/routes/blogs.ts
-```
-
-### 测试
-
-**目前未配置专用测试框架。** 添加测试：
-
-1. 创建 `*.test.ts` 命名约定的测试文件
-2. 放在模块旁边或 `tests/` 目录
-3. 运行: `bun test` 或 `bun test <file>`
-
-单个测试文件执行：
-```bash
-bun test src/utils/blogs.test.ts
-```
-
----
-
-## 代码风格指南
-
-### 通用原则
-
-- 使用 TypeScript (strict 模式)
-- 遵循 ESM 规范
-- 优先显式而非隐式
-- 保持函数小而专注
-
-### 格式化 (Biome)
-
-- **缩进**: Tab (非空格)
-- **引号**: 双引号 (`"`)
-- **分号**: 必须
-- **行尾**: LF
-
-提交前运行 `bunx biome check --write .` 自动修复格式问题。
-
-### 导入
-
-**使用路径别名** (`@/*`):
-
+### Imports
 ```typescript
+import { Elysia, t } from "elysia";
+import { cors } from "@elysiajs/cors";
 import { BLOGS_DIR } from "@/libs/constants";
-import { BlogListResponseSchema } from "@/types/blogs";
+import { renderMarkdown } from "./markdown";
 ```
 
-**导入顺序** (Biome 自动排序):
-1. 库导入 (`"elysia"`, `"@elysiajs/cors"`)
-2. 外部包 (`"bun"`, `"chokidar"`)
-3. 路径别名 (`@/...`)
-4. 相对导入 (`"./..."`, `"../..."`)
+### Naming Conventions
 
-### 文件命名
+| Element | Case | Example |
+|---------|------|---------|
+| Variables | camelCase | `userName`, `pageSize` |
+| Constants | UPPER_SNAKE | `PORT`, `BLOGS_DIR` |
+| Functions | camelCase | `renderMarkdown()` |
+| Classes | PascalCase | `RoomService` |
+| Types | PascalCase | `BlogItem` |
+| Files | lowercase | `blogs.ts` |
 
-- 使用小写字母
-- 按功能分组: `routes/blogs.ts`, `types/blogs.ts`, `utils/blogs.ts`
+### Elysia Patterns
 
-### 命名约定
-
-| 元素 | 约定 | 示例 |
-|------|------|------|
-| 变量 | camelCase | `blogList`, `pageSize` |
-| 常量 | PascalCase | `PORT`, `BLOGS_DIR` |
-| 函数 | camelCase | `renderMarkdown()` |
-| 类型/接口 | PascalCase | `BlogItem`, `AnimeDetailResponse` |
-| 文件 | 小写 | `blogs.ts`, `animes.ts` |
-
-### 类型定义
-
-使用 Elysia 的 `t.*` schemas:
-
+**Route with Validation:**
 ```typescript
-import { t } from "elysia";
-
-export const BlogItemSchema = t.Object({
-  title: t.String(),
-  slug: t.String(),
-});
-
-export type BlogItem = typeof BlogItemSchema.static;
+export const blogs = new Elysia({ name: "blogs" })
+  .model({ "blog.item": BlogItemSchema })
+  .get("/blogs/:slug", ({ params: { slug }, set }) => {
+    const blog = getBlog(slug);
+    if (!blog) {
+      set.status = 404;
+      return "Not found";
+    }
+    return blog;
+  }, {
+    params: t.Object({ slug: t.String() }),
+    response: { 200: "blog.item", 404: t.String() },
+  });
 ```
 
-避免使用 `any`。
-
-### 错误处理
-
-使用 `set.status` 设置 HTTP 状态码:
-
+**Service Class:**
 ```typescript
-async ({ params: { slug }, set }) => {
-  const blog = getBySlugStmt.get({ $slug: slug });
-  if (!blog) {
-    set.status = 404;
-    return "Article not found";
+export type OperationResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: { code: string; message: string } };
+
+export class RoomService {
+  private roomsMap = new Map<string, Room>();
+  
+  createRoom(ws: WS, payload: CreateRoomPayload): OperationResult<CreateRoomResponse> {
+    if (this.userMap.has(ws)) {
+      return { success: false, error: { code: "USER_ALREADY_IN_ROOM", message: "..." } };
+    }
+    return { success: true, data: { ... } };
   }
-  return blog;
 }
 ```
 
-### 常量
+## Database
 
-将硬编码值集中在 `src/libs/constants.ts`:
-
-```typescript
-export const PORT = 3030;
-export const BLOGS_DIR = `${WEBDAV_PATH}/Nickyzj/Blogs`;
-```
-
----
-
-## 数据库
-
-- 使用 `bun:sqlite`
-- 使用预处理语句:
+Use `bun:sqlite` with named parameters:
 
 ```typescript
-export const listStmt = db.prepare("SELECT * FROM blogs LIMIT $limit OFFSET $offset");
+import { Database } from "bun:sqlite";
+
+const db = new Database("data/sqlite.db");
+const listStmt = db.prepare("SELECT * FROM blogs LIMIT $limit OFFSET $offset");
+const rows = listStmt.all({ $limit: 10, $offset: 0 });
 ```
 
-- 使用命名参数 (`$slug`, `$limit`, `$offset`)
+## Error Handling
 
----
+- Use `set.status` for HTTP status codes
+- Return error objects from services, don't throw
+- Use TypeBox schemas for response validation
 
-## WebSocket
+## Pre-commit Checklist
 
-- 使用 Bun 原生 WebSocket (非 socket.io)
-- 房间状态存储在内存中 (无持久化)
-- 见 `src/routes/rooms.ts`
+1. Run `bunx biome check .`
+2. Run `bun run build` to verify
+3. Ensure no secrets in code
+4. Follow Conventional Commits: `feat(backend): add pagination`
 
----
+## Security
 
-## 安全
-
-- **永不提交 secrets**: 密钥、令牌、证书不能进入 git
-- **验证所有输入**: 使用 Elysia 的 `t.*` schemas
-- **检查 CORS 配置**: 确认 `ALLOWED_ORIGINS`
-
----
-
-## Git 约定
-
-### 提交信息
-
-遵循 [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-feat(blogs): add pagination support
-fix(animes): handle missing episode data
-chore: update dependencies
-```
-
----
-
-## 提交前
-
-1. 运行 `bunx biome check .` 发现问题
-2. 运行 `bun run dev` 手动验证
-3. 确保无 secrets 或敏感路径被提交
+- Never commit secrets
+- Validate all inputs with TypeBox schemas
+- Use `ws.id` (not IP) for user identification in WebSocket

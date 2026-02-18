@@ -7,6 +7,7 @@ export const PORT = 3030;
 /** 允许访问本后端的源地址 */
 export const ALLOWED_ORIGINS = [
 	"http://localhost:5173",
+	"http://localhost:4173",
 	"https://localhost:2334",
 	"https://nickyzj.run:2334",
 ];
