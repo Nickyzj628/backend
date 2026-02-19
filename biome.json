@@ -31,7 +31,8 @@
       "a11y": {
         "noStaticElementInteractions": "off",
         "useButtonType": "off",
-        "useMediaCaption": "off"
+        "useMediaCaption": "off",
+        "useKeyWithClickEvents": "off"
       }
     }
   },

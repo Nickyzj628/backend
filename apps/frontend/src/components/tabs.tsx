@@ -106,9 +106,7 @@ Tabs.Content = ({
 	if (as) return as;
 
 	return (
-		<div className={clsx(isVisible ? "block" : "hidden", className)}>
-			{children}
-		</div>
+		<div className={clsx(!isVisible && "hidden!", className)}>{children}</div>
 	);
 };
 

@@ -1,5 +1,6 @@
 import { useMemo } from "preact/hooks";
-import { Link, useLocation, useSearchParams } from "wouter-preact";
+import { useLocation } from "react-use";
+import { Link, useSearchParams } from "wouter-preact";
 import { useWebSocketContext } from "@/etc/websocket-context";
 import { clsx, qs } from "@/helpers/string";
 
@@ -22,7 +23,7 @@ const Episode = ({
 	disabled = false,
 	onEpChange,
 }: EpisodeProps) => {
-	const [location] = useLocation();
+	const { pathname } = useLocation();
 	const [searchParams] = useSearchParams();
 	const currentEp = Number(searchParams.get("ep")) || 1;
 
@@ -32,8 +33,8 @@ const Episode = ({
 			...Object.fromEntries(searchParams),
 			ep: value,
 		};
-		return `${location}?${qs.stringify(params)}`;
-	}, [searchParams, value, location]);
+		return `${pathname}?${qs.stringify(params)}`;
+	}, [searchParams, value, pathname]);
 
 	return (
 		<Link

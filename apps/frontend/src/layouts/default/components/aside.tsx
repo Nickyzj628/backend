@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { useLocalStorage } from "react-use";
 import { Link, useRoute } from "wouter-preact";
 import Button from "@/components/button";
-import { ROUTES_VISIBLE_AT_NAVBAR, routes } from "@/etc/routes";
+import { routes, routesWithIcon } from "@/etc/routes";
 import { clsx } from "@/helpers/string";
 import { useIsMobile } from "@/hooks/device";
 
@@ -46,29 +46,24 @@ const Aside = () => {
 					!isAsideFold && "lg:gap-3",
 				)}
 			>
-				{routes
-					.filter(
-						(route) =>
-							ROUTES_VISIBLE_AT_NAVBAR.includes(route.path) && route.accessible,
-					)
-					.map((route) => {
-						const [match] = useRoute(
-							route.path === "/" ? "/" : `${route.path}/*?`,
-						);
-						return (
-							<Link href={route.path} key={route.path}>
-								<Button
-									type={match ? "info" : "ghost"}
-									size="xl"
-									rounded={isAsideFold ? "full" : true}
-									icon={clsx(route.icon, "shrink-0")}
-									className={clsx("w-full px-3! whitespace-nowrap")}
-								>
-									{!isAsideFold && !isMobile && route.title}
-								</Button>
-							</Link>
-						);
-					})}
+				{routesWithIcon.map((route) => {
+					const [match] = useRoute(
+						route.path === "/" ? "/" : `${route.path}/*?`,
+					);
+					return (
+						<Link href={route.path} key={route.path}>
+							<Button
+								type={match ? "info" : "ghost"}
+								size="xl"
+								rounded={isAsideFold ? "full" : true}
+								icon={route.icon}
+								className={clsx("w-full px-3! whitespace-nowrap")}
+							>
+								{!isAsideFold && !isMobile && route.title}
+							</Button>
+						</Link>
+					);
+				})}
 			</nav>
 			{/* gadgets */}
 			<div
@@ -82,7 +77,7 @@ const Aside = () => {
 						type={isAsideFold ? "ghost" : "info"}
 						size="xl"
 						rounded="full"
-						icon="icon-[mingcute--align-arrow-left-line]"
+						icon={<span className="i-mingcute-align-arrow-left-line" />}
 						className={clsx(isAsideFold && "rotate-180")}
 						onClick={() => setIsAsideFold(!isAsideFold)}
 					/>
@@ -92,7 +87,11 @@ const Aside = () => {
 					size="xl"
 					rounded="full"
 					icon={
-						isDark ? "icon-[mingcute--sun-line]" : "icon-[mingcute--moon-line]"
+						isDark ? (
+							<span className="i-mingcute-sun-line" />
+						) : (
+							<span className="i-mingcute-moon-line" />
+						)
 					}
 					onClick={() => setIsDark(!isDark)}
 				/>

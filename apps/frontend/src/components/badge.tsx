@@ -32,11 +32,7 @@ type Props = {
 	size?: Size;
 	rounded?: boolean;
 	className?: string;
-	/**
-	 * 请传入 @iconify/tailwind4 插件支持的类名，或 JSX 组件
-	 * @example "icon-[mingcute--align-arrow-left-line]"
-	 */
-	icon?: string | ReactNode;
+	icon?: ReactNode;
 	children?: ReactNode;
 	showClose?: boolean;
 	onClose?: () => void;
@@ -52,7 +48,7 @@ export type BadgeProps = Props;
  *     size="middle"
  *     rounded
  *     className="mr-1"
- *     icon="icon-[mingcute--align-arrow-left-line]"
+ *     icon={<span className="icon-[mingcute--align-arrow-left-line]" />}
  *     showClose
  *     onClose={() => console.log("点击了右侧关闭按钮")}
  * >
@@ -69,10 +65,6 @@ const Badge = ({
 	showClose = false,
 	onClose = () => void 0,
 }: Props) => {
-	const isPresetIcon =
-		icon && typeof icon === "string" && icon.startsWith("icon-");
-	const isCustomIcon = icon && !isPresetIcon;
-
 	return (
 		<span
 			className={clsx(
@@ -83,17 +75,18 @@ const Badge = ({
 				className,
 			)}
 		>
-			{isPresetIcon && <span className={clsx(icon, sizeMap[size]["icon"])} />}
-			{isCustomIcon && icon}
+			{icon}
 			{children}
 			{showClose && (
 				<span
 					className={clsx(
-						"icon-[mingcute--close-line] opacity-80 cursor-pointer hover:opacity-100",
+						"opacity-80 cursor-pointer hover:opacity-100",
 						sizeMap[size]["icon"],
 					)}
 					onClick={onClose}
-				/>
+				>
+					<span className="i-mingcute-close-line" />
+				</span>
 			)}
 		</span>
 	);

@@ -19,7 +19,7 @@ const RecentBlogs = () => {
 	}, [blogs, isLoadingFirstPage, hasNextPage]);
 
 	return (
-		<Section className={"aspect-[2/3] w-full sm:w-80 lg:w-96 mt-2"}>
+		<Section className={"aspect-2/3 w-full sm:w-80 lg:w-96 mt-2"}>
 			<Section.Title className="text-red-300">近期文章</Section.Title>
 			<div
 				className={clsx(
@@ -30,7 +30,7 @@ const RecentBlogs = () => {
 				{isLoadingFirstPage && <Loading />}
 				{error && (
 					<div className="flex flex-col items-center">
-						<div className="icon-[mingcute--pic-line] size-32" />
+						<div className="i-mingcute-pic-line size-32" />
 						<p>{error.message}</p>
 					</div>
 				)}

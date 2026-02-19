@@ -60,7 +60,7 @@ const Works = () => {
 				<Timeline key={year} time={year}>
 					{works.map((work, i) => (
 						<a key={i} href={work.href} target="_blank">
-							<Figure className="aspect-[3/2] w-64">
+							<Figure className="aspect-3/2 w-64">
 								<Figure.Image
 									src={work.image}
 									alt={work.title}

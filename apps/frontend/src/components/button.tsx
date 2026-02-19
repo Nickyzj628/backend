@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from "preact/compat";
+import type { CSSProperties } from "preact";
+import type { ReactNode } from "preact/compat";
 import { clsx } from "@/helpers/string";
 
 const typeMap = {
@@ -37,32 +38,20 @@ const softMap = {
 
 const sizeMap = {
 	sm: {
-		button: {
-			normal: "px-3 py-1.5 text-xs",
-			onlyIcon: "p-1.5 text-xs",
-		},
-		icon: "size-2",
+		normal: "px-3 py-1.5 text-xs",
+		onlyIcon: "p-1.5 text-xs",
 	},
 	md: {
-		button: {
-			normal: "px-4 py-2 text-sm",
-			onlyIcon: "p-2 text-sm",
-		},
-		icon: "size-3",
+		normal: "px-4 py-2 text-sm",
+		onlyIcon: "p-2 text-sm",
 	},
 	lg: {
-		button: {
-			normal: "px-5 py-2.5 text-sm",
-			onlyIcon: "p-2.5 text-sm",
-		},
-		icon: "size-4",
+		normal: "px-5 py-2.5 text-sm",
+		onlyIcon: "p-2.5 text-sm",
 	},
 	xl: {
-		button: {
-			normal: "px-6 py-3 text-base",
-			onlyIcon: "p-3 text-base",
-		},
-		icon: "size-5",
+		normal: "px-6 py-3 text-base",
+		onlyIcon: "p-3 text-base",
 	},
 };
 type Size = keyof typeof sizeMap;
@@ -74,11 +63,7 @@ type Props = {
 	size?: Size;
 	rounded?: boolean | "full";
 	disabled?: boolean;
-	/**
-	 * 请传入 @iconify/tailwind4 插件支持的类名，或 JSX 组件
-	 * @example "icon-[mingcute--align-arrow-left-line]"
-	 */
-	icon?: string | ReactNode;
+	icon?: ReactNode;
 	children?: ReactNode;
 	className?: string;
 	style?: CSSProperties;
@@ -96,7 +81,7 @@ export type ButtonProps = Props;
  *     size="xl"
  *     rounded="full"
  *     disabled
- *     icon="icon-[mingcute--align-arrow-left-line]"
+ *     icon={<span className="icon-[mingcute--align-arrow-left-line]" />}
  *     onClick={() => void 0}
  *     className="mr-3"
  *     style={{ marginLeft: 12 }}
@@ -116,17 +101,13 @@ const Button = ({
 	style,
 	onClick = () => void 0,
 }: Props) => {
-	const isPresetIcon =
-		icon && typeof icon === "string" && icon.startsWith("icon-");
-	const isCustomIcon = icon && !isPresetIcon;
-
 	return (
 		<button
 			disabled={disabled}
 			className={clsx(
 				"inline-flex items-center gap-1.5 font-medium text-center transition disabled:opacity-50 disabled:pointer-events-none",
 				soft ? softMap[type] : typeMap[type],
-				sizeMap[size]["button"][!children ? "onlyIcon" : "normal"],
+				sizeMap[size][!children ? "onlyIcon" : "normal"],
 				rounded === "full"
 					? "rounded-full"
 					: rounded === true
@@ -137,12 +118,7 @@ const Button = ({
 			style={style}
 			onClick={onClick}
 		>
-			{isPresetIcon && (
-				<span
-					className={clsx(icon, sizeMap[size]["icon"], !children && "mx-auto")}
-				/>
-			)}
-			{isCustomIcon && icon}
+			{icon}
 			{children}
 		</button>
 	);

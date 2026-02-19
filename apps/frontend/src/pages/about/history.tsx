@@ -6,7 +6,7 @@ const History = () => {
 	const history = [
 		{
 			time: "2024年",
-			title: "Preact + Tailwind CSS",
+			title: "Preact + UnoCSS",
 			description:
 				"在去年的基础上用Preact重构，优化了文件结构，迭代了一些实用小功能。",
 			images: ["/About/History/2024.webp"],

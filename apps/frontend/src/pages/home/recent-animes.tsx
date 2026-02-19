@@ -49,7 +49,7 @@ const RecentAnimes = () => {
 	}, [animes]);
 
 	return (
-		<Section className="flex flex-col flex-1 gap-1.5 min-w-72 w-full sm:w-80 lg:w-96 h-[36rem] mt-2">
+		<Section className="flex flex-col flex-1 gap-1.5 min-w-72 w-full sm:w-80 lg:w-96 h-144 mt-2">
 			<Section.Title className="text-yellow-300">本季新番</Section.Title>
 			<div
 				className={clsx(
@@ -60,7 +60,7 @@ const RecentAnimes = () => {
 				{isLoading && <Loading />}
 				{error && (
 					<div className="flex flex-col items-center">
-						<div className="icon-[mingcute--pic-line] size-32" />
+						<div className="i-mingcute-pic-line size-32" />
 						<p>{error.message}</p>
 					</div>
 				)}
@@ -71,7 +71,7 @@ const RecentAnimes = () => {
 								key={anime.title}
 								href={`/animes/${anime.slug}?ep=${anime.eps}`}
 							>
-								<Figure className="max-w-36 aspect-[2/3]">
+								<Figure className="max-w-36 aspect-2/3">
 									<Figure.Image
 										src={`/animes/${anime.title}.webp`}
 										alt={anime.title}

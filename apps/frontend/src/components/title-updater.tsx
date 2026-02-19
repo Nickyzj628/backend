@@ -1,17 +1,18 @@
 import { useEffect } from "preact/hooks";
-import { useLocation } from "wouter-preact";
+import { useLocation } from "react-use";
 import { routes } from "@/etc/routes";
 import { setTitle } from "@/helpers/dom";
 
 /** 切换页面时自动更新标签页标题 */
 const TitleUpdater = () => {
-	const [location] = useLocation();
+	const { pathname } = useLocation();
+
 	useEffect(() => {
-		const route = routes.find((route) => route.path === location);
+		const route = routes.find((route) => route.path === pathname);
 		if (route && "title" in route) {
 			setTitle(route.title);
 		}
-	}, [location]);
+	}, [pathname]);
 
 	return null;
 };

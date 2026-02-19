@@ -6,19 +6,19 @@ import { clsx } from "@/helpers/string";
 const typeMap = {
 	info: {
 		wrapper: "bg-blue-50 text-blue-500 dark:bg-blue-950",
-		icon: "icon-[mingcute--information-fill]",
+		icon: <span className="i-mingcute-information-fill" />,
 	},
 	success: {
 		wrapper: "bg-green-50 text-green-500 dark:bg-green-950",
-		icon: "icon-[mingcute--check-circle-fill]",
+		icon: <span className="i-mingcute-check-circle-fill" />,
 	},
 	warning: {
 		wrapper: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
-		icon: "icon-[mingcute--warning-fill]",
+		icon: <span className="i-mingcute-warning-fill" />,
 	},
 	danger: {
 		wrapper: "bg-red-50 text-red-500 dark:bg-red-950",
-		icon: "icon-[mingcute--close-circle-fill]",
+		icon: <span className="i-mingcute-close-circle-fill" />,
 	},
 };
 type Type = keyof typeof typeMap;
@@ -82,7 +82,7 @@ const Alert = forwardRef(
 				style={style}
 			>
 				{showIcon && (
-					<span className={clsx("size-5 shrink-0", typeMap[type].icon)} />
+					<span className="size-5 shrink-0">{typeMap[type].icon}</span>
 				)}
 				<div>
 					{title && (
@@ -105,7 +105,9 @@ const Alert = forwardRef(
 				</div>
 				{showClose && (
 					<button className="shrink-0 ml-auto" onClick={onClose}>
-						<span className="icon-[mingcute--close-line] size-4" />
+						<span className="size-4">
+							<span className="i-mingcute-close-line" />
+						</span>
 					</button>
 				)}
 			</div>

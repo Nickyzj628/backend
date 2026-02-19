@@ -37,7 +37,7 @@ export const Figure = ({ className, children }: FigureProps) => {
 	return (
 		<div
 			className={clsx(
-				"group/figure relative rounded-xl overflow-hidden transition hover:scale-[0.98]",
+				"group/figure relative rounded-xl overflow-hidden transition hover:scale-98",
 				className,
 			)}
 		>

@@ -12,12 +12,12 @@ const Footer = () => {
 			</a>
 			和
 			<a
-				href="https://tailwindcss.com/"
+				href="https://unocss.dev/"
 				target="_blank"
 				className="transition-none"
 				rel="noopener"
 			>
-				Tailwind CSS
+				UnoCSS
 			</a>
 			驱动
 		</footer>

@@ -70,7 +70,6 @@ export function useWebSocket(url: string): UseWebSocketReturn {
 
 	const send = useCallback((event: string, payload?: unknown) => {
 		const ws = wsRef.current;
-		console.log(event, payload, ws);
 		if (ws?.readyState === WebSocket.OPEN) {
 			ws.send(JSON.stringify({ event, payload }));
 		}

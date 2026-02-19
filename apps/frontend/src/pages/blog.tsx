@@ -95,7 +95,7 @@ const Page = () => {
 					backgroundImage: `url(${getImage(`/Blogs/${data.title}.webp`)})`,
 				}}
 			>
-				<div className="absolute top-0 left-0 size-full rounded-xl backdrop-brightness-50 backdrop-blur-xs" />
+				<div className="absolute top-0 left-0 size-full rounded-xl bg-black/60" />
 			</div>
 			<div className="relative flex flex-col items-center gap-0.5 w-full mt-8 sm:mt-16 mb-4 sm:mb-8 p-3">
 				<h1 className="mb-3 text-white text-balance text-center">
@@ -112,7 +112,7 @@ const Page = () => {
 			{/* article */}
 			<article
 				ref={initArticleRef}
-				className="relative prose prose-neutral prose-img:inline prose-img:max-h-96 prose-img:mr-3 prose-img:mt-0 prose-img:mb-3 prose-img:shadow prose-img:rounded-xl prose-pre:rounded-xl p-5 mx-auto rounded-xl shadow-xl bg-white overflow-x-hidden transition dark:prose-invert prose-blockquote:dark:border-s-neutral-500 prose-pre:dark:bg-neutral-900 dark:bg-neutral-800"
+				className="relative prose prose-neutral prose-img:inline prose-img:max-h-96 prose-img:mr-3 prose-img:mt-0 prose-img:mb-3 prose-img:shadow prose-img:rounded-xl prose-pre:rounded-xl px-6 mx-auto rounded-xl shadow-xl bg-white overflow-x-hidden transition dark:prose-invert prose-blockquote:dark:border-s-neutral-500 prose-pre:dark:bg-neutral-900 dark:bg-neutral-800"
 				dangerouslySetInnerHTML={{ __html: data.html ?? "" }}
 			/>
 
@@ -148,7 +148,7 @@ const Page = () => {
 				<Button
 					size="xl"
 					rounded="full"
-					icon="icon-[mingcute--align-arrow-left-line] rotate-90"
+					icon={<span className="i-mingcute-align-arrow-left-line rotate-90" />}
 					onClick={() => window.scrollTo(0, 0)}
 				/>
 			</div>

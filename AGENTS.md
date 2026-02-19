@@ -6,7 +6,7 @@ AI coding assistant guidelines for this Bun monorepo.
 
 - **Runtime**: Bun (ESM)
 - **Backend**: ElysiaJS with TypeBox validation, SQLite (`bun:sqlite`)
-- **Frontend**: Preact + Vite + TailwindCSS v4, wouter-preact (routing), socket.io-client
+- **Frontend**: Preact + Vite + UnoCSS v4, wouter-preact (routing), socket.io-client
 - **Lint/Format**: Biome (shared across both apps)
 - **Testing**: Bun test runner
 
@@ -69,6 +69,7 @@ bun test apps/backend/src/utils/...  # Run single test file (backend)
 ## Code Style
 
 ### Biome Config (applies to both apps)
+
 - **Indent**: Tabs
 - **Quotes**: Double
 - **Semicolons**: Required
@@ -77,19 +78,20 @@ bun test apps/backend/src/utils/...  # Run single test file (backend)
 
 ### Naming Conventions
 
-| Element        | Case       | Example                     |
-|----------------|------------|-----------------------------|
-| Variables      | camelCase  | `userName`, `pageSize`      |
-| Constants      | UPPER_SNAKE| `PORT`, `BLOGS_DIR`         |
-| Functions      | camelCase  | `renderMarkdown()`          |
-| Classes        | PascalCase | `RoomService`               |
-| Types/Interfaces| PascalCase | `BlogItem`, `ButtonProps`   |
-| Files (TS/TSX) | lowercase  | `blogs.ts`, `button.tsx`    |
-| Components     | PascalCase | `Button.tsx`, `Header.tsx` |
+| Element          | Case        | Example                    |
+| ---------------- | ----------- | -------------------------- |
+| Variables        | camelCase   | `userName`, `pageSize`     |
+| Constants        | UPPER_SNAKE | `PORT`, `BLOGS_DIR`        |
+| Functions        | camelCase   | `renderMarkdown()`         |
+| Classes          | PascalCase  | `RoomService`              |
+| Types/Interfaces | PascalCase  | `BlogItem`, `ButtonProps`  |
+| Files (TS/TSX)   | lowercase   | `blogs.ts`, `button.tsx`   |
+| Components       | PascalCase  | `Button.tsx`, `Header.tsx` |
 
 ### Imports
 
 **Backend:**
+
 ```typescript
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
@@ -98,6 +100,7 @@ import { renderMarkdown } from "./markdown";
 ```
 
 **Frontend:**
+
 ```typescript
 import { clsx } from "@/helpers/string";
 import useUser from "@/hooks/store/use-user";
@@ -108,23 +111,29 @@ import { getPeriod } from "@/helpers/time";
 ## Backend Patterns
 
 ### Route with Validation (ElysiaJS)
+
 ```typescript
 export const blogs = new Elysia({ name: "blogs" })
   .model({ "blog.item": BlogItemSchema })
-  .get("/blogs/:slug", ({ params: { slug }, set }) => {
-    const blog = getBlog(slug);
-    if (!blog) {
-      set.status = 404;
-      return "Not found";
-    }
-    return blog;
-  }, {
-    params: t.Object({ slug: t.String() }),
-    response: { 200: "blog.item", 404: t.String() },
-  });
+  .get(
+    "/blogs/:slug",
+    ({ params: { slug }, set }) => {
+      const blog = getBlog(slug);
+      if (!blog) {
+        set.status = 404;
+        return "Not found";
+      }
+      return blog;
+    },
+    {
+      params: t.Object({ slug: t.String() }),
+      response: { 200: "blog.item", 404: t.String() },
+    },
+  );
 ```
 
 ### Service Class with Error Handling
+
 ```typescript
 export type OperationResult<T> =
   | { success: true; data: T }
@@ -133,9 +142,15 @@ export type OperationResult<T> =
 export class RoomService {
   private roomsMap = new Map<string, Room>();
 
-  createRoom(ws: WS, payload: CreateRoomPayload): OperationResult<CreateRoomResponse> {
+  createRoom(
+    ws: WS,
+    payload: CreateRoomPayload,
+  ): OperationResult<CreateRoomResponse> {
     if (this.userMap.has(ws)) {
-      return { success: false, error: { code: "USER_ALREADY_IN_ROOM", message: "..." } };
+      return {
+        success: false,
+        error: { code: "USER_ALREADY_IN_ROOM", message: "..." },
+      };
     }
     return { success: true, data: { roomId: generateId() } };
   }
@@ -143,6 +158,7 @@ export class RoomService {
 ```
 
 ### Database (bun:sqlite)
+
 ```typescript
 import { Database } from "bun:sqlite";
 
@@ -154,6 +170,7 @@ const rows = listStmt.all({ $limit: 10, $offset: 0 });
 ## Frontend Patterns
 
 ### Component Structure
+
 ```typescript
 import { clsx } from "@/helpers/string";
 import { CSSProperties, ReactNode } from "preact/compat";
@@ -177,19 +194,23 @@ export default Component;
 export type ComponentProps = Props;
 ```
 
-### State Management (hooks/store/*)
+### State Management (hooks/store/\*)
+
 ```typescript
 // apps/frontend/src/hooks/store/use-user.ts
 import createPersistedGlobalState from "@/etc/create-persisted-global-state";
 
 type UserState = { name: string; token?: string };
 
-const useUser = createPersistedGlobalState<UserState>("user", { name: "Guest" });
+const useUser = createPersistedGlobalState<UserState>("user", {
+  name: "Guest",
+});
 
 export default useUser;
 ```
 
 ### Routing (wouter-preact)
+
 ```typescript
 import { Route, Switch } from "wouter-preact";
 import HomePage from "./pages/home";
@@ -206,7 +227,8 @@ export default function Router() {
 }
 ```
 
-### Icons (Iconify + Tailwind)
+### Icons (Iconify + UnoCSS)
+
 ```tsx
 <Button icon="icon-[mingcute--align-arrow-left-line]">Click me</Button>
 ```

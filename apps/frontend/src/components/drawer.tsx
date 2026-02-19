@@ -75,7 +75,7 @@ const Drawer = ({
 				<div className="flex gap-3 justify-between items-center">
 					<h3>{title}</h3>
 					<button onClick={_onClose}>
-						<span className="icon-[mingcute--close-line]" />
+						<span className="i-mingcute-close-line block" />
 					</button>
 				</div>
 				{children}

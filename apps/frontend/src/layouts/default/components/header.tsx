@@ -5,7 +5,7 @@ import { Link, useRoute } from "wouter-preact";
 import Avatar from "@/components/avatar";
 import Button from "@/components/button";
 import Toggle from "@/components/toggle";
-import { ROUTES_VISIBLE_AT_NAVBAR, routes } from "@/etc/routes";
+import { routesWithIcon } from "@/etc/routes";
 import { clsx } from "@/helpers/string";
 import { useIsMobile } from "@/hooks/device";
 import useUser from "@/hooks/store/use-user";
@@ -94,32 +94,26 @@ const Header = () => {
 								: "invisible opacity-0 top-0 pointer-events-none",
 						)}
 					>
-						{routes
-							.filter(
-								(route) =>
-									ROUTES_VISIBLE_AT_NAVBAR.includes(route.path) &&
-									route.accessible,
-							)
-							.map((route) => {
-								const [match] = useRoute(
-									route.path === "/" ? "/" : `${route.path}/*?`,
-								);
+						{routesWithIcon.map((route) => {
+							const [match] = useRoute(
+								route.path === "/" ? "/" : `${route.path}/*?`,
+							);
 
-								return (
-									<Link
-										key={route.path}
-										href={route.path}
-										onClick={() => setIsNavVisible(false)}
-									>
-										<Button
-											type={match ? "info" : "default"}
-											size="xl"
-											rounded="full"
-											icon={route.icon}
-										/>
-									</Link>
-								);
-							})}
+							return (
+								<Link
+									key={route.path}
+									href={route.path}
+									onClick={() => setIsNavVisible(false)}
+								>
+									<Button
+										type={match ? "info" : "default"}
+										size="xl"
+										rounded="full"
+										icon={route.icon}
+									/>
+								</Link>
+							);
+						})}
 					</div>
 				</div>
 			)}
@@ -128,7 +122,7 @@ const Header = () => {
 				<Button
 					size="lg"
 					rounded="full"
-					icon="icon-[mingcute--notification-line]"
+					icon={<span className="i-mingcute-notification-line" />}
 					onClick={onClickMessage}
 				/>
 				<div className="divider" />

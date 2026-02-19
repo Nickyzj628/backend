@@ -19,7 +19,7 @@ const Shanbay = () => {
 				{isLoading && <Loading />}
 				{error && (
 					<div className="flex flex-col items-center">
-						<div className="icon-[mingcute--pic-line] size-32" />
+						<div className="i-mingcute-pic-line size-32" />
 						<p>{error.message}</p>
 					</div>
 				)}
