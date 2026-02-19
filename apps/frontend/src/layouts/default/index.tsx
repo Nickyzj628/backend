@@ -1,7 +1,7 @@
 import { Suspense } from "preact/compat";
+import CustomRouter from "@/components/custom-router";
 import CustomToaster from "@/components/custom-toaster";
 import Loading from "@/components/loading";
-import Router from "@/components/router";
 import TitleUpdater from "@/components/title-updater";
 import Aside from "./components/aside";
 import Footer from "./components/footer";
@@ -17,7 +17,7 @@ const DefaultLayout = () => {
 					<Aside />
 					<main className="bento relative flex flex-1 flex-wrap items-start content-start gap-3 overflow-hidden">
 						<Suspense fallback={<Loading className="size-full" />}>
-							<Router />
+							<CustomRouter />
 						</Suspense>
 					</main>
 				</div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { useLocalStorage } from "react-use";
 import { Link, useRoute } from "wouter-preact";
 import Button from "@/components/button";
-import { useIsMobile } from "@/hooks/device";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { routesWithIcon } from "@/utils/routes";
 import { clsx } from "@/utils/string";
 
@@ -53,10 +53,10 @@ const Aside = () => {
 					return (
 						<Link href={route.path} key={route.path}>
 							<Button
-								type={match ? "info" : "ghost"}
+								variant={match ? "info" : "ghost"}
 								size="xl"
 								rounded={isAsideFold ? "full" : true}
-								icon={route.icon}
+								icon={route.Icon}
 								className={clsx("w-full px-3! whitespace-nowrap")}
 							>
 								{!isAsideFold && !isMobile && route.title}
@@ -74,7 +74,7 @@ const Aside = () => {
 			>
 				{!isMobile && (
 					<Button
-						type={isAsideFold ? "ghost" : "info"}
+						variant={isAsideFold ? "ghost" : "info"}
 						size="xl"
 						rounded="full"
 						icon={<i className="i-mingcute-align-arrow-left-line" />}
@@ -83,7 +83,7 @@ const Aside = () => {
 					/>
 				)}
 				<Button
-					type={isDark ? "info" : "ghost"}
+					variant={isDark ? "info" : "ghost"}
 					size="xl"
 					rounded="full"
 					icon={

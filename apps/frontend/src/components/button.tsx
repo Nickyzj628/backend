@@ -1,8 +1,8 @@
-import type { CSSProperties } from "preact";
-import type { ReactNode } from "preact/compat";
+import type { ComponentProps, CSSProperties } from "preact";
+import type { FC, ReactNode } from "preact/compat";
 import { clsx } from "@/utils/string";
 
-const typeMap = {
+const variantMap = {
 	default:
 		"bg-neutral-600 text-white hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600",
 	info: "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500",
@@ -17,8 +17,7 @@ const typeMap = {
 	ghost:
 		"bg-transparent text-neutral-800 hover:bg-neutral-200 dark:text-neutral-200 dark:hover:bg-neutral-700",
 };
-type Type = keyof typeof typeMap;
-export type ButtonType = Type;
+export type ButtonVariant = keyof typeof variantMap;
 
 const softMap = {
 	default:
@@ -38,29 +37,28 @@ const softMap = {
 
 const sizeMap = {
 	sm: {
-		normal: "px-3 py-1.5 text-xs",
+		regular: "px-3 py-1.5 text-xs",
 		onlyIcon: "p-1.5 text-xs",
 	},
 	md: {
-		normal: "px-4 py-2 text-sm",
+		regular: "px-4 py-2 text-sm",
 		onlyIcon: "p-2 text-sm",
 	},
 	lg: {
-		normal: "px-5 py-2.5 text-sm",
+		regular: "px-5 py-2.5 text-sm",
 		onlyIcon: "p-2.5 text-sm",
 	},
 	xl: {
-		normal: "px-6 py-3 text-base",
+		regular: "px-6 py-3 text-base",
 		onlyIcon: "p-3 text-base",
 	},
 };
-type Size = keyof typeof sizeMap;
-export type ButtonSize = Size;
+export type ButtonSize = keyof typeof sizeMap;
 
-type Props = {
-	type?: Type;
+type Props = ComponentProps<"button"> & {
+	variant?: ButtonVariant;
 	soft?: boolean;
-	size?: Size;
+	size?: ButtonSize;
 	rounded?: boolean | "full";
 	disabled?: boolean;
 	icon?: ReactNode;
@@ -89,8 +87,8 @@ export type ButtonProps = Props;
  *     Hello world
  * </Button>
  */
-const Button = ({
-	type = "default",
+const Button: FC<Props> = ({
+	variant = "default",
 	soft = true,
 	size = "md",
 	rounded = true,
@@ -100,14 +98,15 @@ const Button = ({
 	className,
 	style,
 	onClick = () => void 0,
-}: Props) => {
+	...restProps
+}) => {
 	return (
 		<button
 			disabled={disabled}
 			className={clsx(
 				"inline-flex items-center gap-1.5 font-medium text-center transition disabled:opacity-50 disabled:pointer-events-none",
-				soft ? softMap[type] : typeMap[type],
-				sizeMap[size][!children ? "onlyIcon" : "normal"],
+				soft ? softMap[variant] : variantMap[variant],
+				sizeMap[size][!children ? "onlyIcon" : "regular"],
 				rounded === "full"
 					? "rounded-full"
 					: rounded === true
@@ -117,6 +116,7 @@ const Button = ({
 			)}
 			style={style}
 			onClick={onClick}
+			{...restProps}
 		>
 			{icon}
 			{children}

@@ -1,41 +1,36 @@
 import { throttle } from "@nickyzj2023/utils";
 import { useEffect, useState } from "preact/hooks";
 import toast from "react-hot-toast/headless";
+import { useToggle } from "react-use";
 import { Link, useRoute } from "wouter-preact";
 import Avatar from "@/components/avatar";
 import Button from "@/components/button";
 import Toggle from "@/components/toggle";
-import { useIsMobile } from "@/hooks/device";
 import useUser from "@/hooks/store/use-user";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { routesWithIcon } from "@/utils/routes";
 import { clsx } from "@/utils/string";
 
 const Header = () => {
-	/**
-	 * 滚动自动收起顶栏
-	 */
-
-	const [isHeaderVisible, setIsHeaderVisible] = useState(false);
+	// 滚动自动收起顶栏
+	const [isHeaderVisible, toggleHeader] = useToggle(true);
 	useEffect(() => {
 		let prevScrollY = 0;
 
 		const onScroll = throttle(() => {
-			setIsHeaderVisible(window.scrollY < prevScrollY);
+			toggleHeader(window.scrollY < prevScrollY);
 			prevScrollY = window.scrollY;
-		}, 150);
-		window.addEventListener("scroll", onScroll);
+		});
 
+		window.addEventListener("scroll", onScroll);
 		return () => {
 			window.removeEventListener("scroll", onScroll);
 		};
 	}, []);
 
-	/**
-	 * 移动端点击打开菜单
-	 */
-
+	// 移动端点击打开菜单
 	const isMobile = useIsMobile();
-	const [isNavVisible, setIsNavVisible] = useState(false);
+	const [isNavVisible, toggleNav] = useToggle(false);
 
 	/**
 	 * 用户相关
@@ -58,55 +53,40 @@ const Header = () => {
 				isHeaderVisible ? "top-0" : "-top-20",
 			)}
 		>
-			{/* logo@pc */}
-			{!isMobile && (
-				<Link
-					href="/"
-					className="flex items-center gap-1.5 text-xl tracking-wide transition dark:text-neutral-100"
-				>
-					<img src="/favicon.webp" alt="LOGO" className="size-12" />
-					NICKYZJ
-				</Link>
-			)}
-			{/* nav@mobile */}
-			{isMobile && (
+			{isMobile ? (
 				<div className="relative z-10">
-					{/* trigger */}
 					<Toggle
-						value={isNavVisible}
 						className="relative z-20"
-						onChange={setIsNavVisible}
+						value={isNavVisible}
+						onChange={toggleNav}
 					/>
-					{/* global shade */}
+					{/* 全局遮罩 */}
 					<div
 						className={clsx(
 							"fixed top-0 left-0 size-full backdrop-blur-sm backdrop-brightness-75 transition-all",
 							!isNavVisible && "invisible opacity-0 pointer-events-none",
 						)}
-						onClick={() => setIsNavVisible(false)}
+						onClick={toggleNav}
 					/>
-					{/* routes list */}
+					{/* 路由菜单 */}
 					<div
 						className={clsx(
 							"absolute left-0 flex flex-col gap-3 w-10 transition-all",
 							isNavVisible
 								? "top-16"
-								: "invisible opacity-0 top-0 pointer-events-none",
+								: "top-0 invisible opacity-0 pointer-events-none",
 						)}
 					>
 						{routesWithIcon.map((route) => {
+							// 对于首页，精准匹配
+							// 对于其他页面，模糊匹配到子孙路由
 							const [match] = useRoute(
 								route.path === "/" ? "/" : `${route.path}/*?`,
 							);
-
 							return (
-								<Link
-									key={route.path}
-									href={route.path}
-									onClick={() => setIsNavVisible(false)}
-								>
+								<Link key={route.path} href={route.path} onClick={toggleNav}>
 									<Button
-										type={match ? "info" : "default"}
+										variant={match ? "info" : "default"}
 										size="xl"
 										rounded="full"
 										icon={route.icon}
@@ -116,8 +96,17 @@ const Header = () => {
 						})}
 					</div>
 				</div>
+			) : (
+				<Link
+					href="/"
+					className="flex items-center gap-1.5 text-xl tracking-wide transition dark:text-neutral-100"
+				>
+					<img src="/favicon.webp" alt="LOGO" className="size-12" />
+					NICKYZJ
+				</Link>
 			)}
-			{/* user */}
+
+			{/* 用户相关 */}
 			<div className="flex items-center gap-6">
 				<Button
 					size="lg"

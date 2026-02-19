@@ -3,43 +3,43 @@ import { lazy, type ReactNode } from "preact/compat";
 export type Route = {
 	path: string;
 	title?: string;
-	icon?: ReactNode;
-	component: () => ReactNode;
+	Icon?: ReactNode;
+	Component: () => ReactNode;
 };
 
 export const routes: Route[] = [
 	{
 		path: "/",
 		title: "主页",
-		icon: <i className="i-mingcute-home-3-line" />,
-		component: lazy(() => import("@/pages/home")),
+		Icon: <i className="i-mingcute-home-3-line" />,
+		Component: lazy(() => import("@/pages/home")),
 	},
 	{
 		path: "/blogs",
 		title: "文章",
-		icon: <i className="i-mingcute-book-6-line" />,
-		component: lazy(() => import("@/pages/blogs")),
+		Icon: <i className="i-mingcute-book-6-line" />,
+		Component: lazy(() => import("@/pages/blogs")),
 	},
 	{
 		path: "/blogs/:slug",
-		component: lazy(() => import("@/pages/blogs/[slug]")),
+		Component: lazy(() => import("@/pages/blogs/[slug]")),
 	},
 	{
 		path: "/animes",
 		title: "番剧",
-		icon: <i className="i-mingcute-tv-2-line" />,
-		component: lazy(() => import("@/pages/animes")),
+		Icon: <i className="i-mingcute-tv-2-line" />,
+		Component: lazy(() => import("@/pages/animes")),
 	},
 	{
 		path: "/animes/:slug",
-		component: lazy(() => import("@/pages/animes/[slug]")),
+		Component: lazy(() => import("@/pages/animes/[slug]")),
 	},
 	{
 		path: "/about",
 		title: "关于",
-		icon: <i className="i-mingcute-user-3-line" />,
-		component: lazy(() => import("@/pages/about")),
+		Icon: <i className="i-mingcute-user-3-line" />,
+		Component: lazy(() => import("@/pages/about")),
 	},
 ];
 
-export const routesWithIcon = routes.filter((route) => "icon" in route);
+export const routesWithIcon = routes.filter((route) => "Icon" in route);

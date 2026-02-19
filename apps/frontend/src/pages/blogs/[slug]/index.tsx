@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
+import type { FC } from "preact/compat";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { useHash } from "react-use";
-import { useParams } from "wouter-preact";
 import Button from "@/components/button";
 import Loading from "@/components/loading";
 import Toggle from "@/components/toggle";
@@ -16,8 +16,7 @@ type Params = {
 	slug: string;
 };
 
-const Page = () => {
-	const { slug } = useParams<Params>();
+const Page: FC<Params> = ({ slug }) => {
 	const [hash] = useHash();
 
 	const { isLoading, error, data } = useBlog(slug);

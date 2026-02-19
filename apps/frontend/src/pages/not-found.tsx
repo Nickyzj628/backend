@@ -1,4 +1,5 @@
 import { Link } from "wouter-preact";
+import Button from "@/components/button";
 
 const NotFound = () => {
 	return (
@@ -7,8 +8,8 @@ const NotFound = () => {
 			<p class="text-zinc-500 dark:text-zinc-400 transition">
 				您的页面好像偏离了地球...
 			</p>
-			<Link href="/" className="button items-center !px-8 mt-5 rounded-xl">
-				回到主页
+			<Link href="/" className="mt-4">
+				<Button className="px-8">回到主页</Button>
 			</Link>
 		</div>
 	);
