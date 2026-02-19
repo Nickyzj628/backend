@@ -3,12 +3,12 @@ import { openapi } from "@elysiajs/openapi";
 import { timeLog } from "@nickyzj2023/utils";
 import { file } from "bun";
 import { Elysia } from "elysia";
-import { ALLOWED_ORIGINS, PORT } from "@/libs/constants";
 import { animes } from "@/routes/animes";
 import { blogs } from "@/routes/blogs";
 import { rooms } from "@/routes/rooms";
 import { shanbay } from "@/routes/shanbay";
 import { startBrecTimer } from "@/utils/brec";
+import { ALLOWED_ORIGINS, PORT } from "@/utils/constants";
 
 const log = (...args: any[]) => timeLog("[app]", ...args);
 

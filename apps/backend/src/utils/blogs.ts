@@ -3,8 +3,8 @@ import type fs from "node:fs";
 import { basename, relative } from "node:path";
 import { timeLog } from "@nickyzj2023/utils";
 import chokidar from "chokidar";
-import { BLOGS_DIR, ROOT_PATH, WEBDAV_PATH } from "@/libs/constants";
 import type { BlogItem } from "@/types/blogs";
+import { BLOGS_DIR, ROOT_PATH, WEBDAV_PATH } from "@/utils/constants";
 import { extractYearFromPath, textToSlug } from "./common";
 import { renderMarkdown } from "./markdown";
 
@@ -170,8 +170,8 @@ export const watchBlogs = async () => {
 
 	// 等待扫描完成
 	await new Promise<void>((resolve) => {
-		initWatcher.on("ready", () => {
-			batchAdd();
+		initWatcher.on("ready", async () => {
+			await batchAdd();
 			initWatcher.close();
 			resolve();
 		});

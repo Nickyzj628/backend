@@ -4,9 +4,9 @@ import { readdir } from "node:fs/promises";
 import { basename, relative } from "node:path";
 import { timeLog } from "@nickyzj2023/utils";
 import chokidar from "chokidar";
-import { ANIMES_DIR, ROOT_PATH, WEBDAV_PATH } from "@/libs/constants.js";
 import type { AnimeItem } from "@/types/animes";
 import { extractSeasonFromPath, textToSlug } from "@/utils/common";
+import { ANIMES_DIR, ROOT_PATH, WEBDAV_PATH } from "@/utils/constants";
 
 const log = (...args: any[]) => timeLog("[animes]", ...args);
 

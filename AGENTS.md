@@ -95,7 +95,7 @@ bun test apps/backend/src/utils/...  # Run single test file (backend)
 ```typescript
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
-import { BLOGS_DIR } from "@/libs/constants";
+import { BLOGS_DIR } from "@/utils/constants";
 import { renderMarkdown } from "./markdown";
 ```
 
