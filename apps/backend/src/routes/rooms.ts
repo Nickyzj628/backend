@@ -42,18 +42,17 @@ export const rooms = new Elysia({
 			const wsRaw = ws.raw as WS;
 			const service = ws.data.roomService;
 
+			function sendError(error: { code: string; message: string }) {
+				ws.send(JSON.stringify({ event: "error", payload: error }));
+			}
+
 			switch (eventName) {
 				case "createRoom": {
 					const result = service.createRoom(wsRaw, payload);
 					if (result.success) {
 						ws.send(JSON.stringify(result.data));
 					} else {
-						ws.send(
-							JSON.stringify({
-								event: "error",
-								payload: result.error,
-							}),
-						);
+						sendError(result.error);
 					}
 					break;
 				}
@@ -62,24 +61,14 @@ export const rooms = new Elysia({
 					if (result.success) {
 						ws.send(JSON.stringify(result.data));
 					} else {
-						ws.send(
-							JSON.stringify({
-								event: "error",
-								payload: result.error,
-							}),
-						);
+						sendError(result.error);
 					}
 					break;
 				}
 				case "roomMessage": {
 					const result = service.sendRoomMessage(wsRaw, payload);
 					if (!result.success) {
-						ws.send(
-							JSON.stringify({
-								event: "error",
-								payload: result.error,
-							}),
-						);
+						sendError(result.error);
 					}
 					break;
 				}

@@ -29,7 +29,9 @@
         "useTemplate": "off"
       },
       "a11y": {
-        "noStaticElementInteractions": "off"
+        "noStaticElementInteractions": "off",
+        "useButtonType": "off",
+        "useMediaCaption": "off"
       }
     }
   },

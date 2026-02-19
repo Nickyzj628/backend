@@ -1,3 +1,9 @@
+import type {
+	CreateRoomPayload,
+	JoinRoomPayload,
+	RoomMessagePayload,
+	VideoSyncResponsePayload,
+} from "@nickyzj/shared-types";
 import type { ServerWebSocket } from "bun";
 import { t } from "elysia";
 
@@ -16,18 +22,12 @@ export type UserData = {
 	isHost: boolean;
 };
 
-export type RoomMessagePayload = {
-	userName: string;
-	isHost: boolean;
-	text: string;
-};
-
-export type VideoInfo = {
-	currentTime?: number;
-	paused?: boolean;
-	playbackRate?: number;
-	ep?: number;
-	url?: string;
+// 重新导出共享类型
+export type {
+	CreateRoomPayload,
+	JoinRoomPayload,
+	RoomMessagePayload,
+	VideoSyncResponsePayload,
 };
 
 // Elysia Schemas for WebSocket message validation
@@ -99,8 +99,4 @@ export const WebSocketMessageSchema = t.Union([
 ]);
 
 // Export inferred types from schemas
-export type CreateRoomPayload = typeof CreateRoomPayloadSchema.static;
-export type JoinRoomPayload = typeof JoinRoomPayloadSchema.static;
-export type VideoSyncResponsePayload =
-	typeof VideoSyncResponsePayloadSchema.static;
 export type WebSocketMessage = typeof WebSocketMessageSchema.static;

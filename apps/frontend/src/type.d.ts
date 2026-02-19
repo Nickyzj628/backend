@@ -77,7 +77,7 @@ type Anime = {
 	slug: string;
 	season: string;
 	eps: number;
-	episodes?: string;
+	episodes?: string[];
 	created_at: string;
 	updated_at: string;
 };
@@ -99,8 +99,5 @@ type AnimeMutationBody = {
 	cover?: string;
 };
 
-type RoomMessage = {
-	type?: "user" | "host" | "system";
-	userName: string;
-	text: string;
-};
+// 放映室相关类型从共享包导入
+// import type { RoomMessage, WebSocketMessage, ... } from "@nickyzj/shared-types"

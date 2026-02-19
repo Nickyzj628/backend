@@ -12,29 +12,32 @@ import { createGlobalState } from "react-use";
  * // 清除缓存
  * removeUser();
  */
-const createPersistedGlobalState = <T>(key: string, getInitialValue: () => T) => {
-    // 如果 localStorage 里没有值，则缓存初始值，供下次使用
-    let cachedValue = localStorage.getItem(key);
-    if (!cachedValue) {
-        cachedValue = JSON.stringify(getInitialValue());
-        localStorage.setItem(key, cachedValue);
-    }
+const createPersistedGlobalState = <T>(
+	key: string,
+	getInitialValue: () => T,
+) => {
+	// 如果 localStorage 里没有值，则缓存初始值，供下次使用
+	let cachedValue = localStorage.getItem(key);
+	if (!cachedValue) {
+		cachedValue = JSON.stringify(getInitialValue());
+		localStorage.setItem(key, cachedValue);
+	}
 
-    const useGlobalValue = createGlobalState<T>(JSON.parse(cachedValue));
+	const useGlobalValue = createGlobalState<T>(JSON.parse(cachedValue));
 
-    return () => {
-        const [value, setValue] = useGlobalValue();
-        const persistValue = (value: T) => {
-            setValue(value);
-            localStorage.setItem(key, JSON.stringify(value));
-        };
-        const removeValue = () => {
-            setValue(undefined);
-            localStorage.removeItem(key);
-        };
+	return () => {
+		const [value, setValue] = useGlobalValue();
+		const persistValue = (value: T) => {
+			setValue(value);
+			localStorage.setItem(key, JSON.stringify(value));
+		};
+		const removeValue = () => {
+			setValue(undefined);
+			localStorage.removeItem(key);
+		};
 
-        return [value, persistValue, removeValue] as const;
-    };
+		return [value, persistValue, removeValue] as const;
+	};
 };
 
 export default createPersistedGlobalState;

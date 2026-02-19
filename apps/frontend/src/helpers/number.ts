@@ -6,8 +6,8 @@
  * random(1, 100); // 1 ~ 100 之间的随机整数
  */
 export const random = (min: number, max: number) => {
-    const range = Math.abs(max - min) + 1;
-    return min + Math.floor(Math.random() * range);
+	const range = Math.abs(max - min) + 1;
+	return min + Math.floor(Math.random() * range);
 };
 
 /**
@@ -16,5 +16,5 @@ export const random = (min: number, max: number) => {
  * extractNumbers("abc123def456ghi789"); // [123, 456, 789]
  */
 export const extractNumbers = (string: string) => {
-    return string.match(/\d+/g)?.map(Number) || [];
+	return string.match(/\d+/g)?.map(Number) || [];
 };

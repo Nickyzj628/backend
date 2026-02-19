@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { useParams } from "wouter-preact";
 import Loading from "@/components/loading";
 import Tabs from "@/components/tabs";
-import { SocketProvider } from "@/etc/socket-context";
+import { WebSocketProvider } from "@/etc/websocket-context";
 import { setTitle } from "@/helpers/dom";
 import { useAnime } from "@/hooks/store/use-anime";
 import Episodes from "@/pages/anime/episodes";
@@ -50,7 +50,7 @@ const Page = () => {
 	if (error) return <NotFound />;
 
 	return (
-		<SocketProvider config={{ path: "/rooms" }}>
+		<WebSocketProvider>
 			<Video anime={data} isHost={isHost} />
 			<Tabs
 				defaultValue={Tab.Episodes}
@@ -67,7 +67,7 @@ const Page = () => {
 					<Room isHost={isHost} onChangeHost={setIsHost} />
 				</Tabs.Content>
 			</Tabs>
-		</SocketProvider>
+		</WebSocketProvider>
 	);
 };
 

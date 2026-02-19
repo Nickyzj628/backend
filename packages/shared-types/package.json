@@ -1,0 +1,16 @@
+{
+	"name": "@nickyzj/shared-types",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/index.ts"
+		},
+		"./rooms": {
+			"types": "./src/rooms.ts"
+		}
+	},
+	"devDependencies": {
+		"typescript": "^5.9.3"
+	}
+}

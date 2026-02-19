@@ -1,3 +1,4 @@
+import type { RoomErrorCode } from "@nickyzj/shared-types";
 import { t } from "elysia";
 
 /**
@@ -10,7 +11,7 @@ export const RoomErrorSchema = t.Union([
 	t.Literal("USER_NOT_FOUND"),
 ]);
 
-export type RoomError = typeof RoomErrorSchema.static;
+export type RoomError = RoomErrorCode;
 
 /**
  * 创建房间响应

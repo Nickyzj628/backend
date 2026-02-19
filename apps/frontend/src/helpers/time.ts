@@ -1,4 +1,4 @@
-import dayjs, { ConfigType } from "dayjs";
+import dayjs, { type ConfigType } from "dayjs";
 import { removeSpaces } from "./string";
 
 /**
@@ -8,9 +8,9 @@ import { removeSpaces } from "./string";
  * await sleep(1000); // 等待 1 秒执行后续代码
  */
 export const sleep = async (time = 150) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, time);
-    });
+	return new Promise((resolve) => {
+		setTimeout(resolve, time);
+	});
 };
 
 /**
@@ -20,20 +20,20 @@ export const sleep = async (time = 150) => {
  * await delayFrames(10); // 等待 10 帧执行后续代码
  */
 export const delayFrames = async (frames = 1) => {
-    return new Promise((resolve) => {
-        let frameCount = 0;
+	return new Promise((resolve) => {
+		let frameCount = 0;
 
-        const run = () => {
-            frameCount++;
-            if (frameCount >= frames) {
-                resolve(void 0);
-            } else {
-                requestAnimationFrame(run);
-            }
-        };
+		const run = () => {
+			frameCount++;
+			if (frameCount >= frames) {
+				resolve(void 0);
+			} else {
+				requestAnimationFrame(run);
+			}
+		};
 
-        requestAnimationFrame(run);
-    });
+		requestAnimationFrame(run);
+	});
 };
 
 /**
@@ -49,14 +49,14 @@ export const delayFrames = async (frames = 1) => {
  * debounceFn(); // 等待 1 秒执行
  */
 export const debounce = (fn: (...args: any[]) => void, time = 150) => {
-    let timer: NodeJS.Timeout;
+	let timer: NodeJS.Timeout;
 
-    return (...args: any[]) => {
-        if (timer) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(() => fn(...args), time);
-    };
+	return (...args: any[]) => {
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(() => fn(...args), time);
+	};
 };
 
 /**
@@ -69,20 +69,20 @@ export const debounce = (fn: (...args: any[]) => void, time = 150) => {
  * }, 1000);
  * throttleFn(); // 等待 1 秒执行
  * throttleFn();
- * throttleFn(); 
+ * throttleFn();
  */
 export const throttle = (fn: (...args: any[]) => void, ms = 150) => {
-    let timer: NodeJS.Timeout;
+	let timer: NodeJS.Timeout;
 
-    return async (...args: any[]) => {
-        if (timer) {
-            return;
-        }
-        timer = setTimeout(() => {
-            fn(...args);
-            timer = null;
-        }, ms);
-    };
+	return async (...args: any[]) => {
+		if (timer) {
+			return;
+		}
+		timer = setTimeout(() => {
+			fn(...args);
+			timer = null;
+		}, ms);
+	};
 };
 
 /**
@@ -91,14 +91,14 @@ export const throttle = (fn: (...args: any[]) => void, ms = 150) => {
  * getPeriod(); // "晚上"
  */
 export const getPeriod = () => {
-    const hour = new Date().getHours();
-    if (hour < 6) return "凌晨";
-    if (hour >= 6 && hour <= 8) return "早上";
-    if (hour >= 9 && hour <= 11) return "上午";
-    if (hour === 12) return "中午";
-    if (hour >= 13 && hour <= 17) return "下午";
-    if (hour >= 18 && hour <= 19) return "傍晚";
-    return "晚上";
+	const hour = new Date().getHours();
+	if (hour < 6) return "凌晨";
+	if (hour >= 6 && hour <= 8) return "早上";
+	if (hour >= 9 && hour <= 11) return "上午";
+	if (hour === 12) return "中午";
+	if (hour >= 13 && hour <= 17) return "下午";
+	if (hour >= 18 && hour <= 19) return "傍晚";
+	return "晚上";
 };
 
 /**
@@ -108,5 +108,5 @@ export const getPeriod = () => {
  * fromNow("2023-01-01"); // "1天前"
  */
 export const fromNow = (date: ConfigType) => {
-    return removeSpaces(dayjs(date).fromNow());
+	return removeSpaces(dayjs(date).fromNow());
 };

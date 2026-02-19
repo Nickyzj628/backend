@@ -8,39 +8,39 @@
  * cache.get("a");    // undefined
  */
 class LRUCache<K, V> {
-    private cache: Map<K, V>;
-    private maxSize: number;
+	private cache: Map<K, V>;
+	private maxSize: number;
 
-    constructor(maxSize = 10) {
-        this.cache = new Map();
-        this.maxSize = maxSize;
-    }
+	constructor(maxSize = 10) {
+		this.cache = new Map();
+		this.maxSize = maxSize;
+	}
 
-    get(key: K): V | undefined {
-        if (!this.cache.has(key)) {
-            return undefined;
-        }
-        // 重置缓存顺序
-        const value = this.cache.get(key);
-        this.cache.delete(key);
-        this.cache.set(key, value);
-        return value;
-    }
+	get(key: K): V | undefined {
+		if (!this.cache.has(key)) {
+			return undefined;
+		}
+		// 重置缓存顺序
+		const value = this.cache.get(key);
+		this.cache.delete(key);
+		this.cache.set(key, value);
+		return value;
+	}
 
-    set(key: K, value: V) {
-        if (this.cache.has(key)) {
-            this.cache.delete(key);
-        } else if (this.cache.size >= this.maxSize) {
-            // 删除最旧的缓存项
-            const oldestKey = this.cache.keys().next().value;
-            this.cache.delete(oldestKey);
-        }
-        this.cache.set(key, value);
-    }
+	set(key: K, value: V) {
+		if (this.cache.has(key)) {
+			this.cache.delete(key);
+		} else if (this.cache.size >= this.maxSize) {
+			// 删除最旧的缓存项
+			const oldestKey = this.cache.keys().next().value;
+			this.cache.delete(oldestKey);
+		}
+		this.cache.set(key, value);
+	}
 
-    has(key: K) {
-        return this.cache.has(key);
-    }
-};
+	has(key: K) {
+		return this.cache.has(key);
+	}
+}
 
 export default LRUCache;

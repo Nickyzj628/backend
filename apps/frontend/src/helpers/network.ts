@@ -17,37 +17,37 @@ const cachedRequests = new LRUCache<string, Promise<Response>>();
  * });
  */
 export const request = async <T>(path: string, options: Recordable = {}) => {
-    // 处理 body 为对象的情况
-    if (typeof options.body === "object" && !(options.body instanceof FormData)) {
-        options.body = JSON.stringify(options.body);
-        options.headers = {
-            ...options.headers,
-            "Content-Type": "application/json",
-        }
-    }
+	// 处理 body 为对象的情况
+	if (typeof options.body === "object" && !(options.body instanceof FormData)) {
+		options.body = JSON.stringify(options.body);
+		options.headers = {
+			...options.headers,
+			"Content-Type": "application/json",
+		};
+	}
 
-    const fetcher = () => fetch(`${BASE_URL}:${BACKEND_PORT}${path}`, options);
-    let promise: Promise<Response>;
+	const fetcher = () => fetch(`${BASE_URL}:${BACKEND_PORT}${path}`, options);
+	let promise: Promise<Response>;
 
-    const canCache = !options.method || options.method === "GET";
-    if (canCache) {
-        if (!cachedRequests.has(path)) {
-            cachedRequests.set(path, fetcher());
-        }
-        promise = cachedRequests.get(path);
-    } else {
-        promise = fetcher();
-    }
+	const canCache = !options.method || options.method === "GET";
+	if (canCache) {
+		if (!cachedRequests.has(path)) {
+			cachedRequests.set(path, fetcher());
+		}
+		promise = cachedRequests.get(path);
+	} else {
+		promise = fetcher();
+	}
 
-    // 必须使用 clone() 消费一个新的响应体，否则下次从 cache 中获取的响应体会报错（无法被重复消费）
-    const response = (await promise).clone();
-    if (!response.ok) {
-        throw new Error(response.statusText);
-    }
+	// 必须使用 clone() 消费一个新的响应体，否则下次从 cache 中获取的响应体会报错（无法被重复消费）
+	const response = (await promise).clone();
+	if (!response.ok) {
+		throw new Error(response.statusText);
+	}
 
-    const data = await response.json();
+	const data = await response.json();
 
-    return data as T;
+	return data as T;
 };
 
 /**
@@ -55,13 +55,15 @@ export const request = async <T>(path: string, options: Recordable = {}) => {
  * @example
  * const [error, response] = await to(request<Resp>("/blogs/2025/猩猩也能懂的Node.js部署教程"));
  */
-export const to = async <T, U = Error>(promise: Promise<T>): Promise<[null, T] | [U, undefined]> => {
-    try {
-        const response = await promise;
-        return [null, response];
-    } catch (error) {
-        return [error as U, undefined];
-    }
+export const to = async <T, U = Error>(
+	promise: Promise<T>,
+): Promise<[null, T] | [U, undefined]> => {
+	try {
+		const response = await promise;
+		return [null, response];
+	} catch (error) {
+		return [error as U, undefined];
+	}
 };
 
 /**
@@ -71,7 +73,7 @@ export const to = async <T, U = Error>(promise: Promise<T>): Promise<[null, T] |
  * const src = getImage("/Nickyzj/Photos/Blogs/猩猩也能懂的Node.js部署教程.webp");
  */
 export const getImage = (path: string) => {
-    return `${BASE_URL}:${WEBDAV_PORT}/p/Nickyzj/Photos${encodeURIComponent(path)}`;
+	return `${BASE_URL}:${WEBDAV_PORT}/p/Nickyzj/Photos${encodeURIComponent(path)}`;
 };
 
 /**
@@ -84,9 +86,9 @@ export const getImage = (path: string) => {
  * }, 2);
  */
 export const getAnimeVideoByEp = (anime: Anime, ep = 1) => {
-    const episode = anime.episodes[ep - 1];
-    if (!episode) {
-        return "";
-    }
-    return `${BASE_URL}:${WEBDAV_PORT}/p/Nickyzj/Animes/${anime.season}/${encodeURIComponent(anime.title)}/${encodeURIComponent(episode)}`;
+	const episode = anime.episodes[ep - 1];
+	if (!episode) {
+		return "";
+	}
+	return `${BASE_URL}:${WEBDAV_PORT}/p/Nickyzj/Animes/${anime.season}/${encodeURIComponent(anime.title)}/${encodeURIComponent(episode)}`;
 };
