@@ -15,7 +15,7 @@ const Page = () => {
 					</span>
 					<h1 className="my-0.5">杨智杰</h1>
 					<span className="text-sm text-zinc-500 transition dark:text-zinc-400">
-						24岁 · JavaScript · 前端临时工
+						{new Date().getFullYear() - 2001}岁 · JavaScript · 前端临时工
 					</span>
 				</div>
 			</div>
