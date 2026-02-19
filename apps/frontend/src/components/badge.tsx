@@ -85,7 +85,7 @@ const Badge = ({
 					)}
 					onClick={onClose}
 				>
-					<span className="i-mingcute-close-line" />
+					<i className="i-mingcute-close-line" />
 				</span>
 			)}
 		</span>

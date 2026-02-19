@@ -148,7 +148,7 @@ const Page = () => {
 				<Button
 					size="xl"
 					rounded="full"
-					icon={<span className="i-mingcute-align-arrow-left-line rotate-90" />}
+					icon={<i className="i-mingcute-align-arrow-left-line rotate-90" />}
 					onClick={() => window.scrollTo(0, 0)}
 				/>
 			</div>

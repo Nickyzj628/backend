@@ -5,19 +5,19 @@ import { clsx } from "@/utils/string";
 
 const typeMap = {
 	info: {
-		icon: <div className="i-mingcute-information-fill size-6 shrink-0" />,
+		icon: <i className="i-mingcute-information-fill size-6 shrink-0" />,
 		wrapperClassName: "bg-blue-50 text-blue-500 dark:bg-blue-950",
 	},
 	success: {
-		icon: <div className="i-mingcute-check-circle-fill size-6 shrink-0" />,
+		icon: <i className="i-mingcute-check-circle-fill size-6 shrink-0" />,
 		wrapperClassName: "bg-green-50 text-green-500 dark:bg-green-950",
 	},
 	warning: {
-		icon: <div className="i-mingcute-warning-fill size-6 shrink-0" />,
+		icon: <i className="i-mingcute-warning-fill size-6 shrink-0" />,
 		wrapperClassName: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
 	},
 	danger: {
-		icon: <div className="i-mingcute-close-circle-fill size-6 shrink-0" />,
+		icon: <i className="i-mingcute-close-circle-fill size-6 shrink-0" />,
 		wrapperClassName: "bg-red-50 text-red-500 dark:bg-red-950",
 	},
 };

@@ -30,7 +30,7 @@ const RecentBlogs = () => {
 				{isLoadingFirstPage && <Loading />}
 				{error && (
 					<div className="flex flex-col items-center">
-						<div className="i-mingcute-pic-line size-32" />
+						<i className="i-mingcute-pic-line size-32" />
 						<p>{error.message}</p>
 					</div>
 				)}

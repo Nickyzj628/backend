@@ -77,7 +77,7 @@ const Aside = () => {
 						type={isAsideFold ? "ghost" : "info"}
 						size="xl"
 						rounded="full"
-						icon={<span className="i-mingcute-align-arrow-left-line" />}
+						icon={<i className="i-mingcute-align-arrow-left-line" />}
 						className={clsx(isAsideFold && "rotate-180")}
 						onClick={() => setIsAsideFold(!isAsideFold)}
 					/>
@@ -88,9 +88,9 @@ const Aside = () => {
 					rounded="full"
 					icon={
 						isDark ? (
-							<span className="i-mingcute-sun-line" />
+							<i className="i-mingcute-sun-line" />
 						) : (
-							<span className="i-mingcute-moon-line" />
+							<i className="i-mingcute-moon-line" />
 						)
 					}
 					onClick={() => setIsDark(!isDark)}

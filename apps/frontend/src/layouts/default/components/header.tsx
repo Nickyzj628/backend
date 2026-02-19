@@ -122,7 +122,7 @@ const Header = () => {
 				<Button
 					size="lg"
 					rounded="full"
-					icon={<span className="i-mingcute-notification-line" />}
+					icon={<i className="i-mingcute-notification-line" />}
 					onClick={onClickMessage}
 				/>
 				<div className="divider" />

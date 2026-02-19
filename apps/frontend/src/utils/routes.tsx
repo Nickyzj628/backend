@@ -11,13 +11,13 @@ export const routes: Route[] = [
 	{
 		path: "/",
 		title: "主页",
-		icon: <div className="i-mingcute-home-3-line" />,
+		icon: <i className="i-mingcute-home-3-line" />,
 		component: lazy(() => import("@/pages/home")),
 	},
 	{
 		path: "/blogs",
 		title: "文章",
-		icon: <div className="i-mingcute-book-6-line" />,
+		icon: <i className="i-mingcute-book-6-line" />,
 		component: lazy(() => import("@/pages/blogs")),
 	},
 	{
@@ -27,7 +27,7 @@ export const routes: Route[] = [
 	{
 		path: "/animes",
 		title: "番剧",
-		icon: <div className="i-mingcute-tv-2-line" />,
+		icon: <i className="i-mingcute-tv-2-line" />,
 		component: lazy(() => import("@/pages/animes")),
 	},
 	{
@@ -37,7 +37,7 @@ export const routes: Route[] = [
 	{
 		path: "/about",
 		title: "关于",
-		icon: <div className="i-mingcute-user-3-line" />,
+		icon: <i className="i-mingcute-user-3-line" />,
 		component: lazy(() => import("@/pages/about")),
 	},
 ];
