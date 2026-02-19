@@ -3,7 +3,7 @@ import type {
 	RoomMessage,
 	RoomMessagePayload,
 } from "@nickyzj/shared-types";
-import type { FormEvent } from "preact/compat";
+import type { SubmitEventHandler } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { toast } from "react-hot-toast/headless";
 import { useSearchParams } from "wouter-preact";
@@ -11,7 +11,7 @@ import Button from "@/components/button";
 import useUser from "@/hooks/store/use-user";
 import { copyToClipboard } from "@/utils/dom";
 import { useWebSocketContext } from "@/utils/websocket-context";
-import Badge, { type BadgeType } from "../../components/badge";
+import Badge, { type BadgeType } from "../../../../components/badge";
 
 const getBadgeInfo = (message: RoomMessage) => {
 	const result = {
@@ -113,11 +113,11 @@ const Room = ({
 	const [messages, setMessages] = useState<RoomMessagePayload[]>([]);
 
 	// 发消息
-	const onSendMessage = (e: FormEvent) => {
+	const onSendMessage: SubmitEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 
-		const form = e.target as HTMLFormElement;
-		const input = form.elements.text as HTMLInputElement;
+		const form = e.currentTarget;
+		const input = form.elements.namedItem("text") as HTMLInputElement;
 		const text = input.value.trim();
 
 		if (!text) return;

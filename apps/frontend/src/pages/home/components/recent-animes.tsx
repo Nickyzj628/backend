@@ -1,3 +1,4 @@
+import type { Anime } from "@nickyzj/shared-types";
 import dayjs from "dayjs";
 import { useMemo } from "preact/hooks";
 import { Link } from "wouter-preact";
@@ -5,8 +6,8 @@ import { Figcaption, Figure } from "@/components/figure";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
 import Timeline from "@/components/timeline";
-import { clsx } from "@/utils/string";
 import { useAnimes } from "@/hooks/store/use-anime";
+import { clsx } from "@/utils/string";
 
 type GroupedAnimes = (Anime & {
 	dayDiff: number;

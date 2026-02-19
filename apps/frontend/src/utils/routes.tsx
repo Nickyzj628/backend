@@ -22,7 +22,7 @@ export const routes: Route[] = [
 	},
 	{
 		path: "/blogs/:slug",
-		component: lazy(() => import("@/pages/blog")),
+		component: lazy(() => import("@/pages/blogs/[slug]")),
 	},
 	{
 		path: "/animes",
@@ -32,7 +32,7 @@ export const routes: Route[] = [
 	},
 	{
 		path: "/animes/:slug",
-		component: lazy(() => import("@/pages/anime")),
+		component: lazy(() => import("@/pages/animes/[slug]")),
 	},
 	{
 		path: "/about",

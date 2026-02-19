@@ -1,6 +1,5 @@
-import { useMemo } from "preact/hooks";
-import { Figcaption, Figure } from "../../components/figure";
-import Section from "../../components/section";
+import { Figcaption, Figure } from "../../../components/figure";
+import Section from "../../../components/section";
 
 const Links = () => {
 	const links = [

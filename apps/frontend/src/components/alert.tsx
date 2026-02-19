@@ -5,27 +5,27 @@ import { clsx } from "@/utils/string";
 
 const typeMap = {
 	info: {
-		wrapper: "bg-blue-50 text-blue-500 dark:bg-blue-950",
 		icon: <div className="i-mingcute-information-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-blue-50 text-blue-500 dark:bg-blue-950",
 	},
 	success: {
-		wrapper: "bg-green-50 text-green-500 dark:bg-green-950",
 		icon: <div className="i-mingcute-check-circle-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-green-50 text-green-500 dark:bg-green-950",
 	},
 	warning: {
-		wrapper: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
 		icon: <div className="i-mingcute-warning-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
 	},
 	danger: {
-		wrapper: "bg-red-50 text-red-500 dark:bg-red-950",
 		icon: <div className="i-mingcute-close-circle-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-red-50 text-red-500 dark:bg-red-950",
 	},
 };
-type Type = keyof typeof typeMap;
-export type AlertType = Type;
 
-type Props = {
-	type?: Type;
+export type AlertType = keyof typeof typeMap;
+
+export type AlertProps = {
+	type?: AlertType;
 	title?: string;
 	description?: string | ReactNode;
 	className?: string;
@@ -35,7 +35,6 @@ type Props = {
 	showClose?: boolean;
 	onClose?: () => void;
 };
-export type AlertProps = Props;
 
 /**
  * 警告，功能和样式参考了 Sailboat UI
@@ -57,8 +56,8 @@ export type AlertProps = Props;
  * />
  */
 const Alert = forwardRef(
-	(
-		{
+	(props: AlertProps, ref: MutableRef<HTMLDivElement>) => {
+		const {
 			type = "info",
 			title,
 			description,
@@ -68,15 +67,14 @@ const Alert = forwardRef(
 			showIcon = true,
 			showClose = false,
 			onClose = () => {},
-		}: Props,
-		ref: MutableRef<HTMLDivElement>,
-	) => {
+		} = props ?? {};
+
 		return (
 			<div
 				ref={ref}
 				className={clsx(
 					"flex gap-3 p-3 rounded-xl text-sm transition",
-					typeMap[type].wrapper,
+					typeMap[type].wrapperClassName,
 					className,
 				)}
 				style={style}

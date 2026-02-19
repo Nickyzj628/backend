@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { useIntersection } from "react-use";
 import { Link } from "wouter-preact";
 import { Figcaption, Figure } from "@/components/figure";
-import { fromNow } from "@/utils/time";
 import { useAnimes } from "@/hooks/store/use-anime";
+import { fromNow } from "@/utils/time";
 
 const Page = ({ page = 1, onLoaded = (hasNextPage: boolean) => void 0 }) => {
 	const { isLoading, error, data, hasNextPage } = useAnimes({ page });

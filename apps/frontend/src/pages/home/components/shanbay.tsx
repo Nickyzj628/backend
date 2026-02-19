@@ -1,11 +1,12 @@
+import type { Shanbay as ShanbayType } from "@nickyzj/shared-types";
 import { Figcaption, Figure } from "@/components/figure";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
-import { clsx } from "@/utils/string";
 import { useRequest } from "@/hooks/network";
+import { clsx } from "@/utils/string";
 
 const Shanbay = () => {
-	const { isLoading, error, data } = useRequest<Shanbay>("/shanbay");
+	const { isLoading, error, data } = useRequest<ShanbayType>("/shanbay");
 
 	return (
 		<Section className={"aspect-2/3 w-full sm:w-80 lg:w-96 mt-2"}>

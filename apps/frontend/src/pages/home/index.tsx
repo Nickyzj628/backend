@@ -1,8 +1,8 @@
-import { getPeriod } from "@/utils/time";
 import useUser from "@/hooks/store/use-user";
-import RecentAnimes from "./recent-animes";
-import RecentBlogs from "./recent-blogs";
-import Shanbay from "./shanbay";
+import { getPeriod } from "@/utils/time";
+import RecentAnimes from "./components/recent-animes";
+import RecentBlogs from "./components/recent-blogs";
+import Shanbay from "./components/shanbay";
 
 const Page = () => {
 	const [user] = useUser();

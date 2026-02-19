@@ -17,6 +17,7 @@ export const textToSlug = (text: string) => {
 		nonZh: "consecutive",
 	})
 		.replaceAll(" ", "-")
+		.replaceAll("--", "-")
 		.toLowerCase();
 };
 

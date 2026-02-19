@@ -5,12 +5,12 @@ import { useParams } from "wouter-preact";
 import Button from "@/components/button";
 import Loading from "@/components/loading";
 import Toggle from "@/components/toggle";
-import { setTitle } from "@/utils/dom";
-import { getImage } from "@/utils/network";
-import { clsx } from "@/utils/string";
 import { useEnsuredRef, useZoom } from "@/hooks/dom";
 import { useBlog } from "@/hooks/store/use-blog";
 import NotFound from "@/pages/not-found";
+import { setTitle } from "@/utils/dom";
+import { getImage } from "@/utils/network";
+import { clsx } from "@/utils/string";
 
 type Params = {
 	slug: string;
@@ -95,7 +95,7 @@ const Page = () => {
 					backgroundImage: `url(${getImage(`/Blogs/${data.title}.webp`)})`,
 				}}
 			>
-				<div className="absolute top-0 left-0 size-full rounded-xl bg-black/60" />
+				<div className="absolute top-0 left-0 size-full rounded-xl backdrop-blur-sm backdrop-brightness-50" />
 			</div>
 			<div className="relative flex flex-col items-center gap-0.5 w-full mt-8 sm:mt-16 mb-4 sm:mb-8 p-3">
 				<h1 className="mb-3 text-white text-balance text-center">
