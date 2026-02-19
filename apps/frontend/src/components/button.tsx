@@ -60,12 +60,7 @@ type Props = ComponentProps<"button"> & {
 	soft?: boolean;
 	size?: ButtonSize;
 	rounded?: boolean | "full";
-	disabled?: boolean;
 	icon?: ReactNode;
-	children?: ReactNode;
-	className?: string;
-	style?: CSSProperties;
-	onClick?: () => void;
 };
 export type ButtonProps = Props;
 

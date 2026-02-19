@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { useLocalStorage } from "react-use";
+import { useLocalStorage, useMedia, useToggle } from "react-use";
 import { Link, useRoute } from "wouter-preact";
 import Button from "@/components/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -12,21 +12,25 @@ const Aside = () => {
 	// 手动切换侧边栏
 	const [isAsideFold, setIsAsideFold] = useLocalStorage("isAsideFold", false);
 
-	// 手动切换深色模式
-	const DARK_MEDIA_QUERY = "(prefers-color-scheme: dark)";
-	const [isDark, setIsDark] = useState(
-		window.matchMedia(DARK_MEDIA_QUERY).matches,
-	);
+	/**
+	 * 深色模式
+	 */
+
+	const [isDark, toggleDark] = useToggle(false);
 	useEffect(() => {
-		document.documentElement.className = isDark ? "dark" : "";
+		const { documentElement } = document;
+		if (!isDark) {
+			documentElement.className = documentElement.className.replace("dark", "");
+		} else {
+			documentElement.className += "dark";
+		}
 	}, [isDark]);
 
-	// 自动切换深色模式
+	// 根据系统偏好自动切换
+	const isSystemDark = useMedia("(prefers-color-scheme: dark)");
 	useEffect(() => {
-		window.matchMedia(DARK_MEDIA_QUERY).onchange = (e) => {
-			setIsDark(e.matches);
-		};
-	}, []);
+		toggleDark(isSystemDark);
+	}, [isSystemDark]);
 
 	if (isMobile) {
 		return null;
@@ -39,33 +43,31 @@ const Aside = () => {
 				isAsideFold ? "items-center" : "lg:w-36 xl:w-44",
 			)}
 		>
-			{/* routes */}
+			{/* 路由菜单 */}
 			<nav
 				className={clsx(
 					"sticky top-3 flex flex-col gap-2 w-full",
 					!isAsideFold && "lg:gap-3",
 				)}
 			>
-				{routesWithIcon.map((route) => {
-					const [match] = useRoute(
-						route.path === "/" ? "/" : `${route.path}/*?`,
-					);
+				{routesWithIcon.map(({ path, title, Icon }) => {
+					const [match] = useRoute(path === "/" ? "/" : `${path}/*?`);
 					return (
-						<Link href={route.path} key={route.path}>
+						<Link key={path} href={path}>
 							<Button
 								variant={match ? "info" : "ghost"}
 								size="xl"
 								rounded={isAsideFold ? "full" : true}
-								icon={route.Icon}
+								icon={Icon}
 								className={clsx("w-full px-3! whitespace-nowrap")}
 							>
-								{!isAsideFold && !isMobile && route.title}
+								{!isAsideFold && title}
 							</Button>
 						</Link>
 					);
 				})}
 			</nav>
-			{/* gadgets */}
+			{/* 底部小工具 */}
 			<div
 				className={clsx(
 					"sticky bottom-3 flex flex-wrap gap-3 w-full",
@@ -87,13 +89,13 @@ const Aside = () => {
 					size="xl"
 					rounded="full"
 					icon={
-						isDark ? (
-							<i className="i-mingcute-sun-line" />
-						) : (
-							<i className="i-mingcute-moon-line" />
-						)
+						<i
+							className={
+								isDark ? "i-mingcute-sun-line" : "i-mingcute-moon-line"
+							}
+						/>
 					}
-					onClick={() => setIsDark(!isDark)}
+					onClick={toggleDark}
 				/>
 			</div>
 		</aside>

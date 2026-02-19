@@ -16,7 +16,7 @@ type Params = {
 	slug: string;
 };
 
-const Page: FC<Params> = ({ slug }) => {
+const Page: FC<Params> = ({ slug }: Params) => {
 	const [hash] = useHash();
 
 	const { isLoading, error, data } = useBlog(slug);

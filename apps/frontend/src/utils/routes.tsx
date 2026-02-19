@@ -7,7 +7,7 @@ export type Route = {
 	Component: () => ReactNode;
 };
 
-export const routes: Route[] = [
+export const routes = [
 	{
 		path: "/",
 		title: "主页",
@@ -40,6 +40,6 @@ export const routes: Route[] = [
 		Icon: <i className="i-mingcute-user-3-line" />,
 		Component: lazy(() => import("@/pages/about")),
 	},
-];
+] as Route[];
 
 export const routesWithIcon = routes.filter((route) => "Icon" in route);

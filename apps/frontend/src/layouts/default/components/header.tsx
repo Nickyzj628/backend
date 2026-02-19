@@ -20,7 +20,7 @@ const Header = () => {
 		const onScroll = throttle(() => {
 			toggleHeader(window.scrollY < prevScrollY);
 			prevScrollY = window.scrollY;
-		});
+		}, 150);
 
 		window.addEventListener("scroll", onScroll);
 		return () => {
@@ -32,16 +32,11 @@ const Header = () => {
 	const isMobile = useIsMobile();
 	const [isNavVisible, toggleNav] = useToggle(false);
 
-	/**
-	 * 用户相关
-	 */
-
+	// 用户相关
 	const [user] = useUser();
-
 	const onClickMessage = () => {
 		toast("消息模块开发中！");
 	};
-
 	const onClickUser = () => {
 		toast("用户模块开发中！");
 	};
@@ -77,19 +72,18 @@ const Header = () => {
 								: "top-0 invisible opacity-0 pointer-events-none",
 						)}
 					>
-						{routesWithIcon.map((route) => {
+						{routesWithIcon.map(({ path, Icon }) => {
 							// 对于首页，精准匹配
 							// 对于其他页面，模糊匹配到子孙路由
-							const [match] = useRoute(
-								route.path === "/" ? "/" : `${route.path}/*?`,
-							);
+							const [match] = useRoute(path === "/" ? "/" : `${path}/*?`);
 							return (
-								<Link key={route.path} href={route.path} onClick={toggleNav}>
+								<Link key={path} href={path}>
 									<Button
 										variant={match ? "info" : "default"}
 										size="xl"
 										rounded="full"
-										icon={route.icon}
+										icon={Icon}
+										onClick={toggleNav}
 									/>
 								</Link>
 							);
@@ -101,7 +95,7 @@ const Header = () => {
 					href="/"
 					className="flex items-center gap-1.5 text-xl tracking-wide transition dark:text-neutral-100"
 				>
-					<img src="/favicon.webp" alt="LOGO" className="size-12" />
+					<img src="/favicon.webp" alt="logo" className="size-12" />
 					NICKYZJ
 				</Link>
 			)}
