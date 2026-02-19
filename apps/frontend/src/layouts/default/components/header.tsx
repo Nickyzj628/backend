@@ -5,10 +5,10 @@ import { Link, useRoute } from "wouter-preact";
 import Avatar from "@/components/avatar";
 import Button from "@/components/button";
 import Toggle from "@/components/toggle";
-import { routesWithIcon } from "@/etc/routes";
-import { clsx } from "@/helpers/string";
 import { useIsMobile } from "@/hooks/device";
 import useUser from "@/hooks/store/use-user";
+import { routesWithIcon } from "@/utils/routes";
+import { clsx } from "@/utils/string";
 
 const Header = () => {
 	/**

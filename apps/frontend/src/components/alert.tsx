@@ -1,24 +1,24 @@
 import type { CSSProperties } from "preact";
 import { forwardRef, type ReactNode } from "preact/compat";
 import type { MutableRef } from "preact/hooks";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 
 const typeMap = {
 	info: {
 		wrapper: "bg-blue-50 text-blue-500 dark:bg-blue-950",
-		icon: <span className="i-mingcute-information-fill" />,
+		icon: <div className="i-mingcute-information-fill size-6 shrink-0" />,
 	},
 	success: {
 		wrapper: "bg-green-50 text-green-500 dark:bg-green-950",
-		icon: <span className="i-mingcute-check-circle-fill" />,
+		icon: <div className="i-mingcute-check-circle-fill size-6 shrink-0" />,
 	},
 	warning: {
 		wrapper: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
-		icon: <span className="i-mingcute-warning-fill" />,
+		icon: <div className="i-mingcute-warning-fill size-6 shrink-0" />,
 	},
 	danger: {
 		wrapper: "bg-red-50 text-red-500 dark:bg-red-950",
-		icon: <span className="i-mingcute-close-circle-fill" />,
+		icon: <div className="i-mingcute-close-circle-fill size-6 shrink-0" />,
 	},
 };
 type Type = keyof typeof typeMap;
@@ -81,9 +81,7 @@ const Alert = forwardRef(
 				)}
 				style={style}
 			>
-				{showIcon && (
-					<span className="size-5 shrink-0">{typeMap[type].icon}</span>
-				)}
+				{showIcon && typeMap[type].icon}
 				<div>
 					{title && (
 						<h4 className="text-current font-bold leading-none">{title}</h4>

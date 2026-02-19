@@ -1,5 +1,5 @@
-import { getImage } from "@/helpers/network";
-import { clsx } from "@/helpers/string";
+import { getImage } from "@/utils/network";
+import { clsx } from "@/utils/string";
 import Image from "./image";
 
 const sizeMap = {

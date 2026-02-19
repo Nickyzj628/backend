@@ -1,5 +1,5 @@
+import { to } from "@nickyzj2023/utils";
 import { toast } from "react-hot-toast/headless";
-import { to } from "./network";
 
 /**
  * 设置页面标题

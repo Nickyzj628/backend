@@ -2,9 +2,9 @@ import { useEffect, useState } from "preact/hooks";
 import { useLocalStorage } from "react-use";
 import { Link, useRoute } from "wouter-preact";
 import Button from "@/components/button";
-import { routes, routesWithIcon } from "@/etc/routes";
-import { clsx } from "@/helpers/string";
 import { useIsMobile } from "@/hooks/device";
+import { routesWithIcon } from "@/utils/routes";
+import { clsx } from "@/utils/string";
 
 const Aside = () => {
 	const isMobile = useIsMobile();

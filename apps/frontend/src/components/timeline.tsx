@@ -1,5 +1,5 @@
 import type { ComponentChildren } from "preact";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 
 type Props = {
 	time?: string;

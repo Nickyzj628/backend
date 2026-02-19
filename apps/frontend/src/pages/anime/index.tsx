@@ -2,13 +2,13 @@ import { useEffect, useState } from "preact/hooks";
 import { useParams } from "wouter-preact";
 import Loading from "@/components/loading";
 import Tabs from "@/components/tabs";
-import { WebSocketProvider } from "@/etc/websocket-context";
-import { setTitle } from "@/helpers/dom";
 import { useAnime } from "@/hooks/store/use-anime";
 import Episodes from "@/pages/anime/episodes";
 import Room from "@/pages/anime/room";
 import Video from "@/pages/anime/video";
 import NotFound from "@/pages/not-found";
+import { setTitle } from "@/utils/dom";
+import { WebSocketProvider } from "@/utils/websocket-context";
 
 const Tab = {
 	Episodes: 1,

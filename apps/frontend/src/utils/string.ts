@@ -1,3 +1,5 @@
+import type { Recordable } from "@/types/common";
+
 /**
  * 拼接 className
  * @param classNames 多个 className，只接受字符串，其他值会被过滤
@@ -7,11 +9,7 @@
  * clsx("flex items-center", true && "justify-between", false && "flex-1", null)
  */
 export const clsx = (...classNames: any[]) => {
-	return classNames
-		.filter(
-			(className) => typeof className === "string" && className.length > 0,
-		)
-		.join(" ");
+	return classNames.filter(Boolean).join(" ");
 };
 
 /**
@@ -53,18 +51,4 @@ export const qs = {
  */
 export const removeSpaces = (string: string) => {
 	return string.replaceAll(" ", "");
-};
-
-/**
- * 首字母大写
- * @param string 任意字符串
- * @returns 首字母大写后的字符串
- * @example
- * capitalize("hello world") // "Hello world"
- */
-export const capitalize = (string: string) => {
-	if (string.length === 0) {
-		return "";
-	}
-	return string[0].toUpperCase() + string.slice(1);
 };

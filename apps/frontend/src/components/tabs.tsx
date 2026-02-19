@@ -1,7 +1,7 @@
 import { type ComponentChildren, createContext } from "preact";
 import type { CSSProperties } from "preact/compat";
 import { useContext, useEffect, useState } from "preact/hooks";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 
 type TabsContextType = {
 	value: any;

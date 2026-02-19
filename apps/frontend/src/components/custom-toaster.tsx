@@ -1,5 +1,5 @@
 import { useToaster } from "react-hot-toast/headless";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 import Alert, { type AlertType } from "./alert";
 
 /** react-hot-toast 与 Alert 组件的 type 映射 */
@@ -43,7 +43,7 @@ const CustomToaster = () => {
 						title={title}
 						description={toast.message}
 						className={clsx(
-							"absolute bottom-0 right-0 w-full shadow-lg",
+							"absolute bottom-0 right-0 w-full shadow",
 							toast.visible ? "opacity-100" : "opacity-0",
 						)}
 						style={{

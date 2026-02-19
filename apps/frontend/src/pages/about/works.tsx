@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/etc/constants";
+import { BASE_URL } from "@/utils/constants";
 import { Figcaption, Figure } from "../../components/figure";
 import Timeline from "../../components/timeline";
 

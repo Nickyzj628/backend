@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { getImage } from "@/helpers/network";
+import { getImage } from "@/utils/network";
 
 type Props = {
 	/** 支持 WebDav 相对路径、base64、HTTP 地址 */

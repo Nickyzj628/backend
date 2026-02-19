@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 import Button from "./button";
 
 type Props = {

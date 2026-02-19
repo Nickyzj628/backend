@@ -198,7 +198,7 @@ export type ComponentProps = Props;
 
 ```typescript
 // apps/frontend/src/hooks/store/use-user.ts
-import createPersistedGlobalState from "@/etc/create-persisted-global-state";
+import createPersistedGlobalState from "@/utils/create-persisted-global-state";
 
 type UserState = { name: string; token?: string };
 

@@ -1,8 +1,8 @@
 import { useMemo } from "preact/hooks";
 import { useLocation } from "react-use";
 import { Link, useSearchParams } from "wouter-preact";
-import { useWebSocketContext } from "@/etc/websocket-context";
-import { clsx, qs } from "@/helpers/string";
+import { clsx, qs } from "@/utils/string";
+import { useWebSocketContext } from "@/utils/websocket-context";
 
 type EpisodesProps = {
 	list?: string[];

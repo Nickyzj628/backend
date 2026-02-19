@@ -1,8 +1,8 @@
+import { sleep } from "@nickyzj2023/utils";
 import type { ComponentChildren } from "preact";
 import { createPortal } from "preact/compat";
 import { useEffect, useState } from "preact/hooks";
-import { clsx } from "@/helpers/string";
-import { sleep } from "@/helpers/time";
+import { clsx } from "@/utils/string";
 
 type Props = {
 	isOpen: boolean;

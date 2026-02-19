@@ -1,6 +1,6 @@
 import type { CSSProperties } from "preact";
 import type { ReactNode } from "preact/compat";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 
 const typeMap = {
 	default:

@@ -1,15 +1,16 @@
 import type {
+	Anime,
 	RoomMessage,
 	VideoInfo,
 	VideoSyncRequestPayload,
 } from "@nickyzj/shared-types";
+import { throttle, to } from "@nickyzj2023/utils";
 import Danmaku from "danmaku/dist/esm/danmaku.canvas.js";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { toast } from "react-hot-toast/headless";
 import { useSearchParams } from "wouter-preact";
-import { useWebSocketContext } from "@/etc/websocket-context";
-import { getAnimeVideoByEp, to } from "@/helpers/network";
-import { throttle } from "@/helpers/time";
+import { getAnimeVideoByEp } from "@/utils/network";
+import { useWebSocketContext } from "@/utils/websocket-context";
 
 type Props = {
 	anime: Anime;

@@ -1,5 +1,6 @@
-import { useAsyncFn, useCounter } from "react-use";
-import { request } from "@/helpers/network";
+import type { Blog } from "@nickyzj/shared-types";
+import { useCounter } from "react-use";
+import type { BlogsParams, BlogsResp } from "@/types/api";
 import { useInfiniteRequest, useRequest } from "../network";
 
 /**
@@ -64,34 +65,4 @@ export const useInfiniteBlogs = () => {
  */
 export const useBlog = (slug: string) => {
 	return useRequest<Blog>(`/blogs/${slug}`);
-};
-
-/**
- * 更新文章信息
- * @example
- * const { trigger, isMutating, error } = useBlogMutation(2025, "年度总结2");
- * trigger({
- *   cover: "base64...",
- * });
- */
-export const useBlogMutation = (year: number, title: string) => {
-	const [{ loading, error }, trigger] = useAsyncFn(
-		(data: Partial<BlogMutationBody>) => {
-			return request(`/blogs/${year}/${title}`, {
-				method: "PUT",
-				body: {
-					title,
-					year,
-					...data,
-				},
-			});
-		},
-		[year, title],
-	);
-
-	return {
-		trigger,
-		isMutating: loading,
-		error,
-	};
 };

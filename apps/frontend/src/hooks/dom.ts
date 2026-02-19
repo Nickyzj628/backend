@@ -4,7 +4,7 @@ import {
 	useEffect,
 	useState,
 } from "preact/hooks";
-import { getChildrenByTag, zoom } from "@/helpers/dom";
+import { getChildrenByTag, zoom } from "@/utils/dom";
 
 /**
  * 更可靠的 DOM 引用保存方式，可以避免提前返回导致 ref.current 容易读到 null 的问题

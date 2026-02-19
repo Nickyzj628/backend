@@ -1,8 +1,8 @@
 import { createContext } from "preact";
 import type { ReactNode } from "preact/compat";
 import { useContext } from "preact/hooks";
-import { BACKEND_PORT, BASE_URL } from "@/etc/constants";
 import { type MessageHandler, useWebSocket } from "@/hooks/use-websocket";
+import { BACKEND_PORT, BASE_URL } from "@/utils/constants";
 
 export type WebSocketContextType = {
 	send: (event: string, payload?: unknown) => void;

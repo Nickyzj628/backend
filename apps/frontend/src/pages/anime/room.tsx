@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { toast } from "react-hot-toast/headless";
 import { useSearchParams } from "wouter-preact";
 import Button from "@/components/button";
-import { useWebSocketContext } from "@/etc/websocket-context";
-import { copyToClipboard } from "@/helpers/dom";
 import useUser from "@/hooks/store/use-user";
+import { copyToClipboard } from "@/utils/dom";
+import { useWebSocketContext } from "@/utils/websocket-context";
 import Badge, { type BadgeType } from "../../components/badge";
 
 const getBadgeInfo = (message: RoomMessage) => {

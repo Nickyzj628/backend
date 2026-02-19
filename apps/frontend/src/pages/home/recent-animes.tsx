@@ -5,7 +5,7 @@ import { Figcaption, Figure } from "@/components/figure";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
 import Timeline from "@/components/timeline";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 import { useAnimes } from "@/hooks/store/use-anime";
 
 type GroupedAnimes = (Anime & {

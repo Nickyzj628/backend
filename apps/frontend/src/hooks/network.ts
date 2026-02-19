@@ -1,8 +1,8 @@
 import { fetcher } from "@nickyzj2023/utils";
 import { useEffect, useState } from "preact/hooks";
 import { useAsync } from "react-use";
-import { BACKEND_PORT, BASE_URL } from "@/etc/constants";
-import { request } from "@/helpers/network";
+import type { Recordable } from "@/types/common";
+import { BACKEND_PORT, BASE_URL } from "@/utils/constants";
 
 export const api = fetcher(`${BASE_URL}:${BACKEND_PORT}`);
 

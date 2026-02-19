@@ -1,5 +1,6 @@
-import { useAsyncFn, useCounter } from "react-use";
-import { request } from "@/helpers/network";
+import type { Anime } from "@nickyzj/shared-types";
+import { useCounter } from "react-use";
+import type { AnimesParams, AnimesResp } from "@/types/api";
 import { useInfiniteRequest, useRequest } from "../network";
 
 /**
@@ -64,34 +65,4 @@ export const useInfiniteAnimes = () => {
  */
 export const useAnime = (slug: string) => {
 	return useRequest<Anime>(`/animes/${slug}`);
-};
-
-/**
- * 更新番剧信息
- * @example
- * const { trigger, isMutating, error } = useAnimeMutation(202507, "NUKITASHI");
- * trigger({
- *   cover: "base64...",
- * });
- */
-export const useAnimeMutation = (season: string, title: string) => {
-	const [{ loading, error }, trigger] = useAsyncFn(
-		(data: Partial<AnimeMutationBody>) => {
-			return request(`/animes/${season}/${title}`, {
-				method: "PUT",
-				body: {
-					title,
-					season,
-					...data,
-				},
-			});
-		},
-		[season, title],
-	);
-
-	return {
-		trigger,
-		isMutating: loading,
-		error,
-	};
 };

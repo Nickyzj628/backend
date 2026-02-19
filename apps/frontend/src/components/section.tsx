@@ -1,5 +1,5 @@
 import type { ReactNode } from "preact/compat";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 
 type SectionProps = {
 	className?: string;

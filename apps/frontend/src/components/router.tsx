@@ -1,5 +1,5 @@
 import { Route, Switch } from "wouter-preact";
-import { routes } from "@/etc/routes";
+import { routes } from "@/utils/routes";
 
 const Router = () => {
 	return (

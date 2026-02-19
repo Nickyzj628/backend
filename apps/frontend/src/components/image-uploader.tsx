@@ -1,7 +1,7 @@
 import type { ChangeEvent } from "preact/compat";
 import { toast } from "react-hot-toast/headless";
-import { compressImageFromFile } from "@/helpers/compress-image";
-import { clsx } from "@/helpers/string";
+import { compressImageFromFile } from "@/utils/compress-image";
+import { clsx } from "@/utils/string";
 import Img from "./image";
 
 type Props = {

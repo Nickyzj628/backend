@@ -1,7 +1,7 @@
 import { Figcaption, Figure } from "@/components/figure";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
-import { clsx } from "@/helpers/string";
+import { clsx } from "@/utils/string";
 import { useRequest } from "@/hooks/network";
 
 const Shanbay = () => {

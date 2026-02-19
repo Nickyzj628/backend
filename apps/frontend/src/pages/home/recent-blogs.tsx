@@ -2,9 +2,9 @@ import { useEffect } from "preact/hooks";
 import { Link } from "wouter-preact";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
-import { getImage } from "@/helpers/network";
-import { clsx } from "@/helpers/string";
-import { fromNow } from "@/helpers/time";
+import { getImage } from "@/utils/network";
+import { clsx } from "@/utils/string";
+import { fromNow } from "@/utils/time";
 import { useInfiniteBlogs } from "@/hooks/store/use-blog";
 
 const RecentBlogs = () => {

@@ -1,4 +1,4 @@
-import { getPeriod } from "@/helpers/time";
+import { getPeriod } from "@/utils/time";
 import useUser from "@/hooks/store/use-user";
 import RecentAnimes from "./recent-animes";
 import RecentBlogs from "./recent-blogs";
