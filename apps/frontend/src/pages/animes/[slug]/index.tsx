@@ -1,5 +1,4 @@
 import { useEffect, useState } from "preact/hooks";
-import { useParams } from "wouter-preact";
 import Loading from "@/components/loading";
 import Tabs from "@/components/tabs";
 import { useAnime } from "@/hooks/store/use-anime";
@@ -20,9 +19,7 @@ type Params = {
 	slug: string;
 };
 
-const Page = () => {
-	const { slug } = useParams<Params>();
-
+const Page = ({ slug }: Params) => {
 	const tabContentClassName =
 		"flex flex-col gap-1.5 p-3 rounded-xl bg-neutral-100 overflow-y-auto transition dark:bg-neutral-700";
 
