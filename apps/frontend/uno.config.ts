@@ -1,5 +1,10 @@
-import { presetWind4 } from "@unocss/preset-wind4";
-import { defineConfig, presetIcons, presetTypography } from "unocss";
+import { readFile } from "node:fs/promises";
+import {
+	defineConfig,
+	presetIcons,
+	presetTypography,
+	presetWind4,
+} from "unocss";
 
 export default defineConfig({
 	content: {
@@ -15,7 +20,7 @@ export default defineConfig({
 	preflights: [
 		{
 			layer: "override",
-			getCSS: async () => await Bun.file("src/assets/override.css").text(),
+			getCSS: async () => await readFile("src/assets/override.css", "utf-8"),
 		},
 	],
 	layers: {
