@@ -1,6 +1,10 @@
 import { readFile } from "node:fs/promises";
-import { presetWind4 } from "@unocss/preset-wind4";
-import { defineConfig, presetIcons, presetTypography } from "unocss";
+import {
+	defineConfig,
+	presetIcons,
+	presetTypography,
+	presetWind4,
+} from "unocss";
 
 export default defineConfig({
 	content: {
