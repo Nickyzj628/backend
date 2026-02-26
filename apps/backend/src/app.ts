@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
+import { log } from "@nickyzj2023/utils";
 import { Elysia } from "elysia";
 import { animes } from "@/routes/animes";
 import { blogs } from "@/routes/blogs";
@@ -8,8 +9,6 @@ import { rooms } from "@/routes/rooms";
 import { shanbay } from "@/routes/shanbay";
 import { startBrecTimer } from "@/utils/brec";
 import { ALLOWED_ORIGINS, PORT } from "@/utils/constants";
-
-const log = (...args: any[]) => console.log("[app]", ...args);
 
 // 创建 ElysiaJS 服务器
 const app = new Elysia({

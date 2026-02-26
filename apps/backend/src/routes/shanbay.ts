@@ -1,3 +1,4 @@
+import type { Shanbay } from "@nickyzj/shared-types";
 import { fetcher, to, withCache } from "@nickyzj2023/utils";
 import { Elysia } from "elysia";
 import { safeParse } from "valibot";
@@ -25,11 +26,10 @@ export const shanbay = new Elysia({ prefix: "/shanbay" }).get(
 
 		const { output } = validation;
 		return {
-			id: output.id,
 			content: output.content,
 			translation: output.translation,
 			author: output.author,
 			image: output.origin_img_urls[0],
-		};
+		} satisfies Shanbay;
 	},
 );

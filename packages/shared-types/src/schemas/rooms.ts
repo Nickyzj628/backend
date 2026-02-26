@@ -1,157 +1,152 @@
-/**
- * 房间/放映室相关 Valibot Schemas
- * 供后端 Elysia 验证使用
- */
-
-import * as v from "valibot";
+import { object, string, InferOutput, boolean, optional, number, literal, union, unknown } from "valibot";
 
 /**
  * 创建房间请求载荷 Schema
  */
-export const CreateRoomPayloadSchema = v.object({
-	userName: v.string(),
+export const CreateRoomPayloadSchema = object({
+	userName: string(),
 });
 
 /**
  * 创建房间请求载荷类型
  */
-export type CreateRoomPayload = v.InferOutput<typeof CreateRoomPayloadSchema>;
+export type CreateRoomPayload = InferOutput<typeof CreateRoomPayloadSchema>;
 
 /**
  * 加入房间请求载荷 Schema
  */
-export const JoinRoomPayloadSchema = v.object({
-	roomCode: v.string(),
-	userName: v.string(),
+export const JoinRoomPayloadSchema = object({
+	roomCode: string(),
+	userName: string(),
 });
 
 /**
  * 加入房间请求载荷类型
  */
-export type JoinRoomPayload = v.InferOutput<typeof JoinRoomPayloadSchema>;
+export type JoinRoomPayload = InferOutput<typeof JoinRoomPayloadSchema>;
 
 /**
  * 房间消息载荷 Schema
  */
-export const RoomMessagePayloadSchema = v.object({
-	userName: v.string(),
-	isHost: v.boolean(),
-	text: v.string(),
+export const RoomMessagePayloadSchema = object({
+	userName: string(),
+	isHost: boolean(),
+	text: string(),
 });
 
 /**
  * 房间消息载荷类型
  */
-export type RoomMessagePayload = v.InferOutput<typeof RoomMessagePayloadSchema>;
+export type RoomMessagePayload = InferOutput<typeof RoomMessagePayloadSchema>;
 
 /**
  * 视频同步响应载荷 Schema
  */
-export const VideoSyncResponsePayloadSchema = v.object({
-	targetId: v.string(),
-	currentTime: v.optional(v.number()),
-	paused: v.optional(v.boolean()),
-	playbackRate: v.optional(v.number()),
-	ep: v.optional(v.number()),
-	url: v.optional(v.string()),
+export const VideoSyncResponsePayloadSchema = object({
+	targetId: string(),
+	currentTime: optional(number()),
+	paused: optional(boolean()),
+	playbackRate: optional(number()),
+	ep: optional(number()),
+	url: optional(string()),
 });
 
 /**
  * 视频同步响应载荷类型
  */
-export type VideoSyncResponsePayload = v.InferOutput<
+export type VideoSyncResponsePayload = InferOutput<
 	typeof VideoSyncResponsePayloadSchema
 >;
 
 /**
  * 创建房间响应 Schema
  */
-export const CreateRoomResponseSchema = v.object({
-	event: v.literal("roomCreated"),
-	payload: v.object({
-		roomCode: v.string(),
-		userId: v.string(),
+export const CreateRoomResponseSchema = object({
+	event: literal("roomCreated"),
+	payload: object({
+		roomCode: string(),
+		userId: string(),
 	}),
 });
 
 /**
  * 创建房间响应类型
  */
-export type CreateRoomResponse = v.InferOutput<typeof CreateRoomResponseSchema>;
+export type CreateRoomResponse = InferOutput<typeof CreateRoomResponseSchema>;
 
 /**
  * 房间错误码 Schema
  */
-export const RoomErrorSchema = v.union([
-	v.literal("ROOM_CODE_EXISTS"),
-	v.literal("ROOM_NOT_FOUND"),
-	v.literal("USER_ALREADY_IN_ROOM"),
-	v.literal("USER_NOT_FOUND"),
+export const RoomErrorSchema = union([
+	literal("ROOM_CODE_EXISTS"),
+	literal("ROOM_NOT_FOUND"),
+	literal("USER_ALREADY_IN_ROOM"),
+	literal("USER_NOT_FOUND"),
 ]);
 
 /**
  * 房间错误码类型
  */
-export type RoomError = v.InferOutput<typeof RoomErrorSchema>;
+export type RoomError = InferOutput<typeof RoomErrorSchema>;
 
 /**
  * 错误响应 Schema
  */
-export const ErrorResponseSchema = v.object({
-	event: v.literal("error"),
-	payload: v.object({
+export const ErrorResponseSchema = object({
+	event: literal("error"),
+	payload: object({
 		code: RoomErrorSchema,
-		message: v.string(),
+		message: string(),
 	}),
 });
 
 /**
  * 错误响应类型
  */
-export type ErrorResponse = v.InferOutput<typeof ErrorResponseSchema>;
+export type ErrorResponse = InferOutput<typeof ErrorResponseSchema>;
 
 /**
  * WebSocket 消息 Schema
  */
-export const WebSocketMessageSchema = v.union([
-	v.object({
-		event: v.literal("createRoom"),
+export const WebSocketMessageSchema = union([
+	object({
+		event: literal("createRoom"),
 		payload: CreateRoomPayloadSchema,
 	}),
-	v.object({
-		event: v.literal("joinRoom"),
+	object({
+		event: literal("joinRoom"),
 		payload: JoinRoomPayloadSchema,
 	}),
-	v.object({
-		event: v.literal("roomMessage"),
+	object({
+		event: literal("roomMessage"),
 		payload: RoomMessagePayloadSchema,
 	}),
-	v.object({
-		event: v.literal("play"),
-		payload: v.optional(v.unknown()),
+	object({
+		event: literal("play"),
+		payload: optional(unknown()),
 	}),
-	v.object({
-		event: v.literal("pause"),
-		payload: v.optional(v.unknown()),
+	object({
+		event: literal("pause"),
+		payload: optional(unknown()),
 	}),
-	v.object({
-		event: v.literal("seek"),
-		payload: v.number(),
+	object({
+		event: literal("seek"),
+		payload: number(),
 	}),
-	v.object({
-		event: v.literal("rateChange"),
-		payload: v.number(),
+	object({
+		event: literal("rateChange"),
+		payload: number(),
 	}),
-	v.object({
-		event: v.literal("epChange"),
-		payload: v.number(),
+	object({
+		event: literal("epChange"),
+		payload: number(),
 	}),
-	v.object({
-		event: v.literal("syncVideo"),
-		payload: v.optional(v.unknown()),
+	object({
+		event: literal("syncVideo"),
+		payload: optional(unknown()),
 	}),
-	v.object({
-		event: v.literal("videoSyncResponse"),
+	object({
+		event: literal("videoSyncResponse"),
 		payload: VideoSyncResponsePayloadSchema,
 	}),
 ]);
@@ -159,4 +154,4 @@ export const WebSocketMessageSchema = v.union([
 /**
  * WebSocket 消息类型
  */
-export type WebSocketMessage = v.InferOutput<typeof WebSocketMessageSchema>;
+export type WebSocketMessage = InferOutput<typeof WebSocketMessageSchema>;

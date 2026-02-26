@@ -1,19 +1,10 @@
-/**
- * 通用 API 响应类型
- * 前后端共用
- */
-
-/**
- * 基础响应结构
- */
+/** 基础响应体 */
 export type Resp = {
 	statusCode: number;
 	message: string;
 };
 
-/**
- * 分页响应结构
- */
+/** 分页响应体 */
 export type RespWithPage = Resp & {
 	page: number;
 	pageSize: number;
@@ -21,9 +12,7 @@ export type RespWithPage = Resp & {
 	totalPages: number;
 };
 
-/**
- * 用户基础信息
- */
+/** 用户信息 */
 export type User = {
 	id: number;
 	name: string;

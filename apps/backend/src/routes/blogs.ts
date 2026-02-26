@@ -42,7 +42,7 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 		async ({ params: { slug }, set }) => {
 			// 从数据库读取文章信息（包含已渲染的 html）
 			const blog = getBySlugStmt.get({ $slug: slug }) as
-				| (Blog & { html: string })
+				| Required<Blog>
 				| undefined;
 
 			if (!blog) {

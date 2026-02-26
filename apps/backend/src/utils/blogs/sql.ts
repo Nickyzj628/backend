@@ -6,7 +6,7 @@ import type { Blog } from "@nickyzj/shared-types";
 import { log } from "@nickyzj2023/utils";
 import { extractYearFromPath, textToSlug } from "../common";
 import { ROOT_PATH, WEBDAV_PATH } from "../constants";
-import { renderMarkdown } from "../markdown";
+import { renderMarkdown } from "./markdown";
 
 const db = new DatabaseSync(`${ROOT_PATH}/data/sqlite.db`);
 

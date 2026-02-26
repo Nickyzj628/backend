@@ -5,7 +5,7 @@ import {
 	type HighlighterCore,
 } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
-import { textToSlug } from "./common";
+import { textToSlug } from "../common";
 
 let highlighter: HighlighterCore | null = null;
 let initPromise: Promise<HighlighterCore> | null = null;
