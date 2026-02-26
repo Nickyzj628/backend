@@ -1,7 +1,6 @@
-import { timeLog } from "@nickyzj2023/utils";
 import type { Room, UserData, WS } from "@/types/rooms";
 
-const log = (...args: string[]) => timeLog("[rooms]", ...args);
+const log = (...args: string[]) => console.log("[rooms]", ...args);
 
 export const roomsMap = new Map<string, Room>();
 export const userMap = new Map<WS, UserData>();

@@ -1,7 +1,6 @@
+import { readFileSync } from "node:fs";
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
-import { timeLog } from "@nickyzj2023/utils";
-import { file } from "bun";
 import { Elysia } from "elysia";
 import { animes } from "@/routes/animes";
 import { blogs } from "@/routes/blogs";
@@ -10,14 +9,16 @@ import { shanbay } from "@/routes/shanbay";
 import { startBrecTimer } from "@/utils/brec";
 import { ALLOWED_ORIGINS, PORT } from "@/utils/constants";
 
-const log = (...args: any[]) => timeLog("[app]", ...args);
+const log = (...args: any[]) => console.log("[app]", ...args);
 
 // 创建 ElysiaJS 服务器
 const app = new Elysia({
 	serve: {
 		tls: {
-			cert: file("E:/Administrator/Documents/ssl/nickyzj.run_bundle.crt"),
-			key: file("E:/Administrator/Documents/ssl/nickyzj.run.key"),
+			cert: readFileSync(
+				"E:/Administrator/Documents/ssl/nickyzj.run_bundle.crt",
+			),
+			key: readFileSync("E:/Administrator/Documents/ssl/nickyzj.run.key"),
 		},
 	},
 });

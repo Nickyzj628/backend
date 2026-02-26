@@ -1,4 +1,4 @@
-import { fetcher, timeLog, to } from "@nickyzj2023/utils";
+import { fetcher, to } from "@nickyzj2023/utils";
 import { safeParse } from "valibot";
 import {
 	type BrecWebhook,
@@ -6,11 +6,11 @@ import {
 	type RoomInfo,
 } from "@/types/brec";
 
-const BREC_WEBHOOK_URL = Bun.env.BREC_WEBHOOK_URL ?? "";
-const BREC_ROOM_IDS = Bun.env.BREC_ROOM_IDS?.split(",") ?? [];
+const BREC_WEBHOOK_URL = process.env.BREC_WEBHOOK_URL ?? "";
+const BREC_ROOM_IDS = process.env.BREC_ROOM_IDS?.split(",") ?? [];
 const BREC_INTERVAL_MS = 60_000;
 
-const log = (...args: any[]) => timeLog("[brec]", ...args);
+const log = (...args: any[]) => console.log("[brec]", ...args);
 
 const roomIdInfoMap = new Map<string, RoomInfo>();
 

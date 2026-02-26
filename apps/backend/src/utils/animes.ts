@@ -1,18 +1,17 @@
-import { Database } from "bun:sqlite";
-import type fs from "node:fs";
+import type { Stats } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { basename, relative } from "node:path";
-import { timeLog } from "@nickyzj2023/utils";
+import { DatabaseSync } from "node:sqlite";
 import chokidar from "chokidar";
 import type { AnimeItem } from "@/types/animes";
 import { extractSeasonFromPath, textToSlug } from "@/utils/common";
 import { ANIMES_DIR, ROOT_PATH, WEBDAV_PATH } from "@/utils/constants";
 
-const log = (...args: any[]) => timeLog("[animes]", ...args);
+const log = (...args: any[]) => console.log("[animes]", ...args);
 
-const db = new Database(`${ROOT_PATH}/data/sqlite.db`);
+const db = new DatabaseSync(`${ROOT_PATH}/data/sqlite.db`);
 
-db.run(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS animes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT UNIQUE NOT NULL,
@@ -25,18 +24,7 @@ db.run(`
   )
 `);
 
-const saveStmt = db.prepare<
-	{ changes: number },
-	{
-		$title: string;
-		$slug: string;
-		$season: string;
-		$eps: number;
-		$episodes: string;
-		$created_at: string;
-		$updated_at: string;
-	}
->(`
+const saveStmt = db.prepare(`
   INSERT INTO animes (title, slug, season, eps, episodes, created_at, updated_at)
   VALUES ($title, $slug, $season, $eps, $episodes, $created_at, $updated_at)
   ON CONFLICT(title) DO UPDATE SET
@@ -48,32 +36,27 @@ const saveStmt = db.prepare<
     updated_at = excluded.updated_at
 `);
 
-const deleteStmt = db.prepare<{ changes: number }, { $title: string }>(`
+const deleteStmt = db.prepare(`
   DELETE FROM animes WHERE title = $title
 `);
 
 // 列表查询不返回 episodes 字段，避免数据过大
-export const listStmt = db.prepare<
-	AnimeItem,
-	{ $limit: number; $offset: number }
->(`
+export const listStmt = db.prepare(`
   SELECT title, slug, season, eps, created_at, updated_at
   FROM animes
   ORDER BY updated_at DESC
   LIMIT $limit OFFSET $offset
 `);
 
-export const countStmt = db.prepare<{ total: number }, []>(
-	`SELECT COUNT(*) as total FROM animes`,
-);
+export const countStmt = db.prepare(`SELECT COUNT(*) as total FROM animes`);
 
-export const getBySlugStmt = db.prepare<AnimeItem, { $slug: string }>(`
+export const getBySlugStmt = db.prepare(`
   SELECT *
   FROM animes
   WHERE slug = $slug
 `);
 
-const saveAnime = async (path: string, stats?: fs.Stats) => {
+const saveAnime = async (path: string, stats?: Stats) => {
 	const title = basename(path);
 	const slug = textToSlug(title);
 	const filePath = relative(WEBDAV_PATH, path);
@@ -84,7 +67,7 @@ const saveAnime = async (path: string, stats?: fs.Stats) => {
 	const updatedAt = stats?.mtime?.toISOString() ?? "";
 
 	// 检查番剧是否存在
-	const existing = getBySlugStmt.get({ $slug: slug });
+	const existing = getBySlugStmt.get({ $slug: slug }) as AnimeItem | undefined;
 
 	// 如果不存在，则插入新记录
 	if (!existing) {
@@ -127,12 +110,12 @@ const saveAnime = async (path: string, stats?: fs.Stats) => {
 const unlinkFile = (path: string) => {
 	const title = basename(path);
 
-	const { changes } = deleteStmt.run({ $title: title });
-	if (changes > 0) {
+	const result = deleteStmt.run({ $title: title }) as { changes: number };
+	if (result.changes > 0) {
 		log(`删除番剧：${title}`);
 	}
 
-	return changes;
+	return result.changes;
 };
 
 /** 计算相对路径的深度 */
@@ -191,7 +174,7 @@ export const watchAnimes = async () => {
 	});
 
 	// 把所有番剧加入队列
-	const initQueue: Array<{ path: string; stats?: fs.Stats }> = [];
+	const initQueue: Array<{ path: string; stats?: Stats }> = [];
 	initWatcher.on("addDir", (path, stats) => {
 		// 只收集番剧目录
 		const relativePath = path.replaceAll("\\", "/").replace(ANIMES_DIR, "");
@@ -201,18 +184,12 @@ export const watchAnimes = async () => {
 		}
 	});
 
-	// 批量处理队列，使用事务优化性能
-	const batchAdd = db.transaction(async () => {
-		await Promise.all(
-			initQueue.map(({ path, stats }) => saveAnime(path, stats)),
-		);
-		return initQueue.length;
-	});
-
-	// 等待扫描完成
+	// 批量处理队列
 	await new Promise<void>((resolve) => {
 		initWatcher.on("ready", async () => {
-			await batchAdd();
+			await Promise.all(
+				initQueue.map(({ path, stats }) => saveAnime(path, stats)),
+			);
 			initWatcher.close();
 			resolve();
 		});

@@ -1,13 +1,13 @@
-import type {
-	CreateRoomPayload,
-	JoinRoomPayload,
-	RoomMessagePayload,
-	VideoSyncResponsePayload,
-} from "@nickyzj/shared-types";
-import type { ServerWebSocket } from "bun";
-import { t } from "elysia";
+/**
+ * 房间/放映室相关类型
+ * 保留本地类型定义供内部使用
+ * Schemas 已从 @nickyzj/shared-types/schemas 导入
+ */
 
-export type WS = ServerWebSocket<unknown> & { id: string };
+// 使用 any 替代 bun 的 WebSocket 类型
+// 运行时由 Elysia 处理 WebSocket
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type WS = any;
 
 export type Room = {
 	name: string;
@@ -22,81 +22,17 @@ export type UserData = {
 	isHost: boolean;
 };
 
-// 重新导出共享类型
+// 从 shared-types 重新导出纯类型（不包含 schemas 中的重复类型）
+export type { VideoInfo } from "@nickyzj/shared-types";
+
+// 从 shared-types/schemas 重新导出类型和 schemas
 export type {
 	CreateRoomPayload,
+	CreateRoomResponse,
+	ErrorResponse,
 	JoinRoomPayload,
+	RoomError,
 	RoomMessagePayload,
 	VideoSyncResponsePayload,
-};
-
-// Elysia Schemas for WebSocket message validation
-export const CreateRoomPayloadSchema = t.Object({
-	userName: t.String(),
-});
-
-export const JoinRoomPayloadSchema = t.Object({
-	roomCode: t.String(),
-	userName: t.String(),
-});
-
-export const RoomMessagePayloadSchema = t.Object({
-	userName: t.String(),
-	isHost: t.Boolean(),
-	text: t.String(),
-});
-
-export const VideoSyncResponsePayloadSchema = t.Object({
-	targetId: t.String(),
-	currentTime: t.Optional(t.Number()),
-	paused: t.Optional(t.Boolean()),
-	playbackRate: t.Optional(t.Number()),
-	ep: t.Optional(t.Number()),
-	url: t.Optional(t.String()),
-});
-
-export const WebSocketMessageSchema = t.Union([
-	t.Object({
-		event: t.Literal("createRoom"),
-		payload: CreateRoomPayloadSchema,
-	}),
-	t.Object({
-		event: t.Literal("joinRoom"),
-		payload: JoinRoomPayloadSchema,
-	}),
-	t.Object({
-		event: t.Literal("roomMessage"),
-		payload: RoomMessagePayloadSchema,
-	}),
-	t.Object({
-		event: t.Literal("play"),
-		payload: t.Optional(t.Unknown()),
-	}),
-	t.Object({
-		event: t.Literal("pause"),
-		payload: t.Optional(t.Unknown()),
-	}),
-	t.Object({
-		event: t.Literal("seek"),
-		payload: t.Number(),
-	}),
-	t.Object({
-		event: t.Literal("rateChange"),
-		payload: t.Number(),
-	}),
-	t.Object({
-		event: t.Literal("epChange"),
-		payload: t.Number(),
-	}),
-	t.Object({
-		event: t.Literal("syncVideo"),
-		payload: t.Optional(t.Unknown()),
-	}),
-	t.Object({
-		event: t.Literal("videoSyncResponse"),
-		payload: VideoSyncResponsePayloadSchema,
-	}),
-]);
-
-// Export inferred types from schemas
-export type WebSocketMessage = typeof WebSocketMessageSchema.static;
+	WebSocketMessage,
+} from "@nickyzj/shared-types/schemas";

@@ -1,19 +1,16 @@
-import { timeLog } from "@nickyzj2023/utils";
-import { Elysia } from "elysia";
-import type { WS } from "@/types/rooms";
 import {
 	CreateRoomPayloadSchema,
+	CreateRoomResponseSchema,
+	ErrorResponseSchema,
 	JoinRoomPayloadSchema,
+	RoomErrorSchema,
 	RoomMessagePayloadSchema,
 	VideoSyncResponsePayloadSchema,
 	WebSocketMessageSchema,
-} from "@/types/rooms";
-import {
-	CreateRoomResponseSchema,
-	ErrorResponseSchema,
-	RoomErrorSchema,
-	RoomService,
-} from "@/utils/rooms";
+} from "@nickyzj/shared-types/schemas";
+import { Elysia } from "elysia";
+import type { WS } from "@/types/rooms";
+import { RoomService } from "@/utils/rooms";
 
 // 创建房间服务实例
 const roomService = new RoomService();
@@ -35,7 +32,7 @@ export const rooms = new Elysia({
 	.ws("/rooms", {
 		body: "rooms.message",
 		open(ws) {
-			timeLog(`[rooms] 新用户 ${ws.id} 连接到放映室`);
+			console.log(`[rooms] 新用户 ${ws.id} 连接到放映室`);
 		},
 		message(ws, data) {
 			const { event: eventName, payload } = data;
@@ -94,7 +91,7 @@ export const rooms = new Elysia({
 					service.responseSync(wsRaw, payload);
 					break;
 				default:
-					timeLog(`[rooms] 未知事件: ${eventName}`);
+					console.log(`[rooms] 未知事件: ${eventName}`);
 			}
 		},
 		close(ws) {

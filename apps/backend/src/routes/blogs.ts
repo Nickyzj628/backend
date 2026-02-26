@@ -1,11 +1,11 @@
-import { Elysia, t } from "elysia";
+import type { Blog } from "@nickyzj/shared-types";
 import {
-	BlogDetailQuerySchema,
-	BlogDetailResponseSchema,
+	BlogDetailParamsSchema,
 	BlogListQuerySchema,
-	BlogListResponseSchema,
-} from "@/types/blogs";
+} from "@nickyzj/shared-types/schemas";
+import { Elysia } from "elysia";
 import { countStmt, getBySlugStmt, listStmt, watchBlogs } from "@/utils/blogs";
+import { fixPageQuery } from "@/utils/common";
 
 // 监听文章目录下的变动，同步到数据库
 watchBlogs();
@@ -13,15 +13,16 @@ watchBlogs();
 export const blogs = new Elysia({ prefix: "/blogs" })
 	.get(
 		"/",
-		async ({ query: { page = 1, pageSize = 10 } }) => {
-			const offset = (page - 1) * pageSize;
+		async ({ query }) => {
+			const { page, pageSize, offset } = fixPageQuery(query);
 
 			const list = listStmt.all({
 				$limit: pageSize,
 				$offset: offset,
-			});
+			}) as Blog[];
 
-			const { total = 0 } = countStmt.get() ?? {};
+			const countResult = countStmt.get() as { total: number } | undefined;
+			const total = countResult?.total ?? 0;
 			const totalPages = Math.ceil(total / pageSize);
 
 			return {
@@ -34,16 +35,15 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 		},
 		{
 			query: BlogListQuerySchema,
-			response: {
-				200: BlogListResponseSchema,
-			},
 		},
 	)
 	.get(
 		"/:slug",
 		async ({ params: { slug }, set }) => {
 			// 从数据库读取文章信息（包含已渲染的 html）
-			const blog = getBySlugStmt.get({ $slug: slug });
+			const blog = getBySlugStmt.get({ $slug: slug }) as
+				| (Blog & { html: string })
+				| undefined;
 
 			if (!blog) {
 				set.status = 404;
@@ -53,10 +53,6 @@ export const blogs = new Elysia({ prefix: "/blogs" })
 			return blog;
 		},
 		{
-			params: BlogDetailQuerySchema,
-			response: {
-				200: BlogDetailResponseSchema,
-				404: t.String(),
-			},
+			params: BlogDetailParamsSchema,
 		},
 	);

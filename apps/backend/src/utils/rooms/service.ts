@@ -1,5 +1,6 @@
 import type {
 	CreateRoomPayload,
+	CreateRoomResponse,
 	JoinRoomPayload,
 	Room,
 	RoomMessagePayload,
@@ -7,14 +8,14 @@ import type {
 	VideoInfo,
 	WS,
 } from "@/types/rooms";
-import type { CreateRoomResponse, RoomError, WSMessage } from "./model";
+import type { WSMessage } from "./model";
 
 /**
  * 操作结果类型
  */
 export type OperationResult<T = WSMessage> =
 	| { success: true; data: T }
-	| { success: false; error: { code: RoomError; message: string } };
+	| { success: false; error: { code: string; message: string } };
 
 /**
  * 房间服务类

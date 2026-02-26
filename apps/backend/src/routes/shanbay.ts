@@ -1,10 +1,7 @@
 import { fetcher, to, withCache } from "@nickyzj2023/utils";
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 import { safeParse } from "valibot";
-import {
-	ShanbayRawResponseSchema,
-	ShanbayResponseSchema,
-} from "@/types/shanbay";
+import { ShanbayRawResponseSchema } from "@/types/shanbay";
 
 const get = withCache(
 	fetcher("https://apiv3.shanbay.com/weapps").get,
@@ -34,12 +31,5 @@ export const shanbay = new Elysia({ prefix: "/shanbay" }).get(
 			author: output.author,
 			image: output.origin_img_urls[0],
 		};
-	},
-	{
-		response: {
-			200: ShanbayResponseSchema,
-			400: t.String(),
-			500: t.String(),
-		},
 	},
 );

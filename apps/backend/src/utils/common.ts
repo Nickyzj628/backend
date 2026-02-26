@@ -64,12 +64,25 @@ export const extractSeasonFromPath = (filePath: string) => {
 };
 
 /**
- * 计算字符串（通常取自文件.text()）的哈希值
+ * 修正分页相关参数
  * @example
- * computeHash("Hello, World!") // => "3e25960a79dbc69b674cd4ec67a72c62"
+ * new Elysia().get("/", ({ query }) => {
+ *  const { page, pageSize } = fixPageQuery(query);
+ * });
  */
-export const computeHash = (content: string) => {
-	const hasher = new Bun.CryptoHasher("md5");
-	hasher.update(content);
-	return hasher.digest("hex");
+export const fixPageQuery = (params: { page?: string; pageSize?: string }) => {
+	let page = Number(params.page) || 1;
+	let pageSize = Number(params.pageSize) || 10;
+
+	// 确保最小值
+	if (page < 1) page = 1;
+	if (pageSize < 1) pageSize = 10;
+
+	// 限制最大值
+	if (pageSize > 100) pageSize = 100;
+
+	// 顺带计算查表时可能用到的 offset 值
+	const offset = (page - 1) * pageSize;
+
+	return { page, pageSize, offset };
 };

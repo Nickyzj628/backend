@@ -1,10 +1,9 @@
-import { Elysia, t } from "elysia";
+import type { Anime } from "@nickyzj/shared-types";
 import {
 	AnimeDetailParamsSchema,
-	AnimeDetailResponseSchema,
 	AnimeListQuerySchema,
-	AnimeListResponseSchema,
-} from "@/types/animes";
+} from "@nickyzj/shared-types/schemas";
+import { Elysia } from "elysia";
 import {
 	countStmt,
 	getBySlugStmt,
@@ -15,19 +14,42 @@ import {
 // 监听番剧目录下的改动，同步到数据库
 watchAnimes();
 
+// 辅助函数：规范化分页参数
+const normalizePageParams = (
+	page: string | undefined,
+	pageSize: string | undefined,
+) => {
+	let normalizedPage = Number(page) || 1;
+	let normalizedPageSize = Number(pageSize) || 10;
+
+	// 确保最小值
+	if (normalizedPage < 1) normalizedPage = 1;
+	if (normalizedPageSize < 1) normalizedPageSize = 10;
+
+	// 限制最大值
+	if (normalizedPageSize > 100) normalizedPageSize = 100;
+
+	return { page: normalizedPage, pageSize: normalizedPageSize };
+};
+
 export const animes = new Elysia({ prefix: "/animes" })
 	.get(
 		"/",
-		async ({ query: { page = 1, pageSize = 10 } }) => {
+		async ({ query }) => {
+			const { page, pageSize } = normalizePageParams(
+				query.page,
+				query.pageSize,
+			);
 			const offset = (page - 1) * pageSize;
 
-			const { total = 0 } = countStmt.get() ?? {};
+			const countResult = countStmt.get() as { total: number } | undefined;
+			const total = countResult?.total ?? 0;
 			const totalPages = Math.ceil(total / pageSize);
 
 			const list = listStmt.all({
 				$limit: pageSize,
 				$offset: offset,
-			});
+			}) as unknown as Anime[];
 
 			return {
 				page,
@@ -39,16 +61,15 @@ export const animes = new Elysia({ prefix: "/animes" })
 		},
 		{
 			query: AnimeListQuerySchema,
-			response: {
-				200: AnimeListResponseSchema,
-			},
 		},
 	)
 	.get(
 		"/:slug",
 		async ({ params: { slug }, set }) => {
 			// 从数据库读取番剧信息
-			const anime = getBySlugStmt.get({ $slug: slug });
+			const anime = getBySlugStmt.get({ $slug: slug }) as
+				| (Anime & { episodes: string })
+				| undefined;
 
 			if (!anime) {
 				set.status = 404;
@@ -68,9 +89,5 @@ export const animes = new Elysia({ prefix: "/animes" })
 		},
 		{
 			params: AnimeDetailParamsSchema,
-			response: {
-				200: AnimeDetailResponseSchema,
-				404: t.String(),
-			},
 		},
 	);

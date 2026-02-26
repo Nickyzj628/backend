@@ -4,11 +4,20 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"types": "./src/index.ts"
+			"types": "./src/index.ts",
+			"import": "./src/index.ts"
 		},
 		"./rooms": {
-			"types": "./src/rooms.ts"
+			"types": "./src/rooms.ts",
+			"import": "./src/rooms.ts"
+		},
+		"./schemas": {
+			"types": "./src/schemas/index.ts",
+			"import": "./src/schemas/index.ts"
 		}
+	},
+	"dependencies": {
+		"valibot": "^1.2.0"
 	},
 	"devDependencies": {
 		"typescript": "^5.9.3"
