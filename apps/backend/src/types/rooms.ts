@@ -4,16 +4,16 @@
  * Schemas 已从 @nickyzj/shared-types/schemas 导入
  */
 
-// 使用 any 替代 bun 的 WebSocket 类型
-// 运行时由 Elysia 处理 WebSocket
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type WS = any;
+import type { WSContext } from "hono/ws";
+
+// 使用 hono/ws 的 WSContext 类型
+export type WS = WSContext;
 
 export type Room = {
 	name: string;
 	size: number;
-	clients: Set<WS>;
-	host?: string;
+	clients: Set<string>; // 存储 userId
+	host?: string; // userId
 };
 
 export type UserData = {

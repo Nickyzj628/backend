@@ -23,7 +23,8 @@ export type OperationResult<T = WSMessage> =
  */
 export class RoomService {
 	private roomsMap = new Map<string, Room>();
-	private userMap = new Map<WS, UserData>();
+	private userMap = new Map<string, UserData>();
+	private wsMap = new Map<string, WS>(); // 存储 ws 对象用于发送消息
 	private readonly SYSTEM_USER_NAME = "NeiKos496";
 
 	/**
@@ -56,16 +57,23 @@ export class RoomService {
 	/**
 	 * 向房间内广播消息（排除发送者）
 	 */
-	broadcastToRoom(roomCode: string, message: WSMessage, senderWs?: WS): void {
+	broadcastToRoom(
+		roomCode: string,
+		message: WSMessage,
+		senderId?: string,
+	): void {
 		const room = this.roomsMap.get(roomCode);
 		if (!room) return;
 
-		for (const client of room.clients) {
-			if (client !== senderWs) {
-				try {
-					client.send(JSON.stringify(message));
-				} catch (err) {
-					console.error("发送消息失败:", err);
+		for (const clientId of room.clients) {
+			if (clientId !== senderId) {
+				const ws = this.wsMap.get(clientId);
+				if (ws) {
+					try {
+						ws.send(JSON.stringify(message));
+					} catch (err) {
+						console.error("发送消息失败:", err);
+					}
 				}
 			}
 		}
@@ -78,11 +86,14 @@ export class RoomService {
 		const room = this.roomsMap.get(roomCode);
 		if (!room) return;
 
-		for (const client of room.clients) {
-			try {
-				client.send(JSON.stringify(message));
-			} catch (err) {
-				console.error("发送消息失败:", err);
+		for (const clientId of room.clients) {
+			const ws = this.wsMap.get(clientId);
+			if (ws) {
+				try {
+					ws.send(JSON.stringify(message));
+				} catch (err) {
+					console.error("发送消息失败:", err);
+				}
 			}
 		}
 	}
@@ -90,24 +101,21 @@ export class RoomService {
 	/**
 	 * 获取用户的房间信息
 	 */
-	getUserData(ws: WS): UserData | undefined {
-		return this.userMap.get(ws);
+	getUserData(userId: string): UserData | undefined {
+		return this.userMap.get(userId);
 	}
 
 	/**
 	 * 创建房间
 	 * 流程：生成房间号 -> 创建用户数据 -> 创建房间 -> 返回房间号
-	 *
-	 * 关于用户识别：每个 WebSocket 连接都有唯一的 ws.id，
-	 * 即使同一 IP 多开浏览器，每个标签页也是不同的 ws 实例，
-	 * 因此会被正确识别为不同用户
 	 */
 	createRoom(
 		ws: WS,
+		userId: string,
 		payload: CreateRoomPayload,
 	): OperationResult<CreateRoomResponse> {
 		// 检查用户是否已在某个房间中
-		if (this.userMap.has(ws)) {
+		if (this.userMap.has(userId)) {
 			return {
 				success: false,
 				error: {
@@ -147,12 +155,13 @@ export class RoomService {
 		const room: Room = {
 			name: roomCode,
 			size: 1,
-			clients: new Set([ws]),
-			host: ws.id, // 使用 ws.id 而非 remoteAddress 以支持同一 IP 多开
+			clients: new Set([userId]),
+			host: userId,
 		};
 
 		// 保存数据
-		this.userMap.set(ws, userData);
+		this.wsMap.set(userId, ws);
+		this.userMap.set(userId, userData);
 		this.roomsMap.set(roomCode, room);
 
 		// 返回成功响应
@@ -162,7 +171,7 @@ export class RoomService {
 				event: "roomCreated",
 				payload: {
 					roomCode,
-					userId: ws.id,
+					userId: userId,
 				},
 			},
 		};
@@ -171,11 +180,15 @@ export class RoomService {
 	/**
 	 * 加入房间
 	 */
-	joinRoom(ws: WS, payload: JoinRoomPayload): OperationResult<WSMessage> {
+	joinRoom(
+		ws: WS,
+		userId: string,
+		payload: JoinRoomPayload,
+	): OperationResult<WSMessage> {
 		const { roomCode, userName } = payload;
 
 		// 检查用户是否已在房间中
-		if (this.userMap.has(ws)) {
+		if (this.userMap.has(userId)) {
 			return {
 				success: false,
 				error: {
@@ -200,13 +213,13 @@ export class RoomService {
 			const newRoom: Room = {
 				name: roomCode,
 				size: 1,
-				clients: new Set([ws]),
-				host: ws.id,
+				clients: new Set([userId]),
+				host: userId,
 			};
 			this.roomsMap.set(roomCode, newRoom);
 		} else {
 			// 加入现有房间
-			existingRoom.clients.add(ws);
+			existingRoom.clients.add(userId);
 			existingRoom.size = existingRoom.clients.size;
 
 			// 通知其他用户
@@ -220,17 +233,18 @@ export class RoomService {
 						text: `${userName}来了`,
 					},
 				},
-				ws,
+				userId,
 			);
 		}
 
-		this.userMap.set(ws, userData);
+		this.wsMap.set(userId, ws);
+		this.userMap.set(userId, userData);
 
 		return {
 			success: true,
 			data: {
 				event: isRoomExist ? "roomJoined" : "roomCreated",
-				payload: isRoomExist ? undefined : { roomCode, userId: ws.id },
+				payload: isRoomExist ? undefined : { roomCode, userId: userId },
 			},
 		};
 	}
@@ -238,8 +252,12 @@ export class RoomService {
 	/**
 	 * 发送房间消息
 	 */
-	sendRoomMessage(ws: WS, payload: RoomMessagePayload): OperationResult {
-		const userData = this.userMap.get(ws);
+	sendRoomMessage(
+		ws: WS,
+		userId: string,
+		payload: RoomMessagePayload,
+	): OperationResult {
+		const userData = this.userMap.get(userId);
 		if (!userData) {
 			return {
 				success: false,
@@ -265,85 +283,88 @@ export class RoomService {
 	/**
 	 * 播放视频
 	 */
-	playVideo(ws: WS): void {
-		const userData = this.userMap.get(ws);
+	playVideo(ws: WS, userId: string): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
-		this.broadcastToRoom(userData.roomCode, { event: "played" }, ws);
+		this.broadcastToRoom(userData.roomCode, { event: "played" }, userId);
 	}
 
 	/**
 	 * 暂停视频
 	 */
-	pauseVideo(ws: WS): void {
-		const userData = this.userMap.get(ws);
+	pauseVideo(ws: WS, userId: string): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
-		this.broadcastToRoom(userData.roomCode, { event: "paused" }, ws);
+		this.broadcastToRoom(userData.roomCode, { event: "paused" }, userId);
 	}
 
 	/**
 	 * 视频跳转
 	 */
-	seekVideo(ws: WS, time: number): void {
-		const userData = this.userMap.get(ws);
+	seekVideo(ws: WS, userId: string, time: number): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
 		this.broadcastToRoom(
 			userData.roomCode,
 			{ event: "seeked", payload: time },
-			ws,
+			userId,
 		);
 	}
 
 	/**
 	 * 改变播放速率
 	 */
-	changeRate(ws: WS, rate: number): void {
-		const userData = this.userMap.get(ws);
+	changeRate(ws: WS, userId: string, rate: number): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
 		this.broadcastToRoom(
 			userData.roomCode,
 			{ event: "rateChanged", payload: rate },
-			ws,
+			userId,
 		);
 	}
 
 	/**
 	 * 切换剧集
 	 */
-	changeEpisode(ws: WS, ep: number): void {
-		const userData = this.userMap.get(ws);
+	changeEpisode(ws: WS, userId: string, ep: number): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
 		this.broadcastToRoom(
 			userData.roomCode,
 			{ event: "epChanged", payload: ep },
-			ws,
+			userId,
 		);
 	}
 
 	/**
 	 * 请求同步视频状态
 	 */
-	requestSync(ws: WS): void {
-		const userData = this.userMap.get(ws);
+	requestSync(ws: WS, userId: string): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
 		const room = this.roomsMap.get(userData.roomCode);
 		if (!room) return;
 
 		// 向房主发送同步请求
-		for (const client of room.clients) {
-			const clientData = this.userMap.get(client);
+		for (const clientId of room.clients) {
+			const clientData = this.userMap.get(clientId);
 			if (clientData?.isHost) {
-				client.send(
-					JSON.stringify({
-						event: "videoSyncRequest",
-						payload: { requesterId: ws.id },
-					}),
-				);
+				const hostWs = this.wsMap.get(clientId);
+				if (hostWs) {
+					hostWs.send(
+						JSON.stringify({
+							event: "videoSyncRequest",
+							payload: { requesterId: userId },
+						}),
+					);
+				}
 				break;
 			}
 		}
@@ -352,21 +373,27 @@ export class RoomService {
 	/**
 	 * 响应同步请求，发送视频状态
 	 */
-	responseSync(ws: WS, payload: VideoInfo & { targetId: string }): void {
-		const userData = this.userMap.get(ws);
+	responseSync(
+		ws: WS,
+		userId: string,
+		payload: VideoInfo & { targetId: string },
+	): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
 		const { targetId, currentTime, paused, playbackRate, ep, url } = payload;
 		const room = this.roomsMap.get(userData.roomCode);
 		if (!room) return;
 
-		// 查找目标客户端
-		const targetWs = Array.from(room.clients).find(
-			(client) => client.id === targetId,
-		);
-
-		if (!targetWs) {
+		// 检查目标用户是否在房间中
+		if (!room.clients.has(targetId)) {
 			console.error(`未找到目标客户端: ${targetId}`);
+			return;
+		}
+
+		const targetWs = this.wsMap.get(targetId);
+		if (!targetWs) {
+			console.error(`未找到目标 WebSocket: ${targetId}`);
 			return;
 		}
 
@@ -391,15 +418,15 @@ export class RoomService {
 	/**
 	 * 用户断开连接
 	 */
-	disconnect(ws: WS): void {
-		const userData = this.userMap.get(ws);
+	disconnect(userId: string): void {
+		const userData = this.userMap.get(userId);
 		if (!userData) return;
 
 		const { userName, roomCode, isHost } = userData;
 
 		const room = this.roomsMap.get(roomCode);
 		if (room) {
-			room.clients.delete(ws);
+			room.clients.delete(userId);
 			room.size = room.clients.size;
 
 			if (room.clients.size === 0) {
@@ -416,22 +443,24 @@ export class RoomService {
 							text: `${userName}走了`,
 						},
 					},
-					ws,
+					userId,
 				);
 
 				// 如果房主离开，转移房主权限
 				if (isHost) {
-					const newHost = Array.from(room.clients)[0];
-					const newHostData = this.userMap.get(newHost);
-					if (newHostData) {
+					const newHostId = Array.from(room.clients)[0];
+					const newHostData = this.userMap.get(newHostId);
+					const newHostWs = this.wsMap.get(newHostId);
+					if (newHostData && newHostWs) {
 						newHostData.isHost = true;
-						newHost.send(JSON.stringify({ event: "hostChanged" }));
-						room.host = newHost.id;
+						newHostWs.send(JSON.stringify({ event: "hostChanged" }));
+						room.host = newHostId;
 					}
 				}
 			}
 		}
 
-		this.userMap.delete(ws);
+		this.userMap.delete(userId);
+		this.wsMap.delete(userId);
 	}
 }

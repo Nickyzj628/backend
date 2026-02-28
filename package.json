@@ -1,37 +1,28 @@
 {
-	"name": "nickyzj-monorepo",
-	"version": "1.0.0",
-	"private": true,
-	"type": "module",
-	"packageManager": "pnpm@10.30.3",
-	"scripts": {
-		"dev:backend": "pnpm --filter backend dev",
-		"dev:frontend": "pnpm --filter frontend dev",
-		"dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,green\"",
-		"build:backend": "pnpm --filter backend build",
-		"build:frontend:dev": "pnpm --filter frontend build:dev",
-		"build:frontend:prod": "pnpm --filter frontend build:prod",
-		"build:frontend": "pnpm build:frontend:dev",
-		"build": "pnpm build:backend && pnpm build:frontend",
-		"check": "pnpm dlx @biomejs/biome check .",
-		"check:write": "pnpm dlx @biomejs/biome check --write .",
-		"test": "pnpm --filter backend test && pnpm --filter frontend test"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.4.4",
-		"@types/node": "^25.3.2",
-		"concurrently": "^9.2.1"
-	},
-	"pnpm": {
-		"packageExtensions": {
-			"@nickyzj2023/utils": {
-				"exports": {
-					".": {
-						"import": "./dist/index.js",
-						"types": "./dist/index.d.ts"
-					}
-				}
-			}
-		}
-	}
+  "name": "nickyzj-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,green\"",
+    "build:shared-types": "pnpm --filter @nickyzj/shared-types build",
+    "build:backend": "pnpm build:shared-types && pnpm --filter backend build",
+    "build:backend:prod": "pnpm build:shared-types && pnpm --filter backend build:prod",
+    "build:frontend:dev": "pnpm build:shared-types && pnpm --filter frontend build:dev",
+    "build:frontend:prod": "pnpm build:shared-types && pnpm --filter frontend build:prod",
+    "build:frontend": "pnpm build:frontend:dev",
+    "build": "pnpm build:shared-types && pnpm build:backend && pnpm build:frontend",
+    "build:prod": "pnpm build:shared-types && pnpm build:backend:prod && pnpm build:frontend:prod",
+    "check": "pnpm dlx @biomejs/biome check .",
+    "check:write": "pnpm dlx @biomejs/biome check --write .",
+    "test": "pnpm --filter backend test && pnpm --filter frontend test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.4",
+    "@types/node": "^25.3.2",
+    "concurrently": "^9.2.1"
+  }
 }

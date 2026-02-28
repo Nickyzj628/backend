@@ -3,6 +3,11 @@ import { ANIMES_DIR } from "../constants";
 export * from "./sql";
 export * from "./watcher";
 
+/** 将绝对路径转换为相对路径（统一分隔符） */
+export const getRelativePath = (absolutePath: string) => {
+	return absolutePath.replaceAll("\\", "/").replace(ANIMES_DIR, "");
+};
+
 /** 计算相对路径的深度 */
 export const getPathDepth = (relativePath: string) => {
 	return relativePath.split(/[\\/]/).filter(Boolean).length;
@@ -38,4 +43,16 @@ export const getActiveSeasonDirs = () => {
 	const lastSeason = getPrevAnimeSeason();
 
 	return [currentSeason, lastSeason].map((season) => `${ANIMES_DIR}/${season}`);
+};
+
+/** 从文件路径提取番剧目录路径 */
+export const getAnimeDir = (absolutePath: string) => {
+	const [season, title] = getRelativePath(absolutePath)
+		.split("/")
+		.filter(Boolean);
+	if (!season || !title) {
+		return null;
+	}
+
+	return `${ANIMES_DIR}/${season}/${title}`;
 };

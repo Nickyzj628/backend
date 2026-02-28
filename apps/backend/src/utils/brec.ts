@@ -1,4 +1,4 @@
-import { fetcher, to } from "@nickyzj2023/utils";
+import { fetcher, log, to } from "@nickyzj2023/utils";
 import { safeParse } from "valibot";
 import {
 	type BrecWebhook,
@@ -9,8 +9,6 @@ import {
 const BREC_WEBHOOK_URL = process.env.BREC_WEBHOOK_URL ?? "";
 const BREC_ROOM_IDS = process.env.BREC_ROOM_IDS?.split(",") ?? [];
 const BREC_INTERVAL_MS = 60_000;
-
-const log = (...args: any[]) => console.log("[brec]", ...args);
 
 const roomIdInfoMap = new Map<string, RoomInfo>();
 
@@ -86,14 +84,16 @@ const runOnce = async () => {
 	}
 
 	const submittedRoomIds = result.map((roomInfo) => roomInfo.room_id);
-	log(`推送了直播间开播状态：${submittedRoomIds.join("、")}`);
+	log(`已推送开播状态：${submittedRoomIds.join("、")}`);
 };
 
 export const startBrecTimer = () => {
+	runOnce();
 	const timer = setInterval(() => {
-		void runOnce();
+		runOnce();
 	}, BREC_INTERVAL_MS);
 
+	log("直播推送定时器已启动");
 	return () => {
 		clearInterval(timer);
 	};

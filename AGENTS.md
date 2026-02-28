@@ -1,138 +1,130 @@
 # AGENTS.md
 
-AI coding assistant guidelines for this Bun monorepo.
+本仓库 AI 编程助手指南。
 
-## Tech Stack
+## 技术栈
 
-- **Runtime**: Bun (ESM)
-- **Backend**: ElysiaJS with TypeBox validation, SQLite (`bun:sqlite`)
-- **Frontend**: Preact + Vite + UnoCSS v4, wouter-preact (routing), socket.io-client
-- **Lint/Format**: Biome (shared across both apps)
-- **Testing**: Bun test runner
+- **运行时**: Node.js v25+ + pnpm
+- **后端**: Hono + Valibot 校验 + SQLite (`bun:sqlite`)
+- **前端**: Preact + Vite + UnoCSS v4 + wouter-preact
+- **代码质量**: Biome (根目录配置)
+- **测试**: 未配置
 
-## Project Structure
+## 项目结构
 
 ```
 .
 ├── apps/
-│   ├── backend/                    # ElysiaJS API server
+│   ├── backend/                    # Hono API 服务器
 │   │   ├── src/
-│   │   │   ├── app.ts               # Elysia entry point
-│   │   │   ├── routes/             # HTTP & WebSocket routes
-│   │   │   ├── libs/               # Shared config
-│   │   │   ├── types/              # TypeBox schemas
-│   │   │   └── utils/              # Utility functions
-│   │   ├── data/sqlite.db
-│   │   └── dist/
-│   └── frontend/                   # Preact SPA
+│   │   │   ├── app.ts               # Hono 入口
+│   │   │   ├── routes/              # HTTP & WebSocket 路由
+│   │   │   ├── types/               # 类型定义
+│   │   │   └── utils/               # 工具函数
+│   │   └── package.json
+│   └── frontend/                    # Preact SPA
 │       ├── src/
-│       │   ├── components/          # Reusable UI components
-│       │   ├── pages/               # Route pages
-│       │   ├── hooks/               # Custom hooks (store/* for state)
-│       │   ├── helpers/             # Utility functions
-│       │   ├── layouts/             # Page layouts
-│       │   ├── etc/                 # Context, constants, etc
+│       │   ├── components/          # 组件
+│       │   ├── pages/               # 页面
+│       │   ├── hooks/               # 自定义 Hooks
+│       │   ├── layouts/             # 布局
 │       │   └── main.tsx
-│       ├── vite.config.ts
-│       └── index.html
-├── biome.json                       # Root Biome config
-└── package.json                     # Workspace root
+│       └── vite.config.ts
+├── biome.json                       # 根目录 Biome 配置
+└── package.json                     # 工作区根配置
 ```
 
-## Commands
+## 命令
 
 ```bash
-# Root workspace
-bun install                          # Install all dependencies
-bun run dev                          # Start both frontend & backend
-bun run dev:backend                  # Start only backend (port 3000)
-bun run dev:frontend                 # Start only frontend (port 5173)
-bun run build                        # Build all apps
-bun run check                        # Lint & format check all
-bun run check:write                  # Auto-fix lint issues
+# 根工作区
+pnpm install                         # 安装所有依赖
+pnpm dev                             # 同时启动前后端
+pnpm dev:backend                     # 仅启动后端 (端口 3000)
+pnpm dev:frontend                    # 仅启动前端 (端口 5173)
+pnpm build                           # 构建所有应用
+pnpm check                           # 检查代码格式和 lint
+pnpm check:write                     # 自动修复问题
 
-# Backend-specific
-bun run --cwd apps/backend dev
-bun run --cwd apps/backend build
-bunx biome check apps/backend/src
+# 后端专用
+cd apps/backend
+pnpm dev                             # 开发模式 (tsx watch)
+pnpm build                           # 使用 esbuild 打包
+pnpm start                           # 运行构建后的版本
 
-# Frontend-specific
-bun run --cwd apps/frontend dev
-bun run --cwd apps/frontend build
-bunx biome check apps/frontend/src
-
-# Testing
-bun test                             # Run all tests
-bun test apps/backend/src/utils/...  # Run single test file (backend)
+# Biome 检查
+pnpm dlx @biomejs/biome check apps/backend/src
+pnpm dlx @biomejs/biome check apps/frontend/src
 ```
 
-## Code Style
+## 代码风格
 
-### Biome Config (applies to both apps)
+### Biome 配置 (双端通用)
 
-- **Indent**: Tabs
-- **Quotes**: Double
-- **Semicolons**: Required
-- **Line endings**: LF
-- Run `bunx biome check --write` to auto-fix
+- **缩进**: Tab
+- **引号**: 双引号
+- **分号**: 必须
+- **换行**: LF
+- 运行 `pnpm dlx @biomejs/biome check --write` 自动修复
 
-### Naming Conventions
+### 命名规范
 
-| Element          | Case        | Example                    |
-| ---------------- | ----------- | -------------------------- |
-| Variables        | camelCase   | `userName`, `pageSize`     |
-| Constants        | UPPER_SNAKE | `PORT`, `BLOGS_DIR`        |
-| Functions        | camelCase   | `renderMarkdown()`         |
-| Classes          | PascalCase  | `RoomService`              |
-| Types/Interfaces | PascalCase  | `BlogItem`, `ButtonProps`  |
-| Files (TS/TSX)   | lowercase   | `blogs.ts`, `button.tsx`   |
-| Components       | PascalCase  | `Button.tsx`, `Header.tsx` |
+| 元素           | 规范        | 示例                     |
+| -------------- | ----------- | ------------------------ |
+| 变量           | camelCase   | `userName`, `pageSize`   |
+| 常量           | UPPER_SNAKE | `PORT`, `BLOGS_DIR`      |
+| 函数           | camelCase   | `renderMarkdown()`       |
+| 类             | PascalCase  | `RoomService`            |
+| 类型/接口      | PascalCase  | `BlogItem`, `ButtonProps`|
+| 文件 (TS/TSX)  | lowercase   | `blogs.ts`, `button.tsx` |
+| 组件           | PascalCase  | `Button.tsx`, `Header.tsx` |
 
-### Imports
+### 导入规范
 
-**Backend:**
-
+**后端:**
 ```typescript
-import { Elysia, t } from "elysia";
-import { cors } from "@elysiajs/cors";
-import { BLOGS_DIR } from "@/utils/constants";
-import { renderMarkdown } from "./markdown";
+import { Hono } from "hono";
+import * as v from "valibot";
+import { PORT } from "@/utils/constants";
+import { blogs } from "./blogs";
 ```
 
-**Frontend:**
-
+**前端:**
 ```typescript
-import { clsx } from "@/helpers/string";
-import useUser from "@/hooks/store/use-user";
+import { clsx } from "@/utils/string";
+import useUser from "@/hooks/use-user";
 import RecentAnimes from "./recent-animes";
-import { getPeriod } from "@/helpers/time";
 ```
 
-## Backend Patterns
+## 后端开发规范
 
-### Route with Validation (ElysiaJS)
+### 路由与校验 (Hono + Valibot)
 
 ```typescript
-export const blogs = new Elysia({ name: "blogs" })
-  .model({ "blog.item": BlogItemSchema })
-  .get(
-    "/blogs/:slug",
-    ({ params: { slug }, set }) => {
-      const blog = getBlog(slug);
-      if (!blog) {
-        set.status = 404;
-        return "Not found";
-      }
-      return blog;
-    },
-    {
-      params: t.Object({ slug: t.String() }),
-      response: { 200: "blog.item", 404: t.String() },
-    },
-  );
+import { Hono } from "hono";
+import * as v from "valibot";
+
+const app = new Hono();
+
+// GET 参数校验
+const QuerySchema = v.object({
+  page: v.optional(v.string(), "1"),
+  pageSize: v.optional(v.string(), "10"),
+});
+
+app.get("/blogs", async (c) => {
+  const query = c.req.query();
+  const parsed = v.safeParse(QuerySchema, query);
+  if (!parsed.success) {
+    return c.json({ error: "参数错误" }, 400);
+  }
+  const { page, pageSize } = parsed.output;
+  // 业务逻辑...
+  return c.json({ data });
+});
 ```
 
-### Service Class with Error Handling
+### 服务类错误处理
 
 ```typescript
 export type OperationResult<T> =
@@ -140,16 +132,11 @@ export type OperationResult<T> =
   | { success: false; error: { code: string; message: string } };
 
 export class RoomService {
-  private roomsMap = new Map<string, Room>();
-
-  createRoom(
-    ws: WS,
-    payload: CreateRoomPayload,
-  ): OperationResult<CreateRoomResponse> {
-    if (this.userMap.has(ws)) {
+  createRoom(payload: CreateRoomPayload): OperationResult<CreateRoomResponse> {
+    if (this.userMap.has(userId)) {
       return {
         success: false,
-        error: { code: "USER_ALREADY_IN_ROOM", message: "..." },
+        error: { code: "USER_ALREADY_IN_ROOM", message: "用户已在房间中" }
       };
     }
     return { success: true, data: { roomId: generateId() } };
@@ -157,106 +144,91 @@ export class RoomService {
 }
 ```
 
-### Database (bun:sqlite)
+### 数据库 (bun:sqlite)
 
 ```typescript
 import { Database } from "bun:sqlite";
 
 const db = new Database("data/sqlite.db");
 const listStmt = db.prepare("SELECT * FROM blogs LIMIT $limit OFFSET $offset");
-const rows = listStmt.all({ $limit: 10, $offset: 0 });
+const rows = listStmt.all({ $limit: 10, $offset: 0 }) as Blog[];
 ```
 
-## Frontend Patterns
+## 前端开发规范
 
-### Component Structure
+### 组件结构
 
 ```typescript
-import { clsx } from "@/helpers/string";
-import { CSSProperties, ReactNode } from "preact/compat";
+import type { JSX } from "preact";
+import { clsx } from "@/utils/string";
 
 type Props = {
-    children?: ReactNode;
-    className?: string;
-    style?: CSSProperties;
-    onClick?: () => void;
+  children?: JSX.Element;
+  className?: string;
+  onClick?: () => void;
 };
 
-const Component = ({ children, className, style, onClick }: Props) => {
-    return (
-        <div className={clsx("base-classes", className)} style={style} onClick={onClick}>
-            {children}
-        </div>
-    );
+const Button = ({ children, className, onClick }: Props) => {
+  return (
+    <button 
+      className={clsx("base-classes", className)} 
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
 };
 
-export default Component;
-export type ComponentProps = Props;
+export default Button;
+export type { Props as ButtonProps };
 ```
 
-### State Management (hooks/store/\*)
-
-```typescript
-// apps/frontend/src/hooks/store/use-user.ts
-import createPersistedGlobalState from "@/utils/create-persisted-global-state";
-
-type UserState = { name: string; token?: string };
-
-const useUser = createPersistedGlobalState<UserState>("user", {
-  name: "Guest",
-});
-
-export default useUser;
-```
-
-### Routing (wouter-preact)
+### 路由 (wouter-preact)
 
 ```typescript
 import { Route, Switch } from "wouter-preact";
-import HomePage from "./pages/home";
-import BlogPage from "./pages/blog";
+import HomePage from "@/pages/home";
+import BlogPage from "@/pages/blog";
 
 export default function Router() {
-    return (
-        <Switch>
-            <Route path="/" component={HomePage} />
-            <Route path="/blog/:slug" component={BlogPage} />
-            <Route component={NotFound} />
-        </Switch>
-    );
+  return (
+    <Switch>
+      <Route path="/" component={HomePage} />
+      <Route path="/blog/:slug" component={BlogPage} />
+    </Switch>
+  );
 }
 ```
 
-### Icons (Iconify + UnoCSS)
+### 图标 (Iconify + UnoCSS)
 
 ```tsx
-<Button icon="icon-[mingcute--align-arrow-left-line]">Click me</Button>
+<i class="icon-[mingcute--arrow-left-line]" />
 ```
 
-## Error Handling
+## 错误处理
 
-- **Backend**: Use `set.status` for HTTP codes, return error objects from services (don't throw)
-- **Frontend**: Use `react-hot-toast` for notifications, handle API errors gracefully
-- Validate all inputs with TypeBox schemas (backend) or runtime checks (frontend)
+- **后端**: 使用 `c.json({ error }, status)` 返回错误，服务返回 `OperationResult` 而非抛异常
+- **前端**: 使用 `react-hot-toast` 显示通知，API 错误优雅处理
+- **校验**: 后端使用 Valibot `safeParse`，失败时使用默认值或返回 400
 
-## Pre-commit Checklist
+## 提交前检查清单
 
-1. Run `bunx biome check .`
-2. Run `bun run build` to verify
-3. Ensure no secrets in code
-4. Follow Conventional Commits: `feat(backend): add pagination`, `fix(frontend): resolve loading state`
+1. 运行 `pnpm check` 检查代码
+2. 运行 `pnpm build` 验证构建
+3. 确保无敏感信息提交
+4. 遵循 Conventional Commits: `feat(backend): 添加分页`, `fix(frontend): 修复加载状态`
 
-## Security
+## 安全规范
 
-- Never commit secrets or .env files
-- Validate all inputs (TypeBox for backend, runtime for frontend)
-- Use `ws.id` for WebSocket user identification (not IP)
-- Sanitize user-generated content before rendering
+- 禁止提交 `.env` 文件或密钥
+- 所有输入必须校验 (后端用 Valibot)
+- WebSocket 使用 `crypto.randomUUID()` 生成用户 ID
+- 用户生成内容渲染前需清理
 
-## Shared Conventions
+## 通用规范
 
-- Use `@/` alias for imports (configured in tsconfig.json)
-- Prefer functional components and hooks in frontend
-- Keep components small and focused
-- Use TypeScript strict mode
-- Write tests for utility functions and services
+- 使用 `@/` 别名导入 (已配置在 tsconfig.json)
+- 前端优先使用函数组件和 Hooks
+- 保持组件小而聚焦
+- 使用 TypeScript 严格模式

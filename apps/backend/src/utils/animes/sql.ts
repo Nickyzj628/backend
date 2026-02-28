@@ -59,8 +59,9 @@ export const saveAnime = async (path: string, stats?: Stats) => {
 	const slug = textToSlug(title);
 	const filePath = relative(WEBDAV_PATH, path);
 	const season = extractSeasonFromPath(filePath);
-	const episodes = await readdir(path);
-	const eps = episodes.length;
+	const episodesRaw = await readdir(path);
+	const episodes = JSON.stringify(episodesRaw);
+	const eps = episodesRaw.length;
 	const createdAt = stats?.birthtime?.toISOString() ?? "";
 	const updatedAt = stats?.mtime?.toISOString() ?? "";
 
@@ -74,7 +75,7 @@ export const saveAnime = async (path: string, stats?: Stats) => {
 			$slug: slug,
 			$season: season,
 			$eps: eps,
-			$episodes: JSON.stringify(episodes),
+			$episodes: episodes,
 			$created_at: createdAt,
 			$updated_at: updatedAt,
 		});
@@ -85,6 +86,8 @@ export const saveAnime = async (path: string, stats?: Stats) => {
 	// 如果存在，则检查是否有变化
 	const hasChanged =
 		existing.season !== season ||
+		existing.eps !== eps ||
+		existing.episodes !== episodes ||
 		existing.created_at !== createdAt ||
 		existing.updated_at !== updatedAt;
 
@@ -98,7 +101,7 @@ export const saveAnime = async (path: string, stats?: Stats) => {
 		$slug: slug,
 		$season: season,
 		$eps: eps,
-		$episodes: JSON.stringify(episodes),
+		$episodes: episodes,
 		$created_at: createdAt,
 		$updated_at: updatedAt,
 	});

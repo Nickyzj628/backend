@@ -12,7 +12,6 @@ export const watchBlogs = async () => {
 	/**
 	 * 一阶段：启动时全量同步所有历史文件
 	 */
-	console.time("全量同步文章");
 
 	const initWatcher = chokidar.watch(BLOGS_DIR, {
 		depth: 1,
@@ -39,8 +38,6 @@ export const watchBlogs = async () => {
 		});
 	});
 
-	console.timeEnd("全量同步文章");
-
 	/**
 	 * 二阶段：只监听近两年的
 	 */
@@ -64,6 +61,6 @@ export const watchBlogs = async () => {
 		.on("change", saveBlog)
 		.on("unlink", deleteBlog)
 		.on("ready", () => {
-			log([`开始监听目录`, activeDirs]);
+			log(`开始监听目录：${activeDirs.join("、")}`);
 		});
 };

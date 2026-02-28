@@ -1,9 +1,5 @@
 import type { Anime } from "@nickyzj/shared-types";
-import {
-	AnimeDetailParamsSchema,
-	AnimeListQuerySchema,
-} from "@nickyzj/shared-types/schemas";
-import { Elysia } from "elysia";
+import { Hono } from "hono";
 import {
 	countStmt,
 	getBySlugStmt,
@@ -15,58 +11,51 @@ import { fixPageQuery } from "@/utils/common";
 // 监听番剧目录下的改动，同步到数据库
 watchAnimes();
 
-export const animes = new Elysia({ prefix: "/animes" })
-	.get(
-		"/",
-		async ({ query }) => {
-			const { page, pageSize, offset } = fixPageQuery(query);
+const app = new Hono();
 
-			const countResult = countStmt.get() as { total: number } | undefined;
-			const total = countResult?.total ?? 0;
-			const totalPages = Math.ceil(total / pageSize);
+// 获取番剧列表
+app.get("/", async (c) => {
+	const { page, pageSize, offset } = fixPageQuery(c.req.query());
 
-			const list = listStmt.all({
-				$limit: pageSize,
-				$offset: offset,
-			}) as unknown as Anime[];
+	const countResult = countStmt.get() as { total: number } | undefined;
+	const total = countResult?.total ?? 0;
+	const totalPages = Math.ceil(total / pageSize);
 
-			return {
-				page,
-				pageSize,
-				total,
-				totalPages,
-				list,
-			};
-		},
-		{
-			query: AnimeListQuerySchema,
-		},
-	)
-	.get(
-		"/:slug",
-		async ({ params: { slug }, set }) => {
-			// 从数据库读取番剧信息
-			const anime = getBySlugStmt.get({ $slug: slug }) as
-				| Required<Anime>
-				| undefined;
+	const list = listStmt.all({
+		$limit: pageSize,
+		$offset: offset,
+	}) as unknown as Anime[];
 
-			if (!anime) {
-				set.status = 404;
-				return "番剧不存在";
-			}
+	return c.json({
+		page,
+		pageSize,
+		total,
+		totalPages,
+		list,
+	});
+});
 
-			// 解析 episodes JSON，转换成 string[]
-			const episodesData = JSON.parse(String(anime.episodes) ?? "[]");
-			const episodes = Array.isArray(episodesData)
-				? episodesData.map((item) => String(item))
-				: [];
+// 获取单个番剧
+app.get("/:slug", async (c) => {
+	const slug = c.req.param("slug");
 
-			return {
-				...anime,
-				episodes,
-			};
-		},
-		{
-			params: AnimeDetailParamsSchema,
-		},
-	);
+	// 从数据库读取番剧信息
+	const anime = getBySlugStmt.get({ $slug: slug }) as
+		| Required<Anime>
+		| undefined;
+
+	if (!anime) {
+		return c.text("番剧不存在", 404);
+	}
+
+	// 解析 episodes JSON，转换成 string[]
+	const episodesRaw = JSON.parse(String(anime.episodes) ?? "[]");
+	const episodes = Array.isArray(episodesRaw) ? episodesRaw.map(String) : [];
+
+	return c.json({
+		...anime,
+		episodes,
+	});
+});
+
+export { app as animes };

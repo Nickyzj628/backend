@@ -22,28 +22,38 @@ html {
 
 /* 标题样式 */
 h1 {
-    font-size: 1.875rem;
+	font-size: 1.875rem;
 }
 h2 {
-    font-size: 1.5rem;
+	font-size: 1.5rem;
 }
 h3 {
-    font-size: 1.25rem;
+	font-size: 1.25rem;
 }
 h4 {
-    font-size: 1.125rem;
+	font-size: 1.125rem;
 }
 h5 {
-    font-size: 1rem;
+	font-size: 1rem;
 }
 h6 {
-    font-size: 0.875rem;
+	font-size: 0.875rem;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	color: #000;
 	transition: color 150ms;
 }
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
 	color: rgb(229, 229, 229);
 }
 
@@ -90,7 +100,8 @@ hr {
 }
 
 /* 文章相关 */
-blockquote, ::marker {
+blockquote,
+::marker {
 	transition: color 150ms;
 }
 
