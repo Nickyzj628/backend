@@ -60,6 +60,22 @@ const Page: FC<Params> = ({ slug }: Params) => {
 		}));
 	}, [data]);
 
+	// 统计字数
+	const charCount = useMemo(() => {
+		const html = data?.html ?? "";
+		if (!html) {
+			return 0;
+		}
+
+		// 创建 DOMParser 解析 HTML
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(html, "text/html");
+
+		// 提取纯文本
+		const text = doc.body.textContent || "";
+		return text.length;
+	}, [data]);
+
 	// 锚点跳转
 	useEffect(() => {
 		if (isLoading || !hash) {
@@ -100,11 +116,16 @@ const Page: FC<Params> = ({ slug }: Params) => {
 				<h1 className="mb-3 text-white text-balance text-center">
 					{data.title}
 				</h1>
-				<span className="text-sm text-neutral-200">
-					创建于：{dayjs(data.created_at).format("YYYY年MM月DD日 HH:mm:ss")}
+				<span className="inline-flex text-sm text-neutral-200">
+					创建于：
+					<pre>{dayjs(data.created_at).format("YYYY年MM月DD日 HH:mm:ss")}</pre>
 				</span>
-				<span className="text-sm text-neutral-200">
-					最后更新于：{dayjs(data.updated_at).format("YYYY年MM月DD日 HH:mm:ss")}
+				<span className="inline-flex text-sm text-neutral-200">
+					更新于：
+					<pre>{dayjs(data.updated_at).format("YYYY年MM月DD日 HH:mm:ss")}</pre>
+				</span>
+				<span className="inline-flex text-sm text-neutral-200">
+					全文约：{charCount}字（阅读需{Math.ceil(charCount / 300)}分钟）
 				</span>
 			</div>
 
