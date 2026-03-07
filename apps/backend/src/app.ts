@@ -9,7 +9,6 @@ import { animes } from "@/routes/animes";
 import { blogs } from "@/routes/blogs";
 import createRoomsRouter from "@/routes/rooms";
 import { shanbay } from "@/routes/shanbay";
-import { startBrecTimer } from "@/utils/brec";
 import { ALLOWED_ORIGINS, PORT } from "@/utils/constants";
 
 // 等待服务器启动的 Promise
@@ -63,13 +62,9 @@ const boot = async () => {
 	await waitForServer(server);
 	log(`服务器已启动: https://localhost:${PORT}`);
 
-	// 服务器启动后再启动 Brec 定时器
-	const stopBrecTimer = startBrecTimer();
-
 	// 优雅关闭
 	process.on("SIGINT", () => {
 		log("服务器即将关闭");
-		stopBrecTimer();
 		server.close(() => {
 			process.exit(0);
 		});
