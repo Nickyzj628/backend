@@ -1,6 +1,7 @@
+import { qs } from "@nickyzj2023/utils";
 import { useMemo } from "preact/hooks";
-import { Link, useLocation, useSearchParams } from "wouter-preact";
-import { clsx, qs } from "@/utils/string";
+import { useRouterStore } from "@/stores/router";
+import { clsx } from "@/utils/string";
 import { useWebSocketContext } from "@/utils/websocket-context";
 
 type EpisodesProps = {
@@ -22,23 +23,22 @@ const Episode = ({
 	disabled = false,
 	onEpChange,
 }: EpisodeProps) => {
-	const [location] = useLocation();
-	const [searchParams] = useSearchParams();
-	const currentEp = Number(searchParams.get("ep")) || 1;
+	const { path, search } = useRouterStore();
+
+	const currentEp = Number(search.ep || 1);
 
 	const active = currentEp === value;
 	const href = useMemo(() => {
-		const params = {
-			...Object.fromEntries(searchParams),
+		const newSearch = {
+			...search,
 			ep: value,
 		};
-		return `${location}?${qs.stringify(params)}`;
-	}, [searchParams, value, location]);
+		return `${path}?${qs.stringify(newSearch)}`;
+	}, [search, value, path]);
 
 	return (
-		<Link
+		<a
 			href={href}
-			replace
 			className={clsx(
 				"text-sm",
 				active ? "dark:text-white" : "text-neutral-400",
@@ -46,10 +46,12 @@ const Episode = ({
 					? "pointer-events-none opacity-50"
 					: "hover:text-black dark:hover:text-white",
 			)}
-			onClick={() => onEpChange?.(value)}
+			onClick={() => {
+				onEpChange?.(value);
+			}}
 		>
 			{label}
-		</Link>
+		</a>
 	);
 };
 

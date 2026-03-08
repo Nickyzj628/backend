@@ -9,12 +9,8 @@ import { toast } from "react-hot-toast/headless";
  * setTitle(); // 页面标题为默认的 "NICKYZJ"
  */
 export const setTitle = (title?: string) => {
-	const logo = "NICKYZJ";
-	if (!title) {
-		document.title = logo;
-	} else {
-		document.title = `${title} / ${logo}`;
-	}
+	const suffix = "NICKYZJ";
+	document.title = [title, suffix].join(" / ")
 };
 
 /**

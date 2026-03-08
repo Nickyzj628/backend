@@ -1,12 +1,11 @@
-import type { Shanbay as ShanbayType } from "@nickyzj/shared-types";
 import { Figcaption, Figure } from "@/components/figure";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
-import { useRequest } from "@/hooks/network";
+import { useShanbayStore } from "@/stores/shanbay";
 import { clsx } from "@/utils/string";
 
 const Shanbay = () => {
-	const { isLoading, error, data } = useRequest<ShanbayType>("/shanbay");
+	const { loading, error, data } = useShanbayStore();
 
 	return (
 		<Section className={"aspect-2/3 w-full sm:w-80 lg:w-96 mt-2"}>
@@ -17,7 +16,7 @@ const Shanbay = () => {
 					!data && "items-center justify-center",
 				)}
 			>
-				{isLoading && <Loading />}
+				{loading && <Loading />}
 				{error && (
 					<div className="flex flex-col items-center">
 						<i className="i-mingcute-pic-line size-32" />

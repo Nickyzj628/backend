@@ -40,6 +40,13 @@ export const routes = [
 		Icon: <i className="i-mingcute-user-3-line" />,
 		Component: lazy(() => import("@/pages/about")),
 	},
-] as Route[];
+];
 
 export const routesWithIcon = routes.filter((route) => "Icon" in route);
+
+export const nanostoresRoutes = routes
+	.map((route) => route.path)
+	.reduce((acc, path) => {
+		acc[path] = path;
+		return acc;
+	}, {});

@@ -1,14 +1,13 @@
 import { throttle } from "@nickyzj2023/utils";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 import toast from "react-hot-toast/headless";
 import { useToggle } from "react-use";
-import { Link, useRoute } from "wouter-preact";
 import Avatar from "@/components/avatar";
 import Button from "@/components/button";
 import Toggle from "@/components/toggle";
-import useUser from "@/hooks/store/use-user";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { routesWithIcon } from "@/utils/routes";
+import { routesWithIcon, useRouterStore } from "@/stores/router";
+import { useUserStore } from "@/stores/user";
 import { clsx } from "@/utils/string";
 
 const Header = () => {
@@ -33,7 +32,7 @@ const Header = () => {
 	const [isNavVisible, toggleNav] = useToggle(false);
 
 	// 用户相关
-	const [user] = useUser();
+	const { data: user } = useUserStore();
 	const onClickMessage = () => {
 		toast("消息模块开发中！");
 	};
@@ -72,32 +71,34 @@ const Header = () => {
 								: "top-0 invisible opacity-0 pointer-events-none",
 						)}
 					>
-						{routesWithIcon.map(({ path, Icon }) => {
-							// 对于首页，精准匹配
-							// 对于其他页面，模糊匹配到子孙路由
-							const [match] = useRoute(path === "/" ? "/" : `${path}/*?`);
+						{routesWithIcon.map(({ path, title, Icon, ...restProps }) => {
+							const router = useRouterStore();
+							const isMatched =
+								"exact" in restProps && restProps.exact
+									? router.route === path
+									: router.route.includes(path);
 							return (
-								<Link key={path} href={path}>
+								<a key={path} href={path}>
 									<Button
-										variant={match ? "info" : "default"}
+										variant={isMatched ? "info" : "default"}
 										size="xl"
 										rounded="full"
 										icon={Icon}
 										onClick={toggleNav}
 									/>
-								</Link>
+								</a>
 							);
 						})}
 					</div>
 				</div>
 			) : (
-				<Link
+				<a
 					href="/"
 					className="flex items-center gap-1.5 text-xl tracking-wide transition dark:text-neutral-100"
 				>
 					<img src="/favicon.webp" alt="logo" className="size-12" />
 					NICKYZJ
-				</Link>
+				</a>
 			)}
 
 			{/* 用户相关 */}

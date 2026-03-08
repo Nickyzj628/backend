@@ -1,5 +1,3 @@
-import type { Recordable } from "@/types/common";
-
 /**
  * 拼接 className
  * @param classNames 多个 className，只接受字符串，其他值会被过滤
@@ -10,36 +8,6 @@ import type { Recordable } from "@/types/common";
  */
 export const clsx = (...classNames: any[]) => {
 	return classNames.filter(Boolean).join(" ");
-};
-
-/**
- * 仅针对 URL 查询字符串的解析和序列化
- * @example
- * qs.parse("?a=1&b=2") // { a: 1, b: 2 }
- * qs.stringify({ a: 1, b: 2 }, { addQueryPrefix: true }) // "?a=1&b=2"
- */
-export const qs = {
-	parse: (queryString: string) => {
-		const searchParams = new URLSearchParams(queryString);
-		const result: Recordable = {};
-
-		for (const [key, value] of searchParams) {
-			// 特殊处理数字字符串为数字
-			if (!isNaN(Number(value))) {
-				result[key] = Number(value);
-			} else {
-				result[key] = value;
-			}
-		}
-
-		return result;
-	},
-	stringify: (params: Recordable, options?: { addQueryPrefix: boolean }) => {
-		const { addQueryPrefix } = options ?? {};
-		const searchParams = new URLSearchParams(params);
-		const queryString = searchParams.toString();
-		return addQueryPrefix ? `?${queryString}` : queryString;
-	},
 };
 
 /**

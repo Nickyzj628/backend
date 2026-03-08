@@ -5,7 +5,7 @@
 ## 技术栈
 
 - **后端**: Hono + Node.js + Valibot + SQLite
-- **前端**: Preact + Vite + UnoCSS + wouter-preact
+- **前端**: Preact + Vite + UnoCSS + nanostores/router
 - **包管理**: pnpm
 - **代码质量**: Biome
 

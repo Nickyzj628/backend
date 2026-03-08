@@ -1,11 +1,11 @@
-import useUser from "@/hooks/store/use-user";
+import { useUserStore } from "@/stores/user";
 import { getPeriod } from "@/utils/time";
 import RecentAnimes from "./components/recent-animes";
 import RecentBlogs from "./components/recent-blogs";
 import Shanbay from "./components/shanbay";
 
 const Page = () => {
-	const [user] = useUser();
+	const { data: user } = useUserStore();
 
 	return (
 		<>

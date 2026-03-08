@@ -6,9 +6,9 @@ import type {
 import type { SubmitEventHandler } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { toast } from "react-hot-toast/headless";
-import { useSearchParams } from "wouter-preact";
 import Button from "@/components/button";
-import useUser from "@/hooks/store/use-user";
+import { useNavigate, useRouterStore } from "@/stores/router";
+import { useUserStore } from "@/stores/user";
 import { copyToClipboard } from "@/utils/dom";
 import { useWebSocketContext } from "@/utils/websocket-context";
 import Badge, { type BadgeType } from "../../../../components/badge";
@@ -34,10 +34,11 @@ const Room = ({
 	isHost = true,
 	onChangeHost = (isHost: boolean) => void 0,
 }) => {
-	const [searchParams, setSearchParams] = useSearchParams();
-	const roomId = searchParams.get("roomId");
+	const navigate = useNavigate();
+	const { search } = useRouterStore();
+	const { roomId } = search;
 
-	const [user] = useUser();
+	const { data: user } = useUserStore();
 	const userName = user.name;
 
 	const { send, on, off, connected } = useWebSocketContext();
@@ -64,13 +65,10 @@ const Room = ({
 	useEffect(() => {
 		const onRoomCreated = (payload: CreateRoomResponse) => {
 			const { roomCode } = payload;
-			setSearchParams(
-				(prev) => {
-					prev.set("roomId", roomCode);
-					return prev;
-				},
-				{ replace: true },
-			);
+			navigate("/animes/:slug", {
+				search: { ...search, roomId: roomCode },
+				replace: true,
+			});
 			setIsInRoom(true);
 			onChangeHost(true);
 
@@ -104,7 +102,7 @@ const Room = ({
 			off("roomJoined", onRoomJoined);
 			off("hostChanged", onHostChanged);
 		};
-	}, [on, off, setSearchParams, onChangeHost]);
+	}, [on, off, search, onChangeHost]);
 
 	/**
 	 * 消息收发相关逻辑

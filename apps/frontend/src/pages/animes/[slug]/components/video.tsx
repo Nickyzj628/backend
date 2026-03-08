@@ -8,7 +8,7 @@ import { throttle, to } from "@nickyzj2023/utils";
 import Danmaku from "danmaku/dist/esm/danmaku.canvas.js";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { toast } from "react-hot-toast/headless";
-import { useSearchParams } from "wouter-preact";
+import { useNavigate, useRouterStore } from "@/stores/router";
 import { getAnimeVideoByEp } from "@/utils/network";
 import { useWebSocketContext } from "@/utils/websocket-context";
 
@@ -18,8 +18,10 @@ type Props = {
 };
 
 const Video = ({ anime, isHost = true }: Props) => {
-	const [searchParams, setSearchParams] = useSearchParams();
-	const ep = Number(searchParams.get("ep")) || 1;
+	const navigate = useNavigate();
+	const { search } = useRouterStore();
+	const ep = Number(search.ep) || 1;
+	console.log(search);
 
 	const { send, on, off } = useWebSocketContext();
 
@@ -203,13 +205,8 @@ const Video = ({ anime, isHost = true }: Props) => {
 	};
 
 	const beEpChanged = (ep: number) => {
-		setSearchParams(
-			(prev) => {
-				prev.set("ep", ep.toString());
-				return prev;
-			},
-			{ replace: true },
-		);
+		search.ep = String(ep);
+		navigate("/animes/:slug", { search, replace: true });
 		toast(`房主切换到了第${ep}话`);
 	};
 

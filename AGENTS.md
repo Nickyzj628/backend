@@ -6,7 +6,7 @@
 
 - **运行时**: Node.js v25+ + pnpm
 - **后端**: Hono + Valibot 校验 + SQLite (`node:sqlite`)
-- **前端**: Preact + Vite + UnoCSS v4 + wouter-preact
+- **前端**: Preact + Vite + UnoCSS v4 + nanostores/router
 - **代码质量**: Biome (根目录配置)
 - **测试**: 未配置
 
@@ -192,21 +192,18 @@ export default Button;
 export type { Props as ButtonProps };
 ```
 
-### 路由 (wouter-preact)
+### 路由 (nanostores/router)
 
 ```typescript
-import { Route, Switch } from "wouter-preact";
-import HomePage from "@/pages/home";
-import BlogPage from "@/pages/blog";
+import { useRouterStore, useNavigate } from "@/stores/router";
 
 export default function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/blog/:slug" component={BlogPage} />
-    </Switch>
-  );
+  const { route } = useRouterStore();
+  const navigate = useNavigate();
+
+  // 根据 route 渲染对应页面
 }
+```
 ```
 
 ### 图标 (Iconify + UnoCSS)

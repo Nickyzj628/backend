@@ -1,12 +1,11 @@
 import type { Anime } from "@nickyzj/shared-types";
 import dayjs from "dayjs";
 import { useMemo } from "preact/hooks";
-import { Link } from "wouter-preact";
 import { Figcaption, Figure } from "@/components/figure";
 import Loading from "@/components/loading";
 import Section from "@/components/section";
 import Timeline from "@/components/timeline";
-import { useAnimes } from "@/hooks/store/use-anime";
+import { useAnimesStore } from "@/stores/anime";
 import { clsx } from "@/utils/string";
 
 type GroupedAnimes = (Anime & {
@@ -17,8 +16,8 @@ type GroupedAnimes = (Anime & {
 const DAY_DIFF_LOCALE_STRINGS = ["今天", "昨天", "前天"];
 
 const RecentAnimes = () => {
-	const { isLoading, error, data } = useAnimes();
-	const animes = data?.list ?? [];
+	const { loading, error, data } = useAnimesStore();
+	const { list = [] } = data ?? {};
 
 	const dayDiffToLocaleString = (dayDiff: number) => {
 		if (dayDiff >= DAY_DIFF_LOCALE_STRINGS.length) {
@@ -28,12 +27,12 @@ const RecentAnimes = () => {
 	};
 
 	const groupedAnimes = useMemo<GroupedAnimes>(() => {
-		if (!animes || animes.length === 0) {
+		if (!list.length) {
 			return [];
 		}
 
 		const now = dayjs();
-		return animes
+		return list
 			.reduce((result, anime) => {
 				const dayDiff = now.diff(dayjs(anime.updated_at), "day");
 				if (!result[dayDiff]) {
@@ -46,8 +45,8 @@ const RecentAnimes = () => {
 				});
 				return result;
 			}, [] as GroupedAnimes)
-			.filter((group) => !!group);
-	}, [animes]);
+			.filter(Boolean);
+	}, [list]);
 
 	return (
 		<Section className="flex flex-col flex-1 gap-1.5 min-w-72 w-full sm:w-80 lg:w-96 h-144 mt-2">
@@ -58,7 +57,7 @@ const RecentAnimes = () => {
 					groupedAnimes.length === 0 && "items-center justify-center",
 				)}
 			>
-				{isLoading && <Loading />}
+				{loading && <Loading />}
 				{error && (
 					<div className="flex flex-col items-center">
 						<i className="i-mingcute-pic-line size-32" />
@@ -68,7 +67,7 @@ const RecentAnimes = () => {
 				{groupedAnimes.map((group) => (
 					<Timeline key={group[0].dayDiff} time={group[0].dayDiffLocale}>
 						{group.map((anime) => (
-							<Link
+							<a
 								key={anime.title}
 								href={`/animes/${anime.slug}?ep=${anime.eps}`}
 							>
@@ -86,7 +85,7 @@ const RecentAnimes = () => {
 										</Figcaption.Description>
 									</Figcaption>
 								</Figure>
-							</Link>
+							</a>
 						))}
 					</Timeline>
 				))}

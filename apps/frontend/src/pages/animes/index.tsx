@@ -1,99 +1,139 @@
-import { useEffect, useRef, useState } from "preact/hooks";
-import { useIntersection } from "react-use";
-import { Link } from "wouter-preact";
+import type { Anime } from "@nickyzj/shared-types";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { Figcaption, Figure } from "@/components/figure";
-import { useAnimes } from "@/hooks/store/use-anime";
+import Section from "@/components/section";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import { useAnimesStore } from "@/stores/anime";
+import { clsx } from "@/utils/string";
 import { fromNow } from "@/utils/time";
 
-const Page = ({ page = 1, onLoaded = (hasNextPage: boolean) => void 0 }) => {
-	const { isLoading, error, data, hasNextPage } = useAnimes({ page });
+type OnPageLoaded = (pageItems: Anime[], hasNextPage: boolean) => void;
 
-	const animes = data?.list ?? [];
+const SeasonItems = ({
+	page = 1,
+	onLoaded,
+	items = [],
+}: {
+	page: number;
+	onLoaded: OnPageLoaded;
+	items?: Anime[];
+}) => {
+	const isFirstPage = page === 1;
+
+	const { loading, error, data } = useAnimesStore({ page });
+	const { list = [], totalPages } = data ?? {};
+
+	const season = Number(items[0]?.season);
+	const colors = [
+		"text-blue-300",
+		"text-red-300",
+		"text-yellow-300",
+		"text-pink-300",
+	];
+	const color = colors[season % colors.length];
 
 	useEffect(() => {
-		if (!isLoading) {
-			onLoaded(hasNextPage);
+		if (!loading && !!data) {
+			const hasNextPage = page < totalPages;
+			onLoaded(list, hasNextPage);
 		}
-	}, [isLoading]);
+	}, [loading, data]);
 
-	if (error) {
+	if (error || !data || loading) {
 		return null;
 	}
 
 	return (
-		<>
-			{isLoading &&
-				Array.from({ length: 12 }).map((_, i) => (
-					<div
-						key={i}
-						className="aspect-2/3 rounded-xl bg-neutral-200 transition dark:bg-neutral-800"
-					/>
+		<Section className={clsx(!isFirstPage && "mt-2")}>
+			<Section.Title className={color}>{season}</Section.Title>
+			<div className="grid flex-1 grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9 gap-3">
+				{items.map((item) => (
+					<a
+						key={item.title}
+						href={`/animes/${item.slug}`}
+						className="flex aspect-2/3"
+					>
+						<Figure className="size-full">
+							<Figure.Image
+								src={`/Animes/${item.title}.webp`}
+								alt={item.title}
+							/>
+							<Figcaption>
+								<Figcaption.Title className="text-base text-pretty">
+									{item.title}
+								</Figcaption.Title>
+								<Figcaption.Description>共{item.eps}话</Figcaption.Description>
+								<Figcaption.Extra>
+									{fromNow(item.updated_at)}更新
+								</Figcaption.Extra>
+							</Figcaption>
+						</Figure>
+					</a>
 				))}
-			{animes.map((anime) => (
-				<Link
-					key={anime.title}
-					href={`/animes/${anime.slug}`}
-					className="flex aspect-2/3"
-				>
-					<Figure className="size-full">
-						<Figure.Image
-							src={`/Animes/${anime.title}.webp`}
-							alt={anime.title}
-						/>
-						<Figcaption>
-							<Figcaption.Title className="text-base text-pretty">
-								{anime.title}
-							</Figcaption.Title>
-							<Figcaption.Description>共{anime.eps}话</Figcaption.Description>
-							<Figcaption.Extra>
-								{fromNow(anime.updated_at)}更新
-							</Figcaption.Extra>
-						</Figcaption>
-					</Figure>
-				</Link>
-			))}
-		</>
+			</div>
+		</Section>
 	);
 };
 
 const Pages = () => {
+	// 全量数据
+	const [fullItems, setFullItems] = useState<Anime[]>([]);
+	const seasons = useMemo(() => {
+		return Array.from(
+			new Set(fullItems.map((item) => Number(item.season))),
+			String,
+		);
+	}, [fullItems]);
+
+	/**
+	 * 分页相关逻辑
+	 */
+
 	const [page, setPage] = useState(1);
 	const [isLoadingPage, setIsLoadingPage] = useState(true);
 	const [hasNextPage, setHasNextPage] = useState(true);
 
-	const nextPage = () => {
-		setPage((prev) => prev + 1);
-		setIsLoadingPage(true);
-	};
+	const { ref: pagerRef, isIntersecting } =
+		useIntersectionObserver<HTMLButtonElement>({
+			rootMargin: `${window.outerHeight}px`,
+		});
 
-	const onPageLoaded = (hasNextPage: boolean) => {
-		setHasNextPage(hasNextPage);
+	const onPageLoaded: OnPageLoaded = (pageItems, hasNextPage) => {
 		setIsLoadingPage(false);
+		setFullItems([...fullItems, ...pageItems]);
+		setHasNextPage(hasNextPage);
 	};
 
-	const pager = useRef<HTMLButtonElement>(null);
-	const intersection = useIntersection(pager, {});
 	useEffect(() => {
-		if (isLoadingPage || !hasNextPage || !intersection?.isIntersecting) {
-			return;
+		if (!isLoadingPage && hasNextPage && isIntersecting) {
+			setPage(page + 1);
+			setIsLoadingPage(true);
 		}
-		nextPage();
-	}, [isLoadingPage, hasNextPage, intersection]);
+	}, [isLoadingPage, hasNextPage, isIntersecting]);
 
 	return (
-		<div className="grid flex-1 grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9 gap-3">
-			{Array.from({ length: page }).map((_, i) => (
-				<Page key={i} page={i + 1} onLoaded={onPageLoaded} />
-			))}
-			{hasNextPage && (
-				<button
-					ref={pager}
-					aria-label="下一页"
-					className="size-full"
-					onClick={nextPage}
-				/>
-			)}
-		</div>
+		<>
+			{Array.from({ length: page }).map((_, i) => {
+				const currentPage = i + 1;
+				const currentSeason = seasons[i];
+				return (
+					<SeasonItems
+						key={`page-${currentPage}`}
+						// 1. 让子组件请求某一页
+						page={currentPage}
+						// 2. 返回该页数据
+						onLoaded={onPageLoaded}
+						// 3. 从全量数据中渲染某一年的数据
+						items={fullItems.filter((item) => item.season === currentSeason)}
+					/>
+				);
+			})}
+			<button
+				ref={pagerRef}
+				aria-label="下一页"
+				className="absolute bottom-0"
+			/>
+		</>
 	);
 };
 

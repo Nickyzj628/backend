@@ -1,25 +1,21 @@
 import dayjs from "dayjs";
-import type { FC } from "preact/compat";
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { useHash } from "react-use";
 import Button from "@/components/button";
 import Loading from "@/components/loading";
 import Toggle from "@/components/toggle";
 import { useEnsuredRef, useZoom } from "@/hooks/dom";
-import { useBlog } from "@/hooks/store/use-blog";
 import NotFound from "@/pages/not-found";
+import { useBlogStore } from "@/stores/blog";
+import { useRouterStore } from "@/stores/router";
 import { setTitle } from "@/utils/dom";
 import { getImage } from "@/utils/network";
 import { clsx } from "@/utils/string";
 
-type Params = {
-	slug: string;
-};
+const Page = () => {
+	const { hash, params } = useRouterStore();
+	const { slug } = params as Record<"slug", string>;
 
-const Page: FC<Params> = ({ slug }: Params) => {
-	const [hash] = useHash();
-
-	const { isLoading, error, data } = useBlog(slug);
+	const { loading, error, data } = useBlogStore(slug);
 	useEffect(() => {
 		if (data && "title" in data) {
 			setTitle(data.title);
@@ -78,7 +74,7 @@ const Page: FC<Params> = ({ slug }: Params) => {
 
 	// 锚点跳转
 	useEffect(() => {
-		if (isLoading || !hash) {
+		if (loading || !hash) {
 			return;
 		}
 
@@ -86,20 +82,23 @@ const Page: FC<Params> = ({ slug }: Params) => {
 			decodeURIComponent(hash).replace("#", ""),
 		);
 		a?.scrollIntoView();
-	}, [isLoading, hash]);
+	}, [loading, hash]);
 
 	// 图片缩放
 	const [initArticleRef, articleRef] = useEnsuredRef();
 	useZoom(articleRef);
 
-	if (isLoading)
+	if (error) {
+		return <NotFound />;
+	}
+
+	if (loading || !data) {
 		return (
 			<div className="absolute inset-0 m-auto flex flex-col items-center gap-1 size-fit text-neutral-400 transition dark:text-neutral-500">
 				<Loading />
 			</div>
 		);
-
-	if (error) return <NotFound />;
+	}
 
 	return (
 		<>
@@ -110,22 +109,20 @@ const Page: FC<Params> = ({ slug }: Params) => {
 					backgroundImage: `url(${getImage(`/Blogs/${data.title}.webp`)})`,
 				}}
 			>
-				<div className="absolute top-0 left-0 size-full rounded-xl backdrop-blur-sm backdrop-brightness-50" />
+				<div className="absolute top-0 left-0 size-full rounded-xl backdrop-blur-2 backdrop-brightness-50" />
 			</div>
 			<div className="relative flex flex-col items-center gap-0.5 w-full mt-8 sm:mt-16 mb-4 sm:mb-8 p-3">
 				<h1 className="mb-3 text-white text-balance text-center">
 					{data.title}
 				</h1>
 				<span className="inline-flex text-sm text-neutral-200">
-					创建于：
-					<pre>{dayjs(data.created_at).format("YYYY年MM月DD日 HH:mm:ss")}</pre>
+					创建于{dayjs(data.created_at).format("YYYY年MM月DD日 HH:mm:ss")}
 				</span>
 				<span className="inline-flex text-sm text-neutral-200">
-					更新于：
-					<pre>{dayjs(data.updated_at).format("YYYY年MM月DD日 HH:mm:ss")}</pre>
+					更新于{dayjs(data.updated_at).format("YYYY年MM月DD日 HH:mm:ss")}
 				</span>
 				<span className="inline-flex text-sm text-neutral-200">
-					全文约：{charCount}字（阅读需{Math.ceil(charCount / 300)}分钟）
+					全文约{charCount}字，阅读需{Math.ceil(charCount / 300)}分钟
 				</span>
 			</div>
 

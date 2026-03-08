@@ -1,22 +1,26 @@
-import { useEffect, useState } from "preact/hooks";
-import { useLocalStorage, useMedia, useToggle } from "react-use";
-import { Link, useRoute } from "wouter-preact";
+import { useEffect } from "preact/hooks";
+import { useMedia } from "react-use";
 import Button from "@/components/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { routesWithIcon } from "@/utils/routes";
+import { usePreferenceStore } from "@/stores/preference";
+import { routesWithIcon, useRouterStore } from "@/stores/router";
 import { clsx } from "@/utils/string";
 
 const Aside = () => {
 	const isMobile = useIsMobile();
 
-	// 手动切换侧边栏
-	const [isAsideFold, setIsAsideFold] = useLocalStorage("isAsideFold", false);
+	const {
+		data: { aside, theme },
+		setKey: setPreferenceKey,
+	} = usePreferenceStore();
+
+	const isAsideFolded = aside === "folded";
+	const isDark = theme === "dark";
 
 	/**
 	 * 深色模式
 	 */
 
-	const [isDark, toggleDark] = useToggle(false);
 	useEffect(() => {
 		const { documentElement } = document;
 		if (!isDark) {
@@ -27,10 +31,18 @@ const Aside = () => {
 	}, [isDark]);
 
 	// 根据系统偏好自动切换
-	const isSystemDark = useMedia("(prefers-color-scheme: dark)");
 	useEffect(() => {
-		toggleDark(isSystemDark);
-	}, [isSystemDark]);
+		const colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		const onChange = (e: MediaQueryListEvent) => {
+			setPreferenceKey("theme", e.matches ? "dark" : "light");
+		};
+
+		colorSchemeQuery.addEventListener("change", onChange);
+
+		return () => {
+			colorSchemeQuery.removeEventListener("change", onChange);
+		};
+	}, [setPreferenceKey]);
 
 	if (isMobile) {
 		return null;
@@ -39,31 +51,35 @@ const Aside = () => {
 	return (
 		<aside
 			className={clsx(
-				"bento flex flex-col justify-between w-18 rounded-xl transition-all",
-				isAsideFold ? "items-center" : "lg:w-36 xl:w-44",
+				"bento flex flex-col justify-between w-17 rounded-xl transition-all",
+				isAsideFolded ? "items-center" : "lg:w-36 xl:w-44",
 			)}
 		>
 			{/* 路由菜单 */}
 			<nav
 				className={clsx(
 					"sticky top-3 flex flex-col gap-2 w-full",
-					!isAsideFold && "lg:gap-3",
+					!isAsideFolded && "lg:gap-3",
 				)}
 			>
-				{routesWithIcon.map(({ path, title, Icon }) => {
-					const [match] = useRoute(path === "/" ? "/" : `${path}/*?`);
+				{routesWithIcon.map(({ path, title, Icon, ...restProps }) => {
+					const router = useRouterStore();
+					const isMatched =
+						"exact" in restProps && restProps.exact
+							? router?.route === path
+							: router?.route.includes(path);
 					return (
-						<Link key={path} href={path}>
+						<a key={path} href={path}>
 							<Button
-								variant={match ? "info" : "ghost"}
+								variant={isMatched ? "info" : "ghost"}
 								size="xl"
-								rounded={isAsideFold ? "full" : true}
+								rounded={isAsideFolded ? "full" : true}
 								icon={Icon}
 								className={clsx("w-full px-3! whitespace-nowrap")}
 							>
-								{!isAsideFold && title}
+								{!isAsideFolded && title}
 							</Button>
-						</Link>
+						</a>
 					);
 				})}
 			</nav>
@@ -71,17 +87,19 @@ const Aside = () => {
 			<div
 				className={clsx(
 					"sticky bottom-3 flex flex-wrap gap-3 w-full",
-					isAsideFold && "justify-center",
+					isAsideFolded && "justify-center",
 				)}
 			>
 				{!isMobile && (
 					<Button
-						variant={isAsideFold ? "ghost" : "info"}
+						variant={isAsideFolded ? "ghost" : "info"}
 						size="xl"
 						rounded="full"
 						icon={<i className="i-mingcute-align-arrow-left-line" />}
-						className={clsx(isAsideFold && "rotate-180")}
-						onClick={() => setIsAsideFold(!isAsideFold)}
+						className={clsx(isAsideFolded && "rotate-180")}
+						onClick={() => {
+							setPreferenceKey("aside", !isAsideFolded ? "folded" : "full");
+						}}
 					/>
 				)}
 				<Button
@@ -95,7 +113,9 @@ const Aside = () => {
 							}
 						/>
 					}
-					onClick={toggleDark}
+					onClick={() => {
+						setPreferenceKey("theme", isDark ? "light" : "dark");
+					}}
 				/>
 			</div>
 		</aside>

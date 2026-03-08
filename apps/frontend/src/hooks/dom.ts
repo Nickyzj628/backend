@@ -4,6 +4,7 @@ import {
 	useEffect,
 	useState,
 } from "preact/hooks";
+import type { Recordable } from "@/types/common";
 import { getChildrenByTag, zoom } from "@/utils/dom";
 
 /**
@@ -170,4 +171,36 @@ export const useZoom = (ref: MutableRef<HTMLElement | null>) => {
 			ob.disconnect();
 		};
 	}, [ref]);
+};
+
+export const useSearchParams = () => {
+	const [params, setParams] = useState(
+		() => new URLSearchParams(window.location.search),
+	);
+
+	// 监听地址栏变化，自动 setparams
+	useEffect(() => {
+		const onPopState = () => {
+			setParams(new URLSearchParams(window.location.search));
+		};
+		window.addEventListener("popstate", onPopState);
+		return () => {
+			window.removeEventListener("popstate", onPopState);
+		};
+	}, []);
+
+	// 手动更新地址栏查询参数
+	const updateParams = useCallback((newParams: Recordable | null) => {
+		const url = new URL(window.location.href);
+		if (newParams === null) {
+			url.search = "";
+		} else {
+			Object.entries(newParams).forEach(([key, value]) => {
+				url.searchParams.set(key, String(value));
+			});
+		}
+		window.history.replaceState(null, "", url.toString());
+	}, []);
+
+	return [params, updateParams] as const;
 };
