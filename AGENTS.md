@@ -42,15 +42,24 @@ pnpm install                         # 安装所有依赖
 pnpm dev                             # 同时启动前后端
 pnpm dev:backend                     # 仅启动后端 (端口 3000)
 pnpm dev:frontend                    # 仅启动前端 (端口 5173)
-pnpm build                           # 构建所有应用
+pnpm build                           # 构建所有应用（开发环境）
+pnpm build:prod                      # 构建所有应用（生产环境）
 pnpm check                           # 检查代码格式和 lint
 pnpm check:write                     # 自动修复问题
 
 # 后端专用
 cd apps/backend
 pnpm dev                             # 开发模式 (tsx watch)
-pnpm build                           # 使用 esbuild 打包
-pnpm start                           # 运行构建后的版本
+pnpm build                           # 使用 esbuild 打包（开发环境）
+pnpm build:prod                      # 使用 esbuild 打包到 dist-prod（生产环境）
+pnpm start                           # 运行开发环境构建 (dist/app.js)
+pnpm start:prod                      # 运行生产环境构建 (dist-prod/app.js)
+
+# 前端专用
+cd apps/frontend
+pnpm dev                             # 开发模式
+pnpm build                           # Vite 构建（开发环境）
+pnpm build:prod                      # Vite 构建（生产环境，代码压缩优化）
 
 # Biome 检查
 pnpm dlx @biomejs/biome check apps/backend/src
@@ -215,7 +224,7 @@ export default function Router() {
 ## 提交前检查清单
 
 1. 运行 `pnpm check` 检查代码
-2. 运行 `pnpm build` 验证构建
+2. 运行 `pnpm build` 验证构建（开发环境）
 3. 确保无敏感信息提交
 4. 遵循 Conventional Commits: `feat(backend): 添加分页`, `fix(frontend): 修复加载状态`
 

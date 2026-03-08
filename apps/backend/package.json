@@ -4,7 +4,8 @@
 	"scripts": {
 		"dev": "tsx watch --env-file=.env src/app.ts",
 		"build": "esbuild src/app.ts --bundle --platform=node --target=node25 --outdir=dist --format=esm --packages=external --minify --alias:@=./src",
-		"build:prod": "esbuild src/app.ts --bundle --platform=node --target=node25 --outdir=dist --format=esm --packages=external --minify --alias:@=./src",
+		"build:prod": "esbuild src/app.ts --bundle --platform=node --target=node25 --outdir=dist-prod --format=esm --packages=external --minify --alias:@=./src",
+		"start:prod": "node --env-file=.env dist-prod/app.js",
 		"start": "node --env-file=.env dist/app.js"
 	},
 	"keywords": [],
