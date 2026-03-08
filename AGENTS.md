@@ -5,7 +5,7 @@
 ## 技术栈
 
 - **运行时**: Node.js v25+ + pnpm
-- **后端**: Hono + Valibot 校验 + SQLite (`bun:sqlite`)
+- **后端**: Hono + Valibot 校验 + SQLite (`node:sqlite`)
 - **前端**: Preact + Vite + UnoCSS v4 + wouter-preact
 - **代码质量**: Biome (根目录配置)
 - **测试**: 未配置
@@ -144,12 +144,12 @@ export class RoomService {
 }
 ```
 
-### 数据库 (bun:sqlite)
+### 数据库 (node:sqlite)
 
 ```typescript
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
 
-const db = new Database("data/sqlite.db");
+const db = new DatabaseSync("data/sqlite.db");
 const listStmt = db.prepare("SELECT * FROM blogs LIMIT $limit OFFSET $offset");
 const rows = listStmt.all({ $limit: 10, $offset: 0 }) as Blog[];
 ```
