@@ -35,7 +35,8 @@ const Page = () => {
 		const headers = headerElements.map((element, index) => {
 			const levelMatch = element.match(/<h(\d)/);
 			const idMatch = element.match(/id="([^"]+)"/);
-			const textMatch = element.match(/>([^<]+)<\/h\d>/);
+			// const textMatch = element.match(/>([^<]+)<\/h\d>/);
+			const textMatch = element.match(/>(.*?)<\/h\d>/);
 			return {
 				element,
 				level: Number(levelMatch[1]),
