@@ -10,16 +10,16 @@ import type { WSContext } from "hono/ws";
 export type WS = WSContext;
 
 export type Room = {
-	name: string;
-	size: number;
-	clients: Set<string>; // 存储 userId
-	host?: string; // userId
+  name: string;
+  size: number;
+  clients: Set<string>; // 存储 userId
+  host?: string; // userId
 };
 
 export type UserData = {
-	userName: string;
-	roomCode: string;
-	isHost: boolean;
+  userName: string;
+  roomCode: string;
+  isHost: boolean;
 };
 
 // 从 shared-types 重新导出纯类型（不包含 schemas 中的重复类型）
@@ -27,12 +27,12 @@ export type { VideoInfo } from "@nickyzj/shared-types";
 
 // 从 shared-types/schemas 重新导出类型和 schemas
 export type {
-	CreateRoomPayload,
-	CreateRoomResponse,
-	ErrorResponse,
-	JoinRoomPayload,
-	RoomError,
-	RoomMessagePayload,
-	VideoSyncResponsePayload,
-	WebSocketMessage,
+  CreateRoomPayload,
+  CreateRoomResponse,
+  ErrorResponse,
+  JoinRoomPayload,
+  RoomError,
+  RoomMessagePayload,
+  VideoSyncResponsePayload,
+  WebSocketMessage,
 } from "@nickyzj/shared-types/schemas";

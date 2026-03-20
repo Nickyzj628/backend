@@ -9,8 +9,8 @@ import { toast } from "react-hot-toast/headless";
  * setTitle(); // 页面标题为默认的 "NICKYZJ"
  */
 export const setTitle = (title?: string) => {
-	const suffix = "NICKYZJ";
-	document.title = [title, suffix].join(" / ")
+  const suffix = "NICKYZJ";
+  document.title = [title, suffix].join(" / ");
 };
 
 /**
@@ -21,11 +21,11 @@ export const setTitle = (title?: string) => {
  * zoom(element); // 点击 #image 后展开图片
  */
 export const zoom = async (dom: HTMLImageElement) => {
-	const { default: mediumZoom } = await import("medium-zoom");
-	mediumZoom(dom, {
-		margin: 30,
-		background: "rgba(0, 0, 0, 0.8)",
-	});
+  const { default: mediumZoom } = await import("medium-zoom");
+  mediumZoom(dom, {
+    margin: 30,
+    background: "rgba(0, 0, 0, 0.8)",
+  });
 };
 
 /**
@@ -39,21 +39,21 @@ export const zoom = async (dom: HTMLImageElement) => {
  * console.log(divs); // 输出 #root 下的所有 div 元素
  */
 export const getChildrenByTag = <K extends keyof HTMLElementTagNameMap>(
-	element: Element,
-	tagName: K,
+  element: Element,
+  tagName: K,
 ): HTMLElementTagNameMap[K][] => {
-	const elements: HTMLElementTagNameMap[K][] = [];
+  const elements: HTMLElementTagNameMap[K][] = [];
 
-	if (element.tagName === tagName.toUpperCase()) {
-		elements.push(element as HTMLElementTagNameMap[K]);
-	}
+  if (element.tagName === tagName.toUpperCase()) {
+    elements.push(element as HTMLElementTagNameMap[K]);
+  }
 
-	// 递归遍历子元素
-	Array.from(element.children).forEach((child) => {
-		elements.push(...getChildrenByTag(child, tagName));
-	});
+  // 递归遍历子元素
+  Array.from(element.children).forEach((child) => {
+    elements.push(...getChildrenByTag(child, tagName));
+  });
 
-	return elements;
+  return elements;
 };
 
 /**
@@ -63,25 +63,25 @@ export const getChildrenByTag = <K extends keyof HTMLElementTagNameMap>(
  * copyToClipboard("Hello, world!"); // 复制 "Hello, world!" 到剪贴板
  */
 export const copyToClipboard = async (text: string) => {
-	// 如果浏览器不支持 Clipboard API，则使用旧方法
-	if (!navigator.clipboard) {
-		const textarea = document.createElement("textarea");
-		textarea.value = text;
-		textarea.style.position = "fixed"; // 防止页面滚动
+  // 如果浏览器不支持 Clipboard API，则使用旧方法
+  if (!navigator.clipboard) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed"; // 防止页面滚动
 
-		document.body.appendChild(textarea);
-		textarea.focus();
-		textarea.select();
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
 
-		const done = document.execCommand("copy");
-		toast.success(done ? "复制成功" : "复制失败，请手动复制");
-		document.body.removeChild(textarea);
-	} else {
-		const [error] = await to(navigator.clipboard.writeText(text));
-		if (error) {
-			toast.error(`复制失败：${error.message}`);
-		} else {
-			toast.success("复制成功");
-		}
-	}
+    const done = document.execCommand("copy");
+    toast.success(done ? "复制成功" : "复制失败，请手动复制");
+    document.body.removeChild(textarea);
+  } else {
+    const [error] = await to(navigator.clipboard.writeText(text));
+    if (error) {
+      toast.error(`复制失败：${error.message}`);
+    } else {
+      toast.success("复制成功");
+    }
+  }
 };

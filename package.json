@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.30.3",
   "scripts": {
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
@@ -15,13 +14,17 @@
     "build:frontend:prod": "pnpm --filter frontend build:prod",
     "build": "pnpm -r --workspace-concurrency=1 build",
     "build:prod": "pnpm -r --workspace-concurrency=1 build:prod",
-    "check": "pnpm dlx @biomejs/biome check .",
-    "check:write": "pnpm dlx @biomejs/biome check --write .",
+    "check": "oxlint . && oxfmt --check .",
+    "check:write": "oxlint . --fix && oxfmt --write .",
+    "lint": "oxlint .",
+    "format": "oxfmt --write .",
     "test": "pnpm --filter backend test && pnpm --filter frontend test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.7",
     "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1"
-  }
+    "concurrently": "^9.2.1",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.56.0"
+  },
+  "packageManager": "pnpm@10.30.3"
 }

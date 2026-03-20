@@ -7,7 +7,7 @@
  * clsx("flex items-center", true && "justify-between", false && "flex-1", null)
  */
 export const clsx = (...classNames: any[]) => {
-	return classNames.filter(Boolean).join(" ");
+  return classNames.filter(Boolean).join(" ");
 };
 
 /**
@@ -18,5 +18,5 @@ export const clsx = (...classNames: any[]) => {
  * removeSpaces("a b c") // "abc"
  */
 export const removeSpaces = (string: string) => {
-	return string.replaceAll(" ", "");
+  return string.replaceAll(" ", "");
 };

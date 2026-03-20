@@ -55,66 +55,66 @@ export const getBySlugStmt = db.prepare(`
 `);
 
 export const saveAnime = async (path: string, stats?: Stats) => {
-	const title = basename(path);
-	const slug = textToSlug(title);
-	const filePath = relative(WEBDAV_PATH, path);
-	const season = extractSeasonFromPath(filePath);
-	const episodesRaw = await readdir(path);
-	const episodes = JSON.stringify(episodesRaw);
-	const eps = episodesRaw.length;
-	const createdAt = stats?.birthtime?.toISOString() ?? "";
-	const updatedAt = stats?.mtime?.toISOString() ?? "";
+  const title = basename(path);
+  const slug = textToSlug(title);
+  const filePath = relative(WEBDAV_PATH, path);
+  const season = extractSeasonFromPath(filePath);
+  const episodesRaw = await readdir(path);
+  const episodes = JSON.stringify(episodesRaw);
+  const eps = episodesRaw.length;
+  const createdAt = stats?.birthtime?.toISOString() ?? "";
+  const updatedAt = stats?.mtime?.toISOString() ?? "";
 
-	// 检查番剧是否存在
-	const existing = getBySlugStmt.get({ $slug: slug }) as AnimeItem | undefined;
+  // 检查番剧是否存在
+  const existing = getBySlugStmt.get({ $slug: slug }) as AnimeItem | undefined;
 
-	// 如果不存在，则插入新记录
-	if (!existing) {
-		saveStmt.run({
-			$title: title,
-			$slug: slug,
-			$season: season,
-			$eps: eps,
-			$episodes: episodes,
-			$created_at: createdAt,
-			$updated_at: updatedAt,
-		});
-		log(`新增番剧：${title}，共${eps}话`);
-		return;
-	}
+  // 如果不存在，则插入新记录
+  if (!existing) {
+    saveStmt.run({
+      $title: title,
+      $slug: slug,
+      $season: season,
+      $eps: eps,
+      $episodes: episodes,
+      $created_at: createdAt,
+      $updated_at: updatedAt,
+    });
+    log(`新增番剧：${title}，共${eps}话`);
+    return;
+  }
 
-	// 如果存在，则检查是否有变化
-	const hasChanged =
-		existing.season !== season ||
-		existing.eps !== eps ||
-		existing.episodes !== episodes ||
-		existing.created_at !== createdAt ||
-		existing.updated_at !== updatedAt;
+  // 如果存在，则检查是否有变化
+  const hasChanged =
+    existing.season !== season ||
+    existing.eps !== eps ||
+    existing.episodes !== episodes ||
+    existing.created_at !== createdAt ||
+    existing.updated_at !== updatedAt;
 
-	if (!hasChanged) {
-		return;
-	}
+  if (!hasChanged) {
+    return;
+  }
 
-	// 如果有变化，则更新记录
-	saveStmt.run({
-		$title: title,
-		$slug: slug,
-		$season: season,
-		$eps: eps,
-		$episodes: episodes,
-		$created_at: createdAt,
-		$updated_at: updatedAt,
-	});
-	log(`更新番剧：${title}，共${eps}话`);
+  // 如果有变化，则更新记录
+  saveStmt.run({
+    $title: title,
+    $slug: slug,
+    $season: season,
+    $eps: eps,
+    $episodes: episodes,
+    $created_at: createdAt,
+    $updated_at: updatedAt,
+  });
+  log(`更新番剧：${title}，共${eps}话`);
 };
 
 export const removeAnime = (path: string) => {
-	const title = basename(path);
+  const title = basename(path);
 
-	const result = deleteStmt.run({ $title: title }) as { changes: number };
-	if (result.changes > 0) {
-		log(`删除番剧：${title}`);
-	}
+  const result = deleteStmt.run({ $title: title }) as { changes: number };
+  if (result.changes > 0) {
+    log(`删除番剧：${title}`);
+  }
 
-	return result.changes;
+  return result.changes;
 };

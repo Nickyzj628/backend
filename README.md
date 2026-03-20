@@ -1,13 +1,11 @@
-# NICKYZJ Monorepo
+男生自用个人网站，总体是基于pnpm的monorepo仓库，前端是Preact，后端是Hono。
 
-基于 pnpm 的 monorepo，使用 Hono (Node.js) 后端和 Preact 前端。
+## 具体技术栈
 
-## 技术栈
-
-- **后端**: Hono + Node.js + Valibot + SQLite
-- **前端**: Preact + Vite + UnoCSS + nanostores/router
-- **包管理**: pnpm
-- **代码质量**: Biome
+- **前端**: TypeScript 7、Vite 8、Preact 11、UnoCSS、Nano Stores
+- **后端**: Node.js、Hono、SQLite、Valibot
+- **包管理器**: pnpm
+- **代码质量、格式化工具**: Oxlint、Oxfmt
 
 ## 项目结构
 
@@ -26,53 +24,33 @@
 # 安装依赖
 pnpm install
 
+# 同时启动前后端
+pnpm dev
+# 仅启动前端
+pnpm dev:frontend
 # 仅启动后端
 pnpm dev:backend
 
-# 仅启动前端
-pnpm dev:frontend
-
-# 同时启动前后端
-pnpm dev
-
-# 构建所有应用
+# 构建所有应用（开发环境）
 pnpm build
+# 仅构建前端
+pnpm build:frontend
+# 仅构建后端
+pnpm build:backend
+
+# 构建所有应用（生产环境）
+pnpm build:prod
+# 仅构建前端
+pnpm build:frontend:prod
+# 仅构建后端
+pnpm build:backend:prod
 
 # 代码检查
 pnpm check
-
-# 自动修复
+# 自动修复代码
 pnpm check:write
-```
-
-## 后端
-
-位于 `apps/backend/`，使用 Hono 框架。
-
-```bash
-cd apps/backend
-pnpm dev        # 开发模式 (tsx watch)
-pnpm build      # 打包
-pnpm start      # 运行构建版本
-```
-
-使用 Node.js 原生 `--env-file=.env` 加载环境变量。
-
-## 前端
-
-位于 `apps/frontend/`，使用 Preact + Vite。
-
-```bash
-cd apps/frontend
-pnpm dev        # 开发服务器
-pnpm build      # 生产构建
-pnpm preview    # 预览构建结果
 ```
 
 ## 开发规范
 
-详见 `AGENTS.md`。
-
-- **代码风格**: Biome 配置 (Tab 缩进, 双引号, 必须分号)
-- **命名规范**: camelCase (变量/函数), PascalCase (类/类型/组件)
-- **导入规范**: 使用 `@/` 别名
+详见 `CLAUDE.md`。

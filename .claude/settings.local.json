@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"AGENTS|CLAUDE|README|\\\\.md$\")",
+      "WebSearch",
+      "WebFetch(domain:oxc.rs)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm view:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm check:write)",
+      "Bash(pnpm format:*)",
+      "Bash(pnpm exec:*)"
+    ]
+  }
+}
