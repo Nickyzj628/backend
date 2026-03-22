@@ -23,13 +23,19 @@ const Page = () => {
   }, [data]);
 
   // 生成目录
-  const [isCatalogVisible, setIsCatalogVisible] = useState(window.innerWidth > 1152);
+  const [isCatalogVisible, setIsCatalogVisible] = useState(
+    window.innerWidth > 1152,
+  );
   const catalog = useMemo(() => {
     if (!data?.html) {
       return [];
     }
 
     const headerElements = data.html.match(/<h\d id="[^"]+">.*?<\/h\d>/g);
+    if (!headerElements) {
+      return [];
+    }
+
     const headers = headerElements.map((element, index) => {
       const levelMatch = element.match(/<h(\d)/);
       const idMatch = element.match(/id="([^"]+)"/);
@@ -42,7 +48,6 @@ const Page = () => {
         text: textMatch[1],
       };
     });
-
     if (!headers.length) {
       return [];
     }
@@ -77,7 +82,9 @@ const Page = () => {
       return;
     }
 
-    const a = document.getElementById(decodeURIComponent(hash).replace("#", ""));
+    const a = document.getElementById(
+      decodeURIComponent(hash).replace("#", ""),
+    );
     a?.scrollIntoView();
   }, [loading, hash]);
 
@@ -109,7 +116,9 @@ const Page = () => {
         <div className="absolute top-0 left-0 size-full rounded-xl backdrop-blur-2 backdrop-brightness-50" />
       </div>
       <div className="relative flex flex-col items-center gap-0.5 w-full mt-8 sm:mt-16 mb-4 sm:mb-8 p-3">
-        <h1 className="mb-3 text-white text-balance text-center">{data.title}</h1>
+        <h1 className="mb-3 text-white text-balance text-center">
+          {data.title}
+        </h1>
         <span className="inline-flex text-sm text-neutral-200">
           创建于{dayjs(data.created_at).format("YYYY年MM月DD日 HH:mm:ss")}
         </span>
