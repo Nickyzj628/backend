@@ -24,12 +24,19 @@
 # 安装依赖
 pnpm install
 
-# 同时启动前后端
+# 同时启动前后端（开发环境）
 pnpm dev
-# 仅启动前端
+# 仅启动前端（开发环境）
 pnpm dev:frontend
-# 仅启动后端
+# 仅启动后端（开发环境）
 pnpm dev:backend
+
+# 预览前端（测试环境）
+pnpm start:frontend
+# 预览后端（测试环境）
+pnpm start:backend
+# 预览后端（生产环境）
+pnpm start:backend:prod
 
 # 构建所有应用（开发环境）
 pnpm build

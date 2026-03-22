@@ -6,6 +6,9 @@
   "scripts": {
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
+    "start:backend": "pnpm --filter backend start",
+    "start:backend:prod": "pnpm --filter backend start:prod",
+    "start:frontend": "pnpm --filter frontend preview",
     "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,green\"",
     "build:shared-types": "pnpm --filter @nickyzj/shared-types build",
     "build:backend": "pnpm --filter backend build",

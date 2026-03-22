@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **⚠️ 重要：禁止将代码打包到生产环境（`build:prod`、`build:prod:*` 等）进行验证。所有构建验证应使用开发环境构建命令。**
+
 本文档为 Claude Code (claude.ai/code) 提供指导，确保 AI 始终处于简体中文语境下工作。
 
 本仓库为 pnpm monorepo，包含 Hono (Node.js) 后端和 Preact 前端。
@@ -41,11 +43,10 @@ pnpm dev                        # 同时启动前后端
 pnpm dev:backend                # 仅启动后端 (端口 3000)
 pnpm dev:frontend               # 仅启动前端 (端口 5173)
 
-# 构建
-pnpm build                      # 构建所有应用（开发环境）
-pnpm build:prod                 # 构建所有应用（生产环境）
-pnpm build:backend              # 仅构建后端
-pnpm build:frontend             # 仅构建前端
+# 启动（生产构建产物）
+pnpm start:backend              # 启动后端（开发构建）
+pnpm start:backend:prod         # 启动后端（生产构建）
+pnpm start:frontend             # 启动前端预览
 
 # 代码质量
 pnpm check                      # Oxc 检查格式和 lint
