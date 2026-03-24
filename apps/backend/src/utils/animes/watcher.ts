@@ -2,7 +2,12 @@ import type { Stats } from "node:fs";
 import { log } from "@nickyzj2023/utils";
 import chokidar from "chokidar";
 import { ANIMES_DIR } from "../constants";
-import { getActiveSeasonDirs, getAnimeDir, getPathDepth, getRelativePath } from ".";
+import {
+  getActiveSeasonDirs,
+  getAnimeDir,
+  getPathDepth,
+  getRelativePath,
+} from ".";
 import { removeAnime, saveAnime } from "./sql";
 
 /**
@@ -34,7 +39,9 @@ export const watchAnimes = async () => {
   // 批量处理队列
   await new Promise<void>((resolve) => {
     initWatcher.on("ready", async () => {
-      await Promise.all(initQueue.map(({ path, stats }) => saveAnime(path, stats)));
+      await Promise.all(
+        initQueue.map(({ path, stats }) => saveAnime(path, stats)),
+      );
       initWatcher.close();
       resolve();
     });
@@ -62,9 +69,9 @@ export const watchAnimes = async () => {
         saveAnime(path, stats);
       }
     })
-    .on("add", async (path) => {
+    .on("add", async (path, stats) => {
       const animeDir = getAnimeDir(path);
-      if (animeDir) saveAnime(animeDir);
+      if (animeDir) saveAnime(animeDir, stats);
     })
     .on("unlink", async (path) => {
       const animeDir = getAnimeDir(path);
