@@ -8,7 +8,6 @@
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "start:backend": "pnpm --filter backend start",
-    "start:backend:prod": "pnpm --filter backend start:prod",
     "start:frontend": "pnpm --filter frontend preview",
     "build": "pnpm -r --workspace-concurrency=1 build",
     "build:prod": "pnpm -r --workspace-concurrency=1 build:prod",

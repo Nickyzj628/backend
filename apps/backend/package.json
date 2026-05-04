@@ -9,8 +9,7 @@
 		"dev": "tsx watch --env-file=.env src/app.ts",
 		"build": "tsdown",
 		"build:prod": "tsdown --outDir dist-prod --minify",
-		"start:prod": "node --env-file=.env dist-prod/app.mjs",
-		"start": "node --env-file=.env dist/app.mjs"
+		"start": "node --env-file=.env dist-prod/app.mjs"
 	},
 	"dependencies": {
 		"@hono/node-server": "^2.0.1",
