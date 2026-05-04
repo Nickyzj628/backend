@@ -2,7 +2,7 @@ import type {
 	CreateRoomResponse,
 	RoomMessage,
 	RoomMessagePayload,
-} from "@nickyzj/shared-types";
+} from "@nickyzj2023/shared-types";
 import type { SubmitEventHandler } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { toast } from "react-hot-toast/headless";

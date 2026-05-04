@@ -1,9 +1,9 @@
 /**
  * 房间模块类型定义
- * Schemas 已从 @nickyzj/shared-types/schemas 导入
+ * Schemas 已从 @nickyzj2023/shared-types/schemas 导入
  */
 
-import type { RoomErrorCode } from "@nickyzj/shared-types";
+import type { RoomErrorCode } from "@nickyzj2023/shared-types";
 
 export type RoomError = RoomErrorCode;
 
@@ -20,4 +20,4 @@ export {
 	CreateRoomResponseSchema,
 	ErrorResponseSchema,
 	RoomErrorSchema,
-} from "@nickyzj/shared-types/schemas";
+} from "@nickyzj2023/shared-types/schemas";

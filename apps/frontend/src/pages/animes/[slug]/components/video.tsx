@@ -3,7 +3,7 @@ import type {
 	RoomMessage,
 	VideoInfo,
 	VideoSyncRequestPayload,
-} from "@nickyzj/shared-types";
+} from "@nickyzj2023/shared-types";
 import { throttle, to } from "@nickyzj2023/utils";
 import Danmaku from "danmaku/dist/esm/danmaku.canvas.js";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";

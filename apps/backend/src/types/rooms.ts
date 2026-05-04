@@ -1,7 +1,7 @@
 /**
  * 房间/放映室相关类型
  * 保留本地类型定义供内部使用
- * Schemas 已从 @nickyzj/shared-types/schemas 导入
+ * Schemas 已从 @nickyzj2023/shared-types/schemas 导入
  */
 
 import type { WSContext } from "hono/ws";
@@ -23,7 +23,7 @@ export type UserData = {
 };
 
 // 从 shared-types 重新导出纯类型（不包含 schemas 中的重复类型）
-export type { VideoInfo } from "@nickyzj/shared-types";
+export type { VideoInfo } from "@nickyzj2023/shared-types";
 
 // 从 shared-types/schemas 重新导出类型和 schemas
 export type {
@@ -35,4 +35,4 @@ export type {
 	RoomMessagePayload,
 	VideoSyncResponsePayload,
 	WebSocketMessage,
-} from "@nickyzj/shared-types/schemas";
+} from "@nickyzj2023/shared-types/schemas";

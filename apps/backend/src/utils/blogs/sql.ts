@@ -2,7 +2,7 @@ import type { Stats } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { basename, relative } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import type { Blog } from "@nickyzj/shared-types";
+import type { Blog } from "@nickyzj2023/shared-types";
 import { log } from "@nickyzj2023/utils";
 import { extractYearFromPath, textToSlug } from "../common";
 import { ROOT_PATH, WEBDAV_PATH } from "../constants";

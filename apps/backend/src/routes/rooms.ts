@@ -4,7 +4,7 @@ import type {
 	RoomMessagePayload,
 	VideoSyncResponsePayload,
 	WebSocketMessage,
-} from "@nickyzj/shared-types/schemas";
+} from "@nickyzj2023/shared-types/schemas";
 import { log } from "@nickyzj2023/utils";
 import { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";

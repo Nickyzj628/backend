@@ -1,5 +1,5 @@
 {
-	"name": "@nickyzj/shared-types",
+	"name": "@nickyzj2023/shared-types",
 	"version": "1.0.0",
 	"files": [
 		"dist"
@@ -27,6 +27,6 @@
 		"valibot": "^1.3.1"
 	},
 	"devDependencies": {
-		"typescript": "^5.9.3"
+		"typescript": "^6.0.3"
 	}
 }

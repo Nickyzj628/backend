@@ -1,4 +1,4 @@
-import type { Anime } from "@nickyzj/shared-types";
+import type { Anime } from "@nickyzj2023/shared-types";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { Figcaption, Figure } from "@/components/figure";
 import Section from "@/components/section";

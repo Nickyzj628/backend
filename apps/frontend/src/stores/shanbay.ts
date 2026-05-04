@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/preact";
-import type { Shanbay } from "@nickyzj/shared-types";
+import type { Shanbay } from "@nickyzj2023/shared-types";
 import { createFetcherStore } from "./fetcher";
 
 const shanbayStore = createFetcherStore<Shanbay>("/shanbay");

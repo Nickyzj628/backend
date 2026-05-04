@@ -1,4 +1,4 @@
-import type { Anime } from "@nickyzj/shared-types";
+import type { Anime } from "@nickyzj2023/shared-types";
 import { BASE_URL, WEBDAV_PORT } from "@/utils/constants";
 
 /**

@@ -1,4 +1,4 @@
-import type { Anime } from "@nickyzj/shared-types";
+import type { Anime } from "@nickyzj2023/shared-types";
 import dayjs from "dayjs";
 import { useMemo } from "preact/hooks";
 import { Figcaption, Figure } from "@/components/figure";

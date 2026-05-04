@@ -1,4 +1,4 @@
-import type { Blog } from "@nickyzj/shared-types";
+import type { Blog } from "@nickyzj2023/shared-types";
 import { Hono } from "hono";
 import { countStmt, getBySlugStmt, listStmt, watchBlogs } from "@/utils/blogs";
 import { fixPageQuery } from "@/utils/common";

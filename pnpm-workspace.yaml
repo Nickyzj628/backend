@@ -4,3 +4,6 @@ packages:
 
 onlyBuiltDependencies:
   - esbuild
+
+minimumReleaseAgeExclude:
+  - "@nickyzj2023/*"

@@ -1,4 +1,4 @@
-import type { Shanbay } from "@nickyzj/shared-types";
+import type { Shanbay } from "@nickyzj2023/shared-types";
 import { fetcher, to, withCache } from "@nickyzj2023/utils";
 import { Hono } from "hono";
 import { safeParse } from "valibot";

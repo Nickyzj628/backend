@@ -3,7 +3,7 @@ import type {
 	AnimeResp,
 	AnimesParams,
 	AnimesResp,
-} from "@nickyzj/shared-types";
+} from "@nickyzj2023/shared-types";
 import { qs } from "@nickyzj2023/utils";
 import { useMemo } from "preact/hooks";
 import { createFetcherStore } from "./fetcher";
