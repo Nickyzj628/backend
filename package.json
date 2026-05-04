@@ -4,27 +4,26 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "pnpm --filter backend --filter frontend run dev",
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "start:backend": "pnpm --filter backend start",
     "start:backend:prod": "pnpm --filter backend start:prod",
     "start:frontend": "pnpm --filter frontend preview",
-    "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,green\"",
+    "build": "pnpm -r --workspace-concurrency=1 build",
+    "build:prod": "pnpm -r --workspace-concurrency=1 build:prod",
     "build:shared-types": "pnpm --filter @nickyzj/shared-types build",
     "build:backend": "pnpm --filter backend build",
     "build:backend:prod": "pnpm --filter backend build:prod",
     "build:frontend": "pnpm --filter frontend build",
     "build:frontend:prod": "pnpm --filter frontend build:prod",
-    "build": "pnpm -r --workspace-concurrency=1 build",
-    "build:prod": "pnpm -r --workspace-concurrency=1 build:prod",
     "check": "biome check .",
     "check:write": "biome check --write .",
     "test": "pnpm --filter backend test && pnpm --filter frontend test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
-    "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1"
+    "@types/node": "^25.5.0"
   },
   "packageManager": "pnpm@10.32.1"
 }
