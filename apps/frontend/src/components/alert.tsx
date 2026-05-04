@@ -4,36 +4,36 @@ import type { MutableRef } from "preact/hooks";
 import { clsx } from "@/utils/string";
 
 const typeMap = {
-  info: {
-    icon: <i className="i-mingcute-information-fill size-6 shrink-0" />,
-    wrapperClassName: "bg-blue-50 text-blue-500 dark:bg-blue-950",
-  },
-  success: {
-    icon: <i className="i-mingcute-check-circle-fill size-6 shrink-0" />,
-    wrapperClassName: "bg-green-50 text-green-500 dark:bg-green-950",
-  },
-  warning: {
-    icon: <i className="i-mingcute-warning-fill size-6 shrink-0" />,
-    wrapperClassName: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
-  },
-  danger: {
-    icon: <i className="i-mingcute-close-circle-fill size-6 shrink-0" />,
-    wrapperClassName: "bg-red-50 text-red-500 dark:bg-red-950",
-  },
+	info: {
+		icon: <i className="i-mingcute-information-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-blue-50 text-blue-500 dark:bg-blue-950",
+	},
+	success: {
+		icon: <i className="i-mingcute-check-circle-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-green-50 text-green-500 dark:bg-green-950",
+	},
+	warning: {
+		icon: <i className="i-mingcute-warning-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
+	},
+	danger: {
+		icon: <i className="i-mingcute-close-circle-fill size-6 shrink-0" />,
+		wrapperClassName: "bg-red-50 text-red-500 dark:bg-red-950",
+	},
 };
 
 export type AlertType = keyof typeof typeMap;
 
 export type AlertProps = {
-  type?: AlertType;
-  title?: string;
-  description?: string | ReactNode;
-  className?: string;
-  style?: CSSProperties;
-  actions?: { text: string; onClick: () => void }[];
-  showIcon?: boolean;
-  showClose?: boolean;
-  onClose?: () => void;
+	type?: AlertType;
+	title?: string;
+	description?: string | ReactNode;
+	className?: string;
+	style?: CSSProperties;
+	actions?: { text: string; onClick: () => void }[];
+	showIcon?: boolean;
+	showClose?: boolean;
+	onClose?: () => void;
 };
 
 /**
@@ -55,52 +55,60 @@ export type AlertProps = {
  *     onClose={() => {}}
  * />
  */
-const Alert = forwardRef((props: AlertProps, ref: MutableRef<HTMLDivElement>) => {
-  const {
-    type = "info",
-    title,
-    description,
-    className,
-    style,
-    actions = [],
-    showIcon = true,
-    showClose = false,
-    onClose = () => {},
-  } = props ?? {};
+const Alert = forwardRef(
+	(props: AlertProps, ref: MutableRef<HTMLDivElement>) => {
+		const {
+			type = "info",
+			title,
+			description,
+			className,
+			style,
+			actions = [],
+			showIcon = true,
+			showClose = false,
+			onClose = () => {},
+		} = props ?? {};
 
-  return (
-    <div
-      ref={ref}
-      className={clsx(
-        "flex gap-3 p-3 rounded-xl text-sm transition",
-        typeMap[type].wrapperClassName,
-        className,
-      )}
-      style={style}
-    >
-      {showIcon && typeMap[type].icon}
-      <div>
-        {title && <h4 className="text-current font-bold leading-none">{title}</h4>}
-        {description && <p className="mt-1">{description}</p>}
-        {actions.length > 0 && (
-          <div className="flex gap-4 mt-2">
-            {actions.map((action, index) => (
-              <button key={index} className="font-bold leading-loose" onClick={action.onClick}>
-                {action.text}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      {showClose && (
-        <button className="shrink-0 ml-auto" onClick={onClose}>
-          <span className="size-4">
-            <span className="i-mingcute-close-line" />
-          </span>
-        </button>
-      )}
-    </div>
-  );
-});
+		return (
+			<div
+				ref={ref}
+				className={clsx(
+					"flex gap-3 p-3 rounded-xl text-sm transition",
+					typeMap[type].wrapperClassName,
+					className,
+				)}
+				style={style}
+			>
+				{showIcon && typeMap[type].icon}
+				<div>
+					{title && (
+						<h4 className="text-current font-bold leading-none">{title}</h4>
+					)}
+					{description && <p className="mt-1">{description}</p>}
+					{actions.length > 0 && (
+						<div className="flex gap-4 mt-2">
+							{actions.map((action, index) => (
+								<button
+									key={index}
+									className="font-bold leading-loose"
+									onClick={action.onClick}
+								>
+									{action.text}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+				{showClose && (
+					<button className="shrink-0 ml-auto" onClick={onClose}>
+						<span className="size-4">
+							<span className="i-mingcute-close-line" />
+						</span>
+					</button>
+				)}
+			</div>
+		);
+	},
+);
 
 export default Alert;

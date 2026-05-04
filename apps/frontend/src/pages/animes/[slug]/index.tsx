@@ -11,61 +11,64 @@ import { setTitle } from "@/utils/dom";
 import { WebSocketProvider } from "@/utils/websocket-context";
 
 const Tab = {
-  Episodes: 1,
-  Room: 2,
-  Comments: 3,
+	Episodes: 1,
+	Room: 2,
+	Comments: 3,
 } as const;
 
 const Page = () => {
-  const { params } = useRouterStore();
-  const { slug } = params as Record<"slug", string>;
+	const { params } = useRouterStore();
+	const { slug } = params as Record<"slug", string>;
 
-  const tabContentClassName =
-    "flex flex-col gap-1.5 p-3 rounded-xl bg-neutral-100 overflow-y-auto transition dark:bg-neutral-700";
+	const tabContentClassName =
+		"flex flex-col gap-1.5 p-3 rounded-xl bg-neutral-100 overflow-y-auto transition dark:bg-neutral-700";
 
-  // 获取番剧详情
-  const { loading, error, data } = useAnimeStore(slug);
-  useEffect(() => {
-    if (data && "title" in data) {
-      setTitle(data.title);
-    }
-  }, [data]);
+	// 获取番剧详情
+	const { loading, error, data } = useAnimeStore(slug);
+	useEffect(() => {
+		if (data && "title" in data) {
+			setTitle(data.title);
+		}
+	}, [data]);
 
-  /**
-   * 房间相关状态
-   */
+	/**
+	 * 房间相关状态
+	 */
 
-  const [isHost, setIsHost] = useState(true);
+	const [isHost, setIsHost] = useState(true);
 
-  if (error) {
-    return <NotFound />;
-  }
+	if (error) {
+		return <NotFound />;
+	}
 
-  if (loading || !data) {
-    return (
-      <div className="absolute inset-0 m-auto flex flex-col items-center gap-1 size-fit text-neutral-400 transition dark:text-neutral-500">
-        <Loading />
-      </div>
-    );
-  }
+	if (loading || !data) {
+		return (
+			<div className="absolute inset-0 m-auto flex flex-col items-center gap-1 size-fit text-neutral-400 transition dark:text-neutral-500">
+				<Loading />
+			</div>
+		);
+	}
 
-  return (
-    <WebSocketProvider>
-      <Video anime={data} isHost={isHost} />
-      <Tabs defaultValue={Tab.Episodes} className="w-full xl:w-64 max-h-96 overflow-hidden">
-        <Tabs.List>
-          <Tabs.Trigger value={Tab.Episodes}>选集</Tabs.Trigger>
-          <Tabs.Trigger value={Tab.Room}>聊天</Tabs.Trigger>
-        </Tabs.List>
-        <Tabs.Content value={Tab.Episodes} className={tabContentClassName}>
-          <Episodes list={data?.episodes} disabled={!isHost} />
-        </Tabs.Content>
-        <Tabs.Content value={Tab.Room} className={tabContentClassName}>
-          <Room isHost={isHost} onChangeHost={setIsHost} />
-        </Tabs.Content>
-      </Tabs>
-    </WebSocketProvider>
-  );
+	return (
+		<WebSocketProvider>
+			<Video anime={data} isHost={isHost} />
+			<Tabs
+				defaultValue={Tab.Episodes}
+				className="w-full xl:w-64 max-h-96 overflow-hidden"
+			>
+				<Tabs.List>
+					<Tabs.Trigger value={Tab.Episodes}>选集</Tabs.Trigger>
+					<Tabs.Trigger value={Tab.Room}>聊天</Tabs.Trigger>
+				</Tabs.List>
+				<Tabs.Content value={Tab.Episodes} className={tabContentClassName}>
+					<Episodes list={data?.episodes} disabled={!isHost} />
+				</Tabs.Content>
+				<Tabs.Content value={Tab.Room} className={tabContentClassName}>
+					<Room isHost={isHost} onChangeHost={setIsHost} />
+				</Tabs.Content>
+			</Tabs>
+		</WebSocketProvider>
+	);
 };
 
 export default Page;

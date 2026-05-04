@@ -6,9 +6,9 @@
  * Toast 消息通知
  */
 export type Toast = {
-  id: string;
-  type: "success" | "info" | "warning" | "error";
-  message: string;
-  duration?: number;
-  lifecycle?: "beforeEnter" | "entered" | "beforeExit";
+	id: string;
+	type: "success" | "info" | "warning" | "error";
+	message: string;
+	duration?: number;
+	lifecycle?: "beforeEnter" | "entered" | "beforeExit";
 };

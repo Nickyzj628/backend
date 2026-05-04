@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm view *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm check *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(pnpm check:write)",
+      "Bash(pnpm build:shared-types)"
+    ]
+  }
+}

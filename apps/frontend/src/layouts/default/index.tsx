@@ -7,23 +7,23 @@ import Footer from "./components/footer";
 import Header from "./components/header";
 
 const DefaultLayout = () => {
-  return (
-    <>
-      <div className="flex flex-col gap-3 min-h-screen p-3">
-        <Header />
-        <div className="flex flex-1 gap-3">
-          <Aside />
-          <main className="bento relative flex flex-1 flex-wrap items-start content-start gap-3 overflow-hidden">
-            <Suspense fallback={<Loading className="size-full" />}>
-              <Router />
-            </Suspense>
-          </main>
-        </div>
-        <Footer />
-      </div>
-      <CustomToaster />
-    </>
-  );
+	return (
+		<>
+			<div className="flex flex-col gap-3 min-h-screen p-3">
+				<Header />
+				<div className="flex flex-1 gap-3">
+					<Aside />
+					<main className="bento relative flex flex-1 flex-wrap items-start content-start gap-3 overflow-hidden">
+						<Suspense fallback={<Loading className="size-full" />}>
+							<Router />
+						</Suspense>
+					</main>
+				</div>
+				<Footer />
+			</div>
+			<CustomToaster />
+		</>
+	);
 };
 
 export default DefaultLayout;

@@ -5,7 +5,7 @@
 - **前端**: TypeScript 7、Vite 8、Preact 11、UnoCSS、Nano Stores
 - **后端**: Node.js、Hono、SQLite、Valibot
 - **包管理器**: pnpm
-- **代码质量、格式化工具**: Oxlint、Oxfmt
+- **代码质量、格式化工具**: Biome
 
 ## 项目结构
 

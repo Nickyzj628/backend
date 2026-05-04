@@ -13,32 +13,32 @@ import { createGlobalState } from "react-use";
  * removeUser();
  */
 const createPersistGlobalState = <T>(key: string, getInitialValue: () => T) => {
-  // 如果 localStorage 里没有值，则缓存初始值，供下次使用
-  let cachedValue = localStorage.getItem(key);
-  if (!cachedValue) {
-    cachedValue = JSON.stringify(getInitialValue());
-    localStorage.setItem(key, cachedValue);
-  }
+	// 如果 localStorage 里没有值，则缓存初始值，供下次使用
+	let cachedValue = localStorage.getItem(key);
+	if (!cachedValue) {
+		cachedValue = JSON.stringify(getInitialValue());
+		localStorage.setItem(key, cachedValue);
+	}
 
-  const useGlobalValue = createGlobalState<T>(JSON.parse(cachedValue));
+	const useGlobalValue = createGlobalState<T>(JSON.parse(cachedValue));
 
-  return () => {
-    const [value, setValue] = useGlobalValue();
+	return () => {
+		const [value, setValue] = useGlobalValue();
 
-    // 更新状态时，同步到 localStorage
-    const persistValue = (value: T) => {
-      setValue(value);
-      localStorage.setItem(key, JSON.stringify(value));
-    };
+		// 更新状态时，同步到 localStorage
+		const persistValue = (value: T) => {
+			setValue(value);
+			localStorage.setItem(key, JSON.stringify(value));
+		};
 
-    // 把状态从内存和 localStorage 中移除
-    const removeValue = () => {
-      setValue(undefined);
-      localStorage.removeItem(key);
-    };
+		// 把状态从内存和 localStorage 中移除
+		const removeValue = () => {
+			setValue(undefined);
+			localStorage.removeItem(key);
+		};
 
-    return [value, persistValue, removeValue];
-  };
+		return [value, persistValue, removeValue];
+	};
 };
 
 export default createPersistGlobalState;

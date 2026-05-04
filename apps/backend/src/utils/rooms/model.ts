@@ -11,13 +11,13 @@ export type RoomError = RoomErrorCode;
  * WebSocket 原始消息类型
  */
 export interface WSMessage {
-  event: string;
-  payload?: unknown;
+	event: string;
+	payload?: unknown;
 }
 
 // 从 shared-types/schemas 重新导出 Schemas
 export {
-  CreateRoomResponseSchema,
-  ErrorResponseSchema,
-  RoomErrorSchema,
+	CreateRoomResponseSchema,
+	ErrorResponseSchema,
+	RoomErrorSchema,
 } from "@nickyzj/shared-types/schemas";

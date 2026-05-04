@@ -11,15 +11,15 @@ export const api = fetcher(`${BASE_URL}:${BACKEND_PORT}`);
  * const { isLoading, error, data } = useRequest<AnimesResp>("/animes?page=1");
  */
 export const useRequest = <T>(path: string, options: Recordable = {}) => {
-  const {
-    loading: isLoading,
-    error,
-    value: data,
-  } = useAsync(() => api.get<T>(path, options), [path]);
+	const {
+		loading: isLoading,
+		error,
+		value: data,
+	} = useAsync(() => api.get<T>(path, options), [path]);
 
-  return {
-    isLoading,
-    error,
-    data,
-  };
+	return {
+		isLoading,
+		error,
+		data,
+	};
 };
