@@ -8,7 +8,7 @@ import { BASE_URL, WEBDAV_PORT } from "@/utils/constants";
  * const src = getImage("/Nickyzj/Photos/Blogs/猩猩也能懂的Node.js部署教程.webp");
  */
 export const getImage = (path: string) => {
-  return `${BASE_URL}:${WEBDAV_PORT}/p/Nickyzj/Photos${encodeURIComponent(path)}`;
+	return `${BASE_URL}:${WEBDAV_PORT}/Nickyzj/Photos${encodeURIComponent(path)}`;
 };
 
 /**
@@ -21,9 +21,9 @@ export const getImage = (path: string) => {
  * }, 2);
  */
 export const getAnimeVideoByEp = (anime: Anime, ep = 1) => {
-  const episode = anime.episodes[ep - 1];
-  if (!episode) {
-    return "";
-  }
-  return `${BASE_URL}:${WEBDAV_PORT}/p/Nickyzj/Animes/${anime.season}/${encodeURIComponent(anime.title)}/${encodeURIComponent(episode)}`;
+	const episode = anime.episodes[ep - 1];
+	if (!episode) {
+		return "";
+	}
+	return `${BASE_URL}:${WEBDAV_PORT}/Nickyzj/Animes/${anime.season}/${encodeURIComponent(anime.title)}/${encodeURIComponent(episode)}`;
 };
